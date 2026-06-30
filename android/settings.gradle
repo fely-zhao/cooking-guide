@@ -1,0 +1,11 @@
+pluginManagement { includeBuild("../node_modules/@react-native/gradle-plugin") }
+plugins { id("com.facebook.react.settings") }
+rootProject.name = 'CookingGuideRN'
+
+reactSettings.autolinkLibrariesFromCommand(
+    ["node", "node_modules/react-native/cli.js", "config"],
+    settings.layout.rootDirectory.dir("../").asFile
+)
+
+include ':app'
+includeBuild('../node_modules/@react-native/gradle-plugin')

@@ -1,0 +1,14 @@
+prefix=/Users/michalsek/Documents/work/rn-audio-libs/scripts/../build/intermediate/ffmpeg/output/android/x86_64
+exec_prefix=${prefix}
+libdir=/Users/michalsek/Documents/work/rn-audio-libs/scripts/../build/intermediate/ffmpeg/output/android/x86_64/lib
+includedir=/Users/michalsek/Documents/work/rn-audio-libs/scripts/../build/intermediate/ffmpeg/output/android/x86_64/include
+
+Name: libavutil
+Description: FFmpeg utility library
+Version: 60.8.100
+Requires: 
+Requires.private: 
+Conflicts:
+Libs: -L${libdir}  -lavutil 
+Libs.private: -lm -L/opt/homebrew/Cellar/openssl@3/3.6.0/lib -lssl -lcrypto -latomic -landroid -lmediandk -pthread
+Cflags: -I${includedir}

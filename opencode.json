@@ -1,0 +1,84 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "opencode-go/deepseek-v4-flash",
+
+  "agent": {
+    "build": {
+      "mode": "primary",
+      "model": "opencode-go/deepseek-v4-pro"
+    },
+    "plan": {
+      "mode": "primary",
+      "model": "opencode-go/qwen3.7-plus"
+    },
+    "general": {
+      "mode": "subagent",
+      "model": "opencode-go/deepseek-v4-pro"
+    },
+    "explore": {
+      "mode": "subagent",
+      "model": "opencode-go/deepseek-v4-flash"
+    },
+    "librarian": {
+      "mode": "subagent",
+      "model": "opencode-go/deepseek-v4-flash"
+    },
+    "oracle": {
+      "mode": "subagent",
+      "model": "opencode-go/qwen3.7-max"
+    },
+    "metis": {
+      "mode": "subagent",
+      "model": "opencode-go/qwen3.7-max"
+    },
+    "momus": {
+      "mode": "subagent",
+      "model": "opencode-go/qwen3.7-max"
+    },
+    "visual-engineering": {
+      "mode": "subagent",
+      "model": "opencode-go/kimi-k2.7-code"
+    },
+    "ultrabrain": {
+      "mode": "subagent",
+      "model": "opencode-go/qwen3.7-max"
+    },
+    "deep": {
+      "mode": "subagent",
+      "model": "opencode-go/qwen3.7-max"
+    },
+    "artistry": {
+      "mode": "subagent",
+      "model": "opencode-go/glm-5.2"
+    },
+    "quick": {
+      "mode": "subagent",
+      "model": "opencode-go/deepseek-v4-flash"
+    },
+    "unspecified-low": {
+      "mode": "subagent",
+      "model": "opencode-go/deepseek-v4-flash"
+    },
+    "unspecified-high": {
+      "mode": "subagent",
+      "model": "opencode-go/minimax-m3"
+    },
+    "writing": {
+      "mode": "subagent",
+      "model": "opencode-go/qwen3.7-plus"
+    },
+    "sisyphus-junior": {
+      "mode": "subagent",
+      "model": "opencode-go/deepseek-v4-flash"
+    },
+    "title": {
+      "model": "opencode-go/deepseek-v4-flash"
+    },
+    "compaction": {
+      "model": "opencode-go/deepseek-v4-flash"
+    },
+    "summary": {
+      "model": "opencode-go/deepseek-v4-flash"
+    }
+  }
+}

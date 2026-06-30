@@ -1,0 +1,14 @@
+prefix=/Users/michalsek/Documents/work/rn-audio-libs/scripts/../build/intermediate/ffmpeg/output/android/x86
+exec_prefix=${prefix}
+libdir=/Users/michalsek/Documents/work/rn-audio-libs/scripts/../build/intermediate/ffmpeg/output/android/x86/lib
+includedir=/Users/michalsek/Documents/work/rn-audio-libs/scripts/../build/intermediate/ffmpeg/output/android/x86/include
+
+Name: libswresample
+Description: FFmpeg audio resampling library
+Version: 6.1.100
+Requires: 
+Requires.private: libavutil >= 60.8.100
+Conflicts:
+Libs: -L${libdir}  -lswresample 
+Libs.private: -lm -latomic
+Cflags: -I${includedir}

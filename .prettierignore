@@ -1,0 +1,7 @@
+.omo/
+android/
+ios/
+node_modules/
+coverage/
+dist/
+build/

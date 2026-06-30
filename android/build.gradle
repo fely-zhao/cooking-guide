@@ -1,0 +1,30 @@
+buildscript {
+    ext {
+        buildToolsVersion = "36.0.0"
+        minSdkVersion = 24
+        compileSdkVersion = 36
+        targetSdkVersion = 36
+        ndkVersion = "27.1.12297006"
+        kotlinVersion = "2.1.20"
+    }
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath("com.android.tools.build:gradle")
+        classpath("com.facebook.react:react-native-gradle-plugin")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
+    }
+}
+
+apply plugin: "com.facebook.react.rootproject"
+
+// react-native-audio-api 的 downloadPrebuiltBinaries 依赖 bash 脚本
+// Windows 上没 bash 会卡死。预编译库在 yarn add 时已下载解压，直接跳过。
+subprojects { subproject ->
+    def audioApiDownload = subproject.tasks.findByName('downloadPrebuiltBinaries')
+    if (audioApiDownload != null) {
+        audioApiDownload.enabled = false
+    }
+}
