@@ -189,6 +189,65 @@ App 依赖三个本地后端服务（独立项目）：
 | `yarn test:e2e`     | Jest 端到端测试     |
 | `yarn test:all`     | 运行全部测试        |
 
+## Git 工作流
+
+> 采用 **GitHub Flow**：`main` 分支始终可部署，新工作从 `main` 切出特性分支，完成后通过 PR 合回。
+
+### 分支规范
+
+| 前缀     | 用途     | 示例                               |
+| -------- | -------- | ---------------------------------- |
+| `feat/`  | 新功能   | `feat/parallel-cooking`            |
+| `fix/`   | 修复 bug | `fix/tts-crash-on-network-loss`    |
+| `chore/` | 杂务     | `chore/upgrade-react-native-0.87`  |
+
+- 分支名使用 **kebab-case**（小写英文 + 连字符），不用中文，不用编号
+- PR 标题同分支名风格，描述中引用 GitHub Issue 编号（如有）
+
+### 开发流程
+
+```bash
+# 1. 从 main 切出特性分支
+git checkout -b feat/your-feature
+
+# 2. 完成开发，提交
+git add <files>
+git commit -m "feat: 一句话说明（英文或中文）"
+
+# 3. 推送
+git push -u origin feat/your-feature
+
+# 4. 在 GitHub 创建 Pull Request → main
+# 5. Review 通过后 Squash merge
+# 6. 删除远程特性分支，本地切回 main 并拉取
+git checkout main
+git pull
+git branch -d feat/your-feature
+```
+
+### 提交信息规范
+
+- 首行格式：`<type>: <简短描述>`
+- type 参考：`feat` / `fix` / `chore` / `docs` / `refactor` / `test` / `style`
+- 描述可英文可中文，清晰即可
+
+```
+feat: 双菜并行模式
+fix: TTS 网络断开时崩溃
+chore: 清理无用 SVG 图标
+docs: 更新 README 安装步骤
+```
+
+### .gitignore 规则
+
+- `.codegraph/`、`.omo/` — 本地 AI 工具缓存，不提交
+- `.env`、`.env.local`、`.env.*.local` — 环境变量，不提交
+- `bun.lock` — 项目使用 yarn，不提交
+- `android/hs_err_pid*.log`、`android/replay_pid*.log` — JVM 崩溃日志
+- `__MACOSX/`、`.AppleDouble`、`.LSOverride` — macOS 元数据残留
+- `*.keystore` — 密钥库文件（含 debug.keystore）
+- 完整规则见根目录 [`.gitignore`](.gitignore)
+
 ## 关键文档索引
 
 | 文档                     | 内容                                                  |
