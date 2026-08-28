@@ -53,7 +53,7 @@ export function MagazineCard({
         <View style={styles.overlayTextColumn}>
           <Text
             style={[styles.overlayTitle, !hasImage && styles.overlayTitlePrimary]}
-            numberOfLines={2}
+            numberOfLines={1}
             ellipsizeMode="tail"
           >
             {title}
@@ -140,7 +140,7 @@ export function MagazineCard({
                 <View style={styles.contentTextColumn}>
                   <Text
                     style={styles.placeholderOverlayTitle}
-                    numberOfLines={2}
+                    numberOfLines={1}
                     ellipsizeMode="tail"
                   >
                     {title}
