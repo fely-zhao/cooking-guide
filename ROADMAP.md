@@ -21,6 +21,7 @@
 
 **已完成**：
 
+- **质量闸门恢复全绿** (2026-08-27)：清理 ESLint/Prettier 历史欠账（36 error → 0），yarn lint / tsc / format:check / test:all 全部通过；新增《项目审计报告》（docs/项目审计报告.md，架构/视觉/交互/废代码静态走查）
 - **语音服务切换 Azure AI Speech** (2026-08-27)：
   - 新增 `AzureTTSProvider`（REST + SSML，WAV 输出兼容现有 Player）；`createServices()` 注释 Local 行切换，一行可回退
   - `STTService` 改为 Azure REST 短音频转写直调（Blob body），`speechToTextForCommand()` 接口不变、调用点零改动
