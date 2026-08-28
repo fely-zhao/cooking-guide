@@ -92,3 +92,6 @@ bun.lock
 # JVM crash / replay logs
 android/hs_err_pid*.log
 android/replay_pid*.log
+
+# 本地排查临时文件（真机 DB 拉取副本）
+cooking-guide.db*
