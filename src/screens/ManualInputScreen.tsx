@@ -1,7 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import {
   View,
-  Text,
   TextInput,
   ScrollView,
   StyleSheet,
@@ -14,6 +13,7 @@ import { spacing } from '../theme/spacing';
 import { typography } from '../theme/typography';
 import { SafeAreaContainer } from '../components/SafeAreaContainer';
 import { HeaderBar } from '../components/HeaderBar';
+import { AiProcessingOverlay } from '../components/AiProcessingOverlay';
 import { Button } from '../components/Button';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { RouteProp } from '@react-navigation/native';
@@ -105,14 +105,10 @@ export default function ManualInputScreen() {
             />
           </View>
 
-          {isParsing && (
-            <View style={styles.parsingHint}>
-              <Text style={styles.parsingHintText}>AI 正在解析菜谱…</Text>
-            </View>
-          )}
-
           <View style={styles.bottomSpacer} />
         </ScrollView>
+
+        <AiProcessingOverlay visible={isParsing} />
 
         {/* Fixed bottom save button */}
         <View style={styles.bottomBar}>
@@ -155,14 +151,6 @@ const styles = StyleSheet.create({
     minHeight: 300,
     ...typography.button,
     color: colors.text.primary,
-  },
-  parsingHint: {
-    marginTop: spacing.lg,
-    alignItems: 'center',
-  },
-  parsingHintText: {
-    ...typography.bodySmall,
-    color: colors.text.muted,
   },
   bottomBar: {
     position: 'absolute',

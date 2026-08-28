@@ -21,6 +21,7 @@
 
 **已完成**：
 
+- **AI 解析主题动画** (2026-08-27)：AiProcessingOverlay 升级为做饭主题全屏遮罩（暖色剪影厨师帽轻跳 + 三缕蒸汽错相上飘 + 三步轮换文案 + 圆点进度），文本录入页接入；菜谱编辑页 AI 辅助修改同步受益；Phase-D §10 同步组件文档
 - **录入重复入库修复** (2026-08-27)：真机出现两条同秒创建、内容相似的菜谱（语音录入停止的按钮/自动停止双触发竞态，两次并行 LLM 解析各自入库）；在唯一入库点 RecipeInputScreen.handleManualSave 加 useRef 幂等拦截；代码闸门全过，竞态场景待日常使用观察
 - **烹饪页重播功能补全** (2026-08-27，真机验证通过)：WAITING_TIMER/WAITING_AUTO 状态新增 REPEAT 事件（转 ANNOUNCING_STEP 重播当前步骤，计时/延迟重置），「再说一遍」按钮在这两个状态启用，语音「再说一遍」同步生效；架构文档 FSM 图同步（此前文档写了「任意状态可重播」但代码缺边）；e2e 新增 2 用例
 - **审计整改后真机回归通过** (2026-08-27)：构建 + 启动 + 首页加载正常，老菜谱数据在覆盖安装后完好；双 patch（document-picker/keep-awake）真机构建验证在位。顺带修两个构建运维问题：android script 补 `--appId com.cookingguidern.arm64`（flavor 的 applicationIdSuffix 导致 CLI 启动 Error type 3）；download-audio-libs 幂等化（目标已存在则跳过下载，不再每次 install 赌 GitHub 网络）

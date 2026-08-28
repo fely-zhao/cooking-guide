@@ -513,6 +513,20 @@ import { MagazineCard } from '../components/MagazineCard';
 
 ---
 
+### `AiProcessingOverlay`
+
+```tsx
+import { AiProcessingOverlay } from '../components/AiProcessingOverlay';
+
+<AiProcessingOverlay visible={isParsing} />;
+```
+
+- AI 解析/处理中的全屏遮罩：暖色剪影厨师帽轻跳 + 三缕蒸汽错相上飘 + 三步轮换文案（识别食材→提取步骤→整理菜谱）+ 圆点进度指示。
+- 动画仅 `transform`/`opacity`（reanimated `withRepeat`），蒸汽用单一线性周期插值错相。
+- 适用于所有 LLM 解析等待场景（文本录入、菜谱 AI 辅助修改等），`visible` 控制显隐。
+
+---
+
 ## 11. 文件组织
 
 ```
