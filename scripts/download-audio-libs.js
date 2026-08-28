@@ -15,6 +15,13 @@ const DEST_MAP = {
 async function downloadAndExtract(file) {
   const url = `${BASE}/${file}`;
   const dest = DEST_MAP[file];
+
+  // 幂等：目标目录已存在（上次已解压）则跳过，避免每次 install 都重新下载赌网络
+  if (fs.existsSync(dest) && fs.readdirSync(dest).length > 0) {
+    console.log(`[audio-libs] ${dest} already exists, skipping download`);
+    return;
+  }
+
   console.log(`Downloading ${url}...`);
   console.log(`Extracting to ${dest}`);
 
