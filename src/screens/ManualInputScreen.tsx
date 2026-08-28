@@ -68,13 +68,7 @@ export default function ManualInputScreen() {
         style={styles.flex}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
-        <HeaderBar
-          title="手动录入"
-          onBack={navigation.goBack}
-          rightTitle="完成"
-          onRightPress={handleSave}
-          rightDisabled={isParsing}
-        />
+        <HeaderBar title="手动录入" onBack={navigation.goBack} />
 
         <ScrollView
           style={styles.scrollView}
