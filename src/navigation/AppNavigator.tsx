@@ -2,7 +2,6 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import type { RootStackParamList } from './types';
 import HomeScreen from '../screens/HomeScreen';
-import RecipeListScreen from '../screens/RecipeListScreen';
 import RecipeDetailScreen from '../screens/RecipeDetailScreen';
 import RecipeEditScreen from '../screens/RecipeEditScreen';
 import CookingScreen from '../screens/CookingScreen';
@@ -21,7 +20,6 @@ export default function AppNavigator() {
       }}
     >
       <Stack.Screen name="Home" component={HomeScreen} />
-      <Stack.Screen name="RecipeList" component={RecipeListScreen} />
       <Stack.Screen name="RecipeDetail" component={RecipeDetailScreen} />
       <Stack.Screen
         name="RecipeInput"

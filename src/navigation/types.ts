@@ -3,7 +3,6 @@ import type { ParseRecipeResponse } from '../types/api';
 
 export type RootStackParamList = {
   Home: undefined;
-  RecipeList: undefined;
   RecipeDetail: { recipeId: string };
   RecipeInput: { mode: 'create' | 'edit'; recipeId?: string } | undefined;
   RecipeEdit: { recipeId: string };

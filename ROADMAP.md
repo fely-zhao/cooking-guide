@@ -21,6 +21,7 @@
 
 **已完成**：
 
+- **首页改造收尾** (2026-08-27)：HomeScreen 已是完整菜谱首页（筛选/杂志流/长按菜单/录入 FAB），删除无入口的孤儿屏幕 RecipeListScreen 及其路由注册（AppNavigator + navigation/types）；HomeScreen「收藏」筛选为占位实现，做实后见待解决
 - **质量闸门恢复全绿** (2026-08-27)：清理 ESLint/Prettier 历史欠账（36 error → 0），yarn lint / tsc / format:check / test:all 全部通过；新增《项目审计报告》（docs/项目审计报告.md，架构/视觉/交互/废代码静态走查）
 - **语音服务切换 Azure AI Speech** (2026-08-27)：
   - 新增 `AzureTTSProvider`（REST + SSML，WAV 输出兼容现有 Player）；`createServices()` 注释 Local 行切换，一行可回退
@@ -86,7 +87,7 @@
 
 **待解决**：
 
-- 首页改造（用我的菜谱页替换首页）
+- 收藏功能做实：HomeScreen「收藏」筛选目前直接返回全部（Recipe 模型无收藏字段），需加 isFavorite 字段 + DB 迁移 + 长按菜单切换收藏
 
 ## 长期（V2）
 
