@@ -6,11 +6,9 @@ import {
   FilePreset,
 } from 'react-native-audio-api';
 
-import { STT_URL } from '../config';
+import { AZURE_REGION } from '../config';
 import { STTError } from './stt-error';
 import { ensureMicPermission } from './permissions';
-
-const DEFAULT_STT_URL = STT_URL;
 
 // Set audio session options once at module level for concurrent playback + recording.
 AudioManager.setAudioSessionOptions({
@@ -46,33 +44,46 @@ export function releaseRecorder(): void {
 // ---------------------------------------------------------------------------
 
 /**
- * Speech-to-Text service connecting to the local stt-server (faster-whisper).
+ * Speech-to-Text service connecting to Azure AI Speech (REST, short-audio API).
  *
- * Supports two usage modes:
+ * Endpoint: POST https://{region}.stt.speech.microsoft.com/speech/recognition/
+ *           conversation/cognitiveservices/v1?language={locale}
+ *   - Auth: Ocp-Apim-Subscription-Key header (key stored in MMKV via Settings)
+ *   - Body: raw WAV bytes (≤ 60 s — hard limit of the short-audio API)
+ *
+ * Two usage modes:
  * 1. **Full dictation** – `speechToText()` for recipe voice input (multi-language)
  * 2. **Short commands** – `speechToTextForCommand()` for cooking voice commands
- *    (Chinese-only, optimised for keywords like "好了/下一步/再说一遍/等一下")
+ *    (Chinese-only, matching keywords like "好了/下一步/再说一遍")
  *
- * The stt-server runs at `http://localhost:5000` and accepts OpenAI Whisper
- * API-compatible multipart uploads.  Requires `adb reverse tcp:5000 tcp:5000`
- * so the Android emulator can reach the host service.
+ * ---------------------------------------------------------------------------
+ * LOCAL IMPLEMENTATION (commented out 2026-08-27, switch back if needed):
+ * The original implementation connected to the local stt-server (faster-whisper,
+ * OpenAI Whisper-compatible JSON+base64 API at http://localhost:5000). To restore:
+ *   1. Uncomment the blocks marked "LOCAL STT" below
+ *   2. In config.ts uncomment TTS_URL/STT_URL and remove AZURE_REGION usage
+ *   3. In cooking-machine-shared.ts restore the commented constructor lines
+ *   4. In types/settings.ts & SettingsScreen.tsx re-enable sttUrl/ttsUrl wiring
+ * ---------------------------------------------------------------------------
  */
 export class STTService {
-  private readonly baseUrl: string;
+  private readonly subscriptionKey: string;
+  private readonly region: string;
 
   /**
-   * @param baseUrl - stt-server base URL.  Defaults to `http://localhost:5000`.
-   *                  Override for custom deployments or port changes.
+   * @param subscriptionKey - Azure Speech resource key (from settings storage).
+   * @param region          - Azure region, defaults to AZURE_REGION in config.ts.
    */
-  constructor(baseUrl: string = DEFAULT_STT_URL) {
-    this.baseUrl = baseUrl.replace(/\/+$/, '');
+  constructor(subscriptionKey: string, region: string = AZURE_REGION) {
+    this.subscriptionKey = subscriptionKey;
+    this.region = region;
   }
 
-  /**
-   * Check whether the stt-server is reachable and the whisper model is loaded.
+  /*
+   * --- LOCAL STT (commented out 2026-08-27) --------------------------------
+   * Check whether the local stt-server is reachable and the whisper model is loaded.
    *
    * @returns `true` if the server responds with status `"ok"`.
-   */
   async checkHealth(): Promise<boolean> {
     try {
       const response = await fetch(`${this.baseUrl}/health`, { method: 'GET' });
@@ -83,19 +94,27 @@ export class STTService {
       return false;
     }
   }
+   * --- END LOCAL STT --------------------------------------------------------
+   */
 
   /**
-   * Transcribe audio to text via the local stt-server (faster-whisper).
+   * Transcribe a WAV recording to text via Azure AI Speech (short-audio API).
    *
-   * Reads the WAV file via fetch + arrayBuffer, converts to base64, and
-   * sends as JSON body via fetch — avoids Hermes' inability to send
-   * ArrayBuffer/FormData bodies in POST requests.
+   * Reads the WAV file via fetch → Blob and sends it as the raw request body
+   * (Azure only accepts binary audio, not base64 JSON).
    *
-   * @param filePath - Absolute path to the WAV file.
-   * @param language - Language hint (`'zh'` or `'en'`).
-   * @param model    - Whisper model size (e.g. 'base', 'small', 'medium').
+   * @param filePath - Absolute path to the WAV file (22050 Hz, 16-bit, mono).
+   * @param language - Language hint (`'zh'` → zh-CN, `'en'` → en-US).
    */
-  async speechToText(filePath: string, language: 'zh' | 'en', model: string): Promise<string> {
+  async speechToText(filePath: string, language: 'zh' | 'en'): Promise<string> {
+    if (!this.subscriptionKey) {
+      throw new STTError('未配置 Azure Speech Key，请在设置页填写');
+    }
+
+    const locale = language === 'en' ? 'en-US' : 'zh-CN';
+    // eslint-disable-next-line prettier/prettier -- 单行长 URL，模板串无法自动折行
+    const url = `https://${this.region}.stt.speech.microsoft.com/speech/recognition/conversation/cognitiveservices/v1?language=${locale}`;
+
     try {
       // 1. Read the WAV file via fetch (works on RN with file:// URIs)
       const fileUri = filePath.startsWith('/') ? `file://${filePath}` : filePath;
@@ -103,39 +122,43 @@ export class STTService {
       if (!fileResponse.ok) {
         throw new STTError(`无法读取录音文件: HTTP ${fileResponse.status}`);
       }
-      const audioData = await fileResponse.arrayBuffer();
-      console.log(`[STT] read ${audioData.byteLength} bytes from ${filePath}`);
+      // Blob body is the reliable way to send raw audio from RN/Hermes.
+      const audioBlob = await fileResponse.blob();
+      console.log(`[STT] uploading ${audioBlob.size} bytes from ${filePath}`);
 
-      const audioBase64 = arrayBufferToBase64(audioData);
-
-      // 3. Send as JSON via fetch (string body — Hermes-safe)
-      const response = await fetch(`${this.baseUrl}/v1/audio/transcriptions`, {
+      const response = await fetch(url, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          audio: audioBase64,
-          language,
-          model,
-        }),
+        headers: {
+          'Ocp-Apim-Subscription-Key': this.subscriptionKey,
+          'Content-Type': 'audio/wav; codecs=audio/pcm; samplerate=22050',
+          Accept: 'application/json;text/xml',
+        },
+        body: audioBlob,
       });
 
       if (!response.ok) {
         let detail = `HTTP ${response.status}`;
         try {
-          const body: { detail?: string } = await response.json();
-          if (body?.detail) detail = body.detail;
+          const bodyText = await response.text();
+          if (bodyText) detail += ` — ${bodyText.slice(0, 200)}`;
         } catch {
           // keep fallback
         }
-        throw new STTError(`stt-server 返回错误: ${detail}`);
+        throw new STTError(`Azure STT 返回错误: ${detail}`);
       }
 
-      const result: { text?: string } = await response.json();
-      return (result.text ?? '').trim();
+      const result: { RecognitionStatus?: string; DisplayText?: string } = await response.json();
+      if (result.RecognitionStatus && result.RecognitionStatus !== 'Success') {
+        // NoSpeech / InitialSilenceTimeout / Babble — treat as empty result so
+        // callers can show "未识别到语音" without an exception.
+        console.log(`[STT] Azure recognition not successful: ${result.RecognitionStatus}`);
+        return '';
+      }
+      return (result.DisplayText ?? '').trim();
     } catch (error) {
       if (error instanceof STTError) throw error;
       const message = error instanceof Error ? error.message : 'Unknown STT error';
-      throw new STTError(`stt-server 请求失败: ${message}`, error);
+      throw new STTError(`Azure STT 请求失败: ${message}`, error);
     }
   }
 
@@ -144,7 +167,7 @@ export class STTService {
    * Convenience wrapper that fixes the language to `'zh'` for command recognition.
    */
   async speechToTextForCommand(filePath: string): Promise<string> {
-    return this.speechToText(filePath, 'zh', 'base');
+    return this.speechToText(filePath, 'zh');
   }
 }
 
@@ -290,56 +313,7 @@ export async function recordAudio(options: RecordAudioOptions): Promise<{ filePa
 // ---------------------------------------------------------------------------
 // Base64 helper
 // ---------------------------------------------------------------------------
-
-/**
- * Convert an ArrayBuffer to a base64 string.
- *
- * Pure-JS implementation — no `btoa` dependency, works in any Hermes
- * environment without DOM type declarations.
- */
-function arrayBufferToBase64(buffer: ArrayBuffer): string {
-  const bytes = new Uint8Array(buffer);
-  const chars: string[] = [];
-  for (let i = 0; i < bytes.byteLength; i++) {
-    chars.push(String.fromCharCode(bytes[i]));
-  }
-  const binary = chars.join('');
-  return base64Encode(binary);
-}
-
-/**
- * Encode a Latin-1 string to base64 without using `btoa`.
- *
- * Base64 alphabet: A-Z a-z 0-9 + /
- * Pads with `=` to multiples of 4.
- */
-function base64Encode(input: string): string {
-  const BASE64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
-  let output = '';
-  let i = 0;
-  const len = input.length;
-
-  while (i < len) {
-    const c1 = input.charCodeAt(i++);
-    const hasC2 = i < len;
-    const c2 = hasC2 ? input.charCodeAt(i++) : 0;
-    const hasC3 = i < len;
-    const c3 = hasC3 ? input.charCodeAt(i++) : 0;
-
-    const triplet = (c1 << 16) | (c2 << 8) | c3;
-
-    output += BASE64.charAt((triplet >> 18) & 0x3f);
-    output += BASE64.charAt((triplet >> 12) & 0x3f);
-
-    if (!hasC2) {
-      output += '==';
-    } else if (!hasC3) {
-      output += BASE64.charAt((triplet >> 6) & 0x3f) + '=';
-    } else {
-      output += BASE64.charAt((triplet >> 6) & 0x3f);
-      output += BASE64.charAt(triplet & 0x3f);
-    }
-  }
-
-  return output;
-}
+// NOTE: arrayBufferToBase64()/base64Encode() 已随本地 stt-server 一同停用。
+// 本地实现走 base64-JSON 绕过 Hermes 不支持二进制 body 的限制；Azure 只收
+// 二进制音频，改用 Blob body（见上方 speechToText）。如需切回本地服务且需要
+// 这些工具函数，可从 git 历史恢复（stt.ts 切换前的版本）。

@@ -13,14 +13,14 @@ import { spacing } from '../theme/spacing';
 import { typography } from '../theme/typography';
 import { SafeAreaContainer } from '../components/SafeAreaContainer';
 import { HeaderBar } from '../components/HeaderBar';
-import { Button } from '../components/Button';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { RouteProp } from '@react-navigation/native';
 import type { RecipeInputNavigationProp, RecipeInputStackParamList } from '../navigation/types';
 import type { ParseRecipeResponse } from '../types/api';
 import { STTService, recordAudio } from '../services/stt';
 import { LLMService } from '../services/llm';
-import { createApiClient } from '../config';
+import { settingsStorage } from '../services/storage';
+import { AZURE_REGION, createApiClient } from '../config';
 
 type VoiceInputRouteProp = RouteProp<RecipeInputStackParamList, 'VoiceInput'>;
 
@@ -57,13 +57,20 @@ export default function VoiceInputScreen() {
 
   const processRecording = useCallback(
     async (durationSeconds: number) => {
+      const speechKey = settingsStorage.get('azureSpeechKey') ?? '';
+      if (!speechKey) {
+        Alert.alert('未配置 Azure Key', '请先在「设置」页填写 Azure Speech Key，再使用语音录入。');
+        return;
+      }
+      const speechRegion = settingsStorage.get('azureRegion') ?? AZURE_REGION;
+
       setIsProcessing(true);
       try {
         const { filePath } = await recordAudio({
           maxDurationMs: Math.max(durationSeconds * 1000, 1000),
         });
 
-        const sttService = new STTService();
+        const sttService = new STTService(speechKey, speechRegion);
         const text = await sttService.speechToTextForCommand(filePath);
 
         if (text.trim().length === 0) {
@@ -183,12 +190,12 @@ export default function VoiceInputScreen() {
 
   return (
     <SafeAreaContainer style={styles.container}>
-        <HeaderBar
-          title="语音录入"
-          onBack={handleCancel}
-          rightTitle="完成"
-          onRightPress={handleConfirm}
-        />
+      <HeaderBar
+        title="语音录入"
+        onBack={handleCancel}
+        rightTitle="完成"
+        onRightPress={handleConfirm}
+      />
 
       <View style={styles.content}>
         {/* Status */}

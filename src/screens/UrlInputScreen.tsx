@@ -67,7 +67,6 @@ export default function UrlInputScreen() {
         onRightPress={handleComplete}
         rightDisabled={!canParse}
       />
-      />
 
       <View style={styles.content}>
         {/* URL Input */}

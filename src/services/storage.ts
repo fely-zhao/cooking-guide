@@ -34,6 +34,8 @@ class SettingsStorage {
       llmUrl: this.get('llmUrl') ?? DEFAULT_SETTINGS.llmUrl,
       ttsUrl: this.get('ttsUrl') ?? DEFAULT_SETTINGS.ttsUrl,
       sttUrl: this.get('sttUrl') ?? DEFAULT_SETTINGS.sttUrl,
+      azureSpeechKey: this.get('azureSpeechKey') ?? DEFAULT_SETTINGS.azureSpeechKey,
+      azureRegion: this.get('azureRegion') ?? DEFAULT_SETTINGS.azureRegion,
       ttsVoiceId: this.get('ttsVoiceId') ?? DEFAULT_SETTINGS.ttsVoiceId,
       defaultServings: this.get('defaultServings') ?? DEFAULT_SETTINGS.defaultServings,
       gestureEnabled: this.get('gestureEnabled') ?? DEFAULT_SETTINGS.gestureEnabled,
@@ -47,6 +49,8 @@ class SettingsStorage {
     this.set('llmUrl', DEFAULT_SETTINGS.llmUrl);
     this.set('ttsUrl', DEFAULT_SETTINGS.ttsUrl);
     this.set('sttUrl', DEFAULT_SETTINGS.sttUrl);
+    this.set('azureSpeechKey', DEFAULT_SETTINGS.azureSpeechKey);
+    this.set('azureRegion', DEFAULT_SETTINGS.azureRegion);
     this.set('ttsVoiceId', DEFAULT_SETTINGS.ttsVoiceId);
     this.set('defaultServings', DEFAULT_SETTINGS.defaultServings);
     this.set('gestureEnabled', DEFAULT_SETTINGS.gestureEnabled);

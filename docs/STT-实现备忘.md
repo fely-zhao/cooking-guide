@@ -1,6 +1,15 @@
 # STT 管线实现备忘
 
-## 现状 (2026-06-17 更新，TTS 串扰修复 + 服务端加速)
+## 现状 (2026-08-27 更新：切换到 Azure AI Speech)
+
+STT 已从本地 stt-server（faster-whisper，:5000）切换到 **Azure AI Speech REST 短音频转写 API**。
+本地实现代码保留在 `src/services/stt.ts` 注释块中（类注释内有完整恢复步骤），可随时切回。
+
+> **Azure 切换要点**：`STTService` 构造改为 `new STTService(subscriptionKey, region)`；key 和 region 由用户在设置页录入存 MMKV（`azureSpeechKey` / `azureRegion`，2026-08-27 起 region 也可配），不进代码不进 git；config.ts 仅留默认值 `AZURE_REGION`。Endpoint：`POST https://{region}.stt.speech.microsoft.com/speech/recognition/conversation/cognitiveservices/v1?language=zh-CN`，body 为原始 WAV 二进制（Blob body，解决 Hermes 不支持二进制请求体的旧限制——Azure 只收二进制音频，不走 base64-JSON）。**单次音频硬上限 60 秒**（语音命令 5s 无风险；菜谱语音录入 VoiceInputScreen 上限 30s 也安全）。
+
+### 历史现状 (2026-06-17，TTS 串扰修复 + 服务端加速，本地 stt-server 时期)
+
+STT（语音输入）管线已打通。烹饪时 app 持续监听麦克风，识别中文语音指令（"下一步"、"再说一遍"、"我想问…"），通过 `VoiceCommandService` 匹配关键词并触发 FSM 事件，完成交互闭环。
 
 STT（语音输入）管线已打通。烹饪时 app 持续监听麦克风，识别中文语音指令（"下一步"、"再说一遍"、"我想问…"），通过 `VoiceCommandService` 匹配关键词并触发 FSM 事件，完成交互闭环。
 
@@ -174,6 +183,7 @@ yarn android --no-packager
 10. **TTS 串扰防护**: VoiceCommandService 添加录音阶段追踪（`_recordingPhase: 'idle' | 'recording' | 'transcribing'`），TTS 开始时仅当麦克风仍在录音（`recording` 阶段）才标记 discard。转录完成后检查标记丢弃结果，避免 TTS 播放的语音被误识别为语音命令。`pauseListening()` 注释更新说明此行为。
 11. **服务端转录加速**: `stt-server/server.py` — `transcribe()` 添加 `vad_filter=True`（Silero VAD 跳过静音段，减少幻觉 + 缩短转录时间）和 `beam_size=1`（贪婪解码替代 beam search，速度翻倍）
 12. **缩短静音超时**: `VoiceCommandService` 录音参数 `silenceTimeoutMs` 从 500 降至 300
+13. **切换 Azure STT** (2026-08-27): `STTService` 改为 Azure Speech REST 直调（构造参数 `subscriptionKey + region`）；删除 `model` 参数（Azure 无此概念），`speechToTextForCommand()` 接口不变，`VoiceCommandService`/`VoiceInputScreen` 调用点零改动；本地 faster-whisper 实现体与 base64 工具函数以注释保留在 `stt.ts` 内；设置页新增 `azureSpeechKey` 输入框（MMKV 存储）
 
 ## 待办/后续
 

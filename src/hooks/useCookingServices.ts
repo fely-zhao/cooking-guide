@@ -9,9 +9,12 @@ export function useCookingServices(): Services {
 
   if (!servicesRef.current) {
     servicesRef.current = createServices({
-      ttsUrl: settings.ttsUrl,
-      sttUrl: settings.sttUrl,
+      speechKey: settings.azureSpeechKey,
+      speechRegion: settings.azureRegion,
       llmUrl: settings.llmUrl,
+      // LOCAL STT/TTS (commented out 2026-08-27):
+      // ttsUrl: settings.ttsUrl,
+      // sttUrl: settings.sttUrl,
     });
   }
 

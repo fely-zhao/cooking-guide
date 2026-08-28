@@ -1,6 +1,13 @@
 # TTS 管线实现备忘
 
-## 现状 (2026-06-16 更新)
+## 现状 (2026-08-27 更新：切换到 Azure AI Speech)
+
+TTS 已从本地 tts-server（Windows SAPI，:4000）切换到 **Azure AI Speech REST 短文本合成 API**。
+本地 `LocalTTSProvider` 实现完整保留，`createServices()` 中仅注释切换（一行取消注释即可切回）。
+
+> **Azure 切换要点**：新增 `src/services/tts-provider-azure.ts`（实现同一 `TTSProvider` 接口）；Endpoint：`POST https://{region}.tts.speech.microsoft.com/cognitiveservices/v1`，body 为 SSML，`X-Microsoft-OutputFormat: riff-24khz-16bit-mono-pcm`（WAV 输出与现有 Player 直接兼容）；key 与 STT 共用同一个订阅密钥，key 和 region 均由设置页录入存 MMKV（`azureSpeechKey` / `azureRegion`，config.ts 仅留默认值）。默认音色改为 Azure short name `zh-CN-XiaoxiaoNeural`（晓晓，原 SAPI 名 'zh-cn-female-xiaoxiao' 同源）。`useTtsHealthCheck` 改用 Azure voices/list 接口验证 key 有效性。
+
+### 历史现状 (2026-06-16，本地 tts-server 时期)
 
 TTS 管线已打通，模拟器和真机均已验证通过（已出声）。当前使用 `LocalTTSProvider` 连接本地 tts-server 服务（Windows SAPI）。
 
@@ -9,8 +16,9 @@ TTS 管线已打通，模拟器和真机均已验证通过（已出声）。当�
 ### 架构：Provider 策略模式
 
 ```
-TTSProvider (interface)           ← 新增，策略接口
-  ├── LocalTTSProvider            ← 当前使用：请求本地 tts-server 服务
+TTSProvider (interface)           ← 策略接口
+  ├── LocalTTSProvider            ← 本地服务（2026-08-27 起停用，代码保留可切回）
+  ├── AzureTTSProvider            ← 当前使用：Azure AI Speech REST（2026-08-27 切换）
   ├── MiniMaxTTSProvider (stub)   ← 未来使用：填 MiniMax API 即可
   └── MockTTSProvider             ← 测试使用：返回 0.5s 静音 WAV
 ```
@@ -70,6 +78,7 @@ FSM invoke ttsService
 1. **播放库**：`react-native-track-player` → `react-native-audio-api`
 2. **TTS 解耦**：从 `ApiClient` 中剥离，独立为 `TTSProvider` 策略接口
 3. **本地服务**：`LocalTTSProvider` 匹配 tts-server 服务的实际 API（字段 `voice`/`rate`，非 `voice_id`）
+4. **切换 Azure** (2026-08-27)：新增 `AzureTTSProvider`；`createServices()` 注释 Local 行改用 Azure；DEFAULT_TTS_VOICE 改为 `zh-CN-XiaoxiaoNeural`；`Services.ttsProvider` 类型同步为 `AzureTTSProvider`
 
 ### 启动服务
 

@@ -196,14 +196,20 @@ export default function SettingsScreen() {
   const [llmUrl, setLlmUrl] = useState(settings.llmUrl);
   const [ttsUrl, setTtsUrl] = useState(settings.ttsUrl);
   const [sttUrl, setSttUrl] = useState(settings.sttUrl);
+  const [azureSpeechKey, setAzureSpeechKey] = useState(settings.azureSpeechKey);
+  const [azureRegion, setAzureRegion] = useState(settings.azureRegion);
 
   // Refs to always hold latest values, avoiding stale closures in handleDone
   const llmRef = useRef(llmUrl);
   const ttsRef = useRef(ttsUrl);
   const sttRef = useRef(sttUrl);
+  const azureKeyRef = useRef(azureSpeechKey);
+  const azureRegionRef = useRef(azureRegion);
   llmRef.current = llmUrl;
   ttsRef.current = ttsUrl;
   sttRef.current = sttUrl;
+  azureKeyRef.current = azureSpeechKey;
+  azureRegionRef.current = azureRegion;
 
   const update = <K extends keyof typeof settings>(key: K, value: (typeof settings)[K]) => {
     settingsStorage.set(key, value);
@@ -232,21 +238,42 @@ export default function SettingsScreen() {
     update('llmUrl', llmRef.current);
     update('ttsUrl', ttsRef.current);
     update('sttUrl', sttRef.current);
+    update('azureSpeechKey', azureKeyRef.current);
+    update('azureRegion', azureRegionRef.current);
     navigation.goBack();
   };
 
   return (
     <SafeAreaContainer style={styles.container}>
-        <HeaderBar
-          title="设置"
-          rightTitle="完成"
-          onRightPress={handleDone}
-        />
+      <HeaderBar title="设置" rightTitle="完成" onRightPress={handleDone} />
 
       <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
         {/* API 配置 */}
         <SectionCard title="服务地址" index={0}>
-          <Text style={styles.fieldLabel}>LLM 服务</Text>
+          <Text style={styles.fieldLabel}>Azure Speech Key（语音识别 + 播报共用）</Text>
+          <TextInput
+            style={styles.textInput}
+            placeholder="粘贴 Azure 订阅密钥"
+            placeholderTextColor={colors.text.placeholder}
+            value={azureSpeechKey}
+            onChangeText={setAzureSpeechKey}
+            onEndEditing={e => update('azureSpeechKey', e.nativeEvent.text)}
+            autoCapitalize="none"
+            autoCorrect={false}
+            secureTextEntry
+          />
+          <Text style={[styles.fieldLabel, styles.fieldLabelSpaced]}>Azure Region</Text>
+          <TextInput
+            style={styles.textInput}
+            placeholder="eastasia"
+            placeholderTextColor={colors.text.placeholder}
+            value={azureRegion}
+            onChangeText={setAzureRegion}
+            onEndEditing={e => update('azureRegion', e.nativeEvent.text)}
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
+          <Text style={[styles.fieldLabel, styles.fieldLabelSpaced]}>LLM 服务</Text>
           <TextInput
             style={styles.textInput}
             placeholder="http://localhost:3001"

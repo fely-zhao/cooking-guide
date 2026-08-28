@@ -5,22 +5,32 @@
 
 ---
 
-## 当前状态（2026-06-23）
+## 当前状态（2026-08-27）
 
-| 指标       | 数值                                                                |
-| ---------- | ------------------------------------------------------------------- |
-| 源文件     | 125 TS/TSX（不含测试）                                              |
-| 代码量     | ~12000 行                                                           |
-| 屏幕       | 11                                                                  |
-| 共享组件   | 28（新增 PressableScale）                                           |
-| 测试       | 4 个（cooking-machine ✅, haptic ✅, useKeepAwake ✅, e2e-flow ✅） |
-| 后端服务   | 3 个（STT ✅, TTS ✅, LLM ✅）                                      |
-| 图标       | 23 个 SVG 图标组件                                                  |
-| 插画       | 3 个空/错误状态插画                                                 |
-| 颜色 token | 44 个语义化 token                                                   |
+| 指标       | 数值                                                                      |
+| ---------- | ------------------------------------------------------------------------- |
+| 源文件     | 125 TS/TSX（不含测试）                                                    |
+| 代码量     | ~12000 行                                                                 |
+| 屏幕       | 11                                                                        |
+| 共享组件   | 28（新增 PressableScale）                                                 |
+| 测试       | 4 个（cooking-machine ✅, haptic ✅, useKeepAwake ✅, e2e-flow ✅）       |
+| 后端服务   | LLM 本地代理 1 个；STT/TTS 已切 Azure AI Speech（本地服务代码保留可切回） |
+| 图标       | 23 个 SVG 图标组件                                                        |
+| 插画       | 3 个空/错误状态插画                                                       |
+| 颜色 token | 44 个语义化 token                                                         |
 
 **已完成**：
 
+- **语音服务切换 Azure AI Speech** (2026-08-27)：
+  - 新增 `AzureTTSProvider`（REST + SSML，WAV 输出兼容现有 Player）；`createServices()` 注释 Local 行切换，一行可回退
+  - `STTService` 改为 Azure REST 短音频转写直调（Blob body），`speechToTextForCommand()` 接口不变、调用点零改动
+  - Azure key + region 由设置页录入存 MMKV（`azureSpeechKey` / `azureRegion`，不进代码不进 git），config.ts 仅留默认值
+  - 默认音色改为 `zh-CN-XiaoxiaoNeural`；`useTtsHealthCheck` 改用 voices/list 验证 key
+  - 本地 stt-server/tts-server 实现代码全部注释保留
+- **debug 构建链路修复 + 真机无线调试打通** (2026-08-27)：
+  - 修复三个构建坑：多 flavor 无裸 `installDebug`（android script 写入 `--mode arm64Debug`）；`debuggableVariants` 未匹配 flavor 致 debug 构建被内嵌 bundle（已显式列出）；keep-awake 的 jcenter() patch 未应用（`npx patch-package` 补上）
+  - 真机无线调试（WiFi ADB）打通：配对/连接双端口、reverse、双设备条目坑均已验证并记入运行与打包指南
+  - Azure 语音功能真机验证通过（2026-08-27）
 - XState v5 FSM 烹饪引导（7 状态 / 9 事件，e2e 测试覆盖）
 - TTS 四层管线（Provider → Service → Cache → Player）
 - STT 录音 + VAD + faster-whisper
@@ -104,11 +114,13 @@
 
 ## 依赖服务
 
-| 服务                         | 端口 | 状态      |
-| ---------------------------- | ---- | --------- |
-| STT（Python faster-whisper） | 5000 | ✅ 可工作 |
-| TTS（Node.js Windows SAPI）  | 4000 | ✅ 可工作 |
-| LLM（Node.js DeepSeek 代理） | 3001 | ✅ 可工作 |
+| 服务                         | 端口/区域 | 状态                                |
+| ---------------------------- | --------- | ----------------------------------- |
+| STT（Azure AI Speech）       | eastasia  | ✅ 真机验证通过                     |
+| TTS（Azure AI Speech）       | eastasia  | ✅ 真机验证通过                     |
+| LLM（Node.js DeepSeek 代理） | 3001      | ✅ 可工作                           |
+| STT 本地（faster-whisper）   | 5000      | ⏸️ 停用（代码注释保留，可随时切回） |
+| TTS 本地（Windows SAPI）     | 4000      | ⏸️ 停用（代码注释保留，可随时切回） |
 
 ---
 

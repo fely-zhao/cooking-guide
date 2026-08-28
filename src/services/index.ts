@@ -14,6 +14,7 @@ export { MockTTSProvider } from './tts-provider';
 export type { TTSProvider, TTSProviderOptions } from './tts-provider';
 export { LocalTTSProvider } from './tts-provider-local';
 export { MiniMaxTTSProvider } from './tts-provider-minimax';
+export { AzureTTSProvider } from './tts-provider-azure';
 export { LLMService, LLMError } from './llm';
 export { STTError } from './stt-error';
 export { STTService, recordAudio, releaseRecorder } from './stt';

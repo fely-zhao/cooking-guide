@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "android": "react-native run-android",
+    "android": "react-native run-android --mode arm64Debug",
     "ios": "react-native run-ios",
     "format": "prettier --write .",
     "format:check": "prettier --check .",

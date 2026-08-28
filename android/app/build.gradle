@@ -26,8 +26,10 @@ react {
     // cliFile = file("../../node_modules/react-native/cli.js")
 
     /* Variants */
-    //   The list of variants to that are debuggable. For those we're going to
-    //   skip the bundling of the JS bundle and the assets. Default is "debug", "debugOptimized".
+    //   注意：项目有 arm64/x86 flavor，variant 名带后缀（如 arm64Debug），
+    //   默认值 ["debug"] 匹配不上会导致 debug 构建被打成内嵌 bundle 的离线包（无法热更新）。
+    //   2026-08-27 修复：显式列出 debuggableVariants。
+    debuggableVariants = ["arm64Debug", "arm64DebugOptimized", "x86Debug", "x86DebugOptimized"]
     //   If you add flavors like lite, prod, etc. you'll have to list your debuggableVariants.
     // debuggableVariants = ["liteDebug", "liteDebugOptimized", "prodDebug", "prodDebugOptimized"]
     // debuggableVariants = ["debug"]
