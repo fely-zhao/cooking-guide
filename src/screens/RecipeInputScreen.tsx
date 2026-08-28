@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation, useRoute, CommonActions } from '@react-navigation/native';
 import type { RouteProp } from '@react-navigation/native';
@@ -77,8 +77,14 @@ export default function RecipeInputScreen() {
 
   const { recipeId } = route.params;
 
+  // 防重入库：上游（双击停止/自动停止竞态）可能触发两次 onSave，
+  // 单点在唯一入库口拦截，一次录入只允许创建一条记录。
+  const hasSavedRef = useRef(false);
+
   const handleManualSave = useCallback(
     (data: ParseRecipeResponse) => {
+      if (hasSavedRef.current) return;
+      hasSavedRef.current = true;
       const newId = createRecipe({
         name: data.name,
         servings: 2,
