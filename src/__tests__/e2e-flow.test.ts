@@ -419,6 +419,40 @@ describe('Scenario A: 手动录入 → 开始烹饪 → 全流程完成', () => 
     expect(getStateValue(actor)).toBe('IDLE');
   });
 
+  it('should handle REPEAT from WAITING_TIMER (restart step)', async () => {
+    const { actor } = createTestMachineWithDeferredTimer();
+    actor.start();
+
+    actor.send({ type: 'START', recipe: TEST_RECIPE });
+    await flush();
+    await flush();
+    actor.send({ type: 'NEXT' });
+    await flush();
+    actor.send({ type: 'CONFIRM' });
+    await flush();
+    await flush();
+    actor.send({ type: 'NEXT' });
+    await flush(); // step 3 (wait_timer) → WAITING_TIMER
+
+    expect(getStateValue(actor)).toBe('WAITING_TIMER');
+    actor.send({ type: 'REPEAT' });
+    expect(getStateValue(actor)).toBe('ANNOUNCING_STEP');
+    expect(actor.getSnapshot().context.currentStepIndex).toBe(3);
+  });
+
+  it('should handle REPEAT from WAITING_AUTO', async () => {
+    const { actor } = createTestMachine();
+    actor.start();
+
+    actor.send({ type: 'START', recipe: TEST_RECIPE });
+    await flush(); // step 0 instant → WAITING_AUTO
+    expect(getStateValue(actor)).toBe('WAITING_AUTO');
+
+    actor.send({ type: 'REPEAT' });
+    expect(getStateValue(actor)).toBe('ANNOUNCING_STEP');
+    expect(actor.getSnapshot().context.currentStepIndex).toBe(0);
+  });
+
   it('should handle EXIT from WAITING_TIMER', async () => {
     const { actor } = createTestMachineWithDeferredTimer();
     actor.start();

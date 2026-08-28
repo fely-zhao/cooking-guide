@@ -277,6 +277,7 @@ export const cookingMachine = setup({
           { guard: 'hasSteps', target: 'COMPLETED' },
           { target: 'COMPLETED' },
         ],
+        REPEAT: 'ANNOUNCING_STEP',
         ASK: { target: 'ANSWERING', actions: 'recordPreviousState' },
         SKIP: {
           guard: 'canSkip',
@@ -343,6 +344,7 @@ export const cookingMachine = setup({
           { guard: 'hasSteps', target: 'COMPLETED' },
           { target: 'COMPLETED' },
         ],
+        REPEAT: 'ANNOUNCING_STEP',
         ASK: { target: 'ANSWERING', actions: 'recordPreviousState' },
         SKIP: {
           guard: 'canSkip',

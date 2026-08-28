@@ -21,6 +21,7 @@
 
 **已完成**：
 
+- **烹饪页重播功能补全** (2026-08-27)：WAITING_TIMER/WAITING_AUTO 状态新增 REPEAT 事件（转 ANNOUNCING_STEP 重播当前步骤，计时/延迟重置），「再说一遍」按钮在这两个状态启用，语音「再说一遍」同步生效；架构文档 FSM 图同步（此前文档写了「任意状态可重播」但代码缺边）；e2e 新增 2 用例
 - **审计整改后真机回归通过** (2026-08-27)：构建 + 启动 + 首页加载正常，老菜谱数据在覆盖安装后完好；双 patch（document-picker/keep-awake）真机构建验证在位。顺带修两个构建运维问题：android script 补 `--appId com.cookingguidern.arm64`（flavor 的 applicationIdSuffix 导致 CLI 启动 Error type 3）；download-audio-libs 幂等化（目标已存在则跳过下载，不再每次 install 赌 GitHub 网络）
 - **审计整改第一批** (2026-08-27)：删死代码（react-native-reanimated-dnd 依赖、SkeletonCircle、api-proxy.mock、useAsync、headset/gesture stub、bun-types）；测试去 bun 化统一 jest 并自动发现测试文件；uuid 移入 dependencies；新增 voice-commands 关键词匹配单测；修正 README/架构文档/Phase-D/STT/TTS 备忘事实漂移（图标 25、录入入口 4 种、Azure 选型、新增实现状态表）；删除 docs/oc和omo使用技巧.md
 - **首页改造收尾** (2026-08-27)：HomeScreen 已是完整菜谱首页（筛选/杂志流/长按菜单/录入 FAB），删除无入口的孤儿屏幕 RecipeListScreen 及其路由注册（AppNavigator + navigation/types）；HomeScreen「收藏」筛选为占位实现，做实后见待解决

@@ -65,11 +65,11 @@ interface ButtonStates {
 function getButtonStates(fsmState: CookingState): ButtonStates {
   switch (fsmState) {
     case 'WAITING_AUTO':
-      return { next: true, repeat: false, ask: false, confirm: false, exit: true };
+      return { next: true, repeat: true, ask: false, confirm: false, exit: true };
     case 'WAITING_USER':
       return { next: true, repeat: true, ask: true, confirm: true, exit: true };
     case 'WAITING_TIMER':
-      return { next: true, repeat: false, ask: false, confirm: false, exit: true };
+      return { next: true, repeat: true, ask: false, confirm: false, exit: true };
     case 'COMPLETED':
       return { next: false, repeat: false, ask: false, confirm: false, exit: true };
     case 'IDLE':
