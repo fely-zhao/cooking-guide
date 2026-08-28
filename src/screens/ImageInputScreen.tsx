@@ -94,6 +94,7 @@ export default function ImageInputScreen() {
         onBack={handleCancel}
         rightTitle="完成"
         onRightPress={handleRecognize}
+        rightDisabled={isRecognizing}
       />
 
       <View style={styles.content}>

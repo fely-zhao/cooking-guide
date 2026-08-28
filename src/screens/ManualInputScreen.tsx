@@ -37,6 +37,9 @@ export default function ManualInputScreen() {
       Alert.alert('提示', '请输入菜谱内容');
       return;
     }
+    if (isParsing) {
+      return;
+    }
 
     setIsParsing(true);
     try {
@@ -57,7 +60,7 @@ export default function ManualInputScreen() {
     } finally {
       setIsParsing(false);
     }
-  }, [recipeText, onSave, navigation]);
+  }, [recipeText, isParsing, onSave, navigation]);
 
   return (
     <SafeAreaContainer style={styles.container}>
@@ -70,6 +73,7 @@ export default function ManualInputScreen() {
           onBack={navigation.goBack}
           rightTitle="完成"
           onRightPress={handleSave}
+          rightDisabled={isParsing}
         />
 
         <ScrollView
