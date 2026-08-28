@@ -1,12 +1,10 @@
-import { describe, it, expect, jest, mock } from 'bun:test';
-
-/* eslint-disable @typescript-eslint/no-var-requires -- mock.module 工厂内必须用 require，不能用静态 import */
+/* eslint-disable @typescript-eslint/no-var-requires -- jest.mock 工厂内必须用 require，不能用静态 import */
 
 // ---------------------------------------------------------------------------
 // This test file validates HomeScreen structure and logic.
 // Full component rendering tests require Jest + react-native preset due to
-// bun's limitations with mocking react-native's Flow-typed barrel file.
-// See jest.config.js and jest.setup.js for the Jest-based test setup.
+// react-native's Flow-typed barrel file. See jest.config.js and jest.setup.js
+// for the Jest-based test setup.
 // ---------------------------------------------------------------------------
 
 // ---------------------------------------------------------------------------
@@ -18,7 +16,7 @@ function MockView({ children }: Record<string, unknown>) {
   return createElement('View', null, children);
 }
 
-mock.module('react-native', () => ({
+jest.mock('react-native', () => ({
   View: MockView,
   Text: ({ children }: Record<string, unknown>) => {
     const { createElement } = require('react');
@@ -35,13 +33,13 @@ mock.module('react-native', () => ({
   FlatList: () => null,
 }));
 
-mock.module('react-native-safe-area-context', () => ({
+jest.mock('react-native-safe-area-context', () => ({
   SafeAreaView: MockView,
   SafeAreaProvider: MockView,
   useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
 }));
 
-mock.module('react-native-reanimated', () => ({
+jest.mock('react-native-reanimated', () => ({
   __esModule: true,
   default: {
     View: MockView,
@@ -68,7 +66,7 @@ mock.module('react-native-reanimated', () => ({
   },
 }));
 
-mock.module('react-native-svg', () => ({
+jest.mock('react-native-svg', () => ({
   __esModule: true,
   default: () => null,
   Svg: () => null,
@@ -79,23 +77,23 @@ mock.module('react-native-svg', () => ({
   G: () => null,
 }));
 
-mock.module('react-native-gesture-handler', () => ({
+jest.mock('react-native-gesture-handler', () => ({
   __esModule: true,
   GestureDetector: ({ children }: Record<string, unknown>) => {
     const { createElement } = require('react');
-    return createElement(React.Fragment, null, children);
+    return createElement(require('react').Fragment, null, children);
   },
   Gesture: { Pan: () => ({}) },
 }));
 
-mock.module('../utils/haptic', () => ({
+jest.mock('../utils/haptic', () => ({
   __esModule: true,
   hapticLight: () => {},
   hapticMedium: () => {},
   hapticSelection: () => {},
 }));
 
-mock.module('../components/SafeAreaContainer', () => ({
+jest.mock('../components/SafeAreaContainer', () => ({
   __esModule: true,
   SafeAreaContainer: ({ children }: Record<string, unknown>) => {
     const { createElement } = require('react');
@@ -103,13 +101,13 @@ mock.module('../components/SafeAreaContainer', () => ({
   },
 }));
 
-mock.module('@react-navigation/native', () => ({
+jest.mock('@react-navigation/native', () => ({
   __esModule: true,
   useNavigation: () => ({ navigate: jest.fn() }),
   useFocusEffect: (_cb: () => void) => {},
 }));
 
-mock.module('../hooks/useRecipes', () => ({
+jest.mock('../hooks/useRecipes', () => ({
   __esModule: true,
   useRecipes: () => ({
     recipes: [] as unknown[],
@@ -119,7 +117,7 @@ mock.module('../hooks/useRecipes', () => ({
   }),
 }));
 
-mock.module('../db/recipes', () => ({
+jest.mock('../db/recipes', () => ({
   __esModule: true,
   deleteRecipe: jest.fn(),
 }));
@@ -129,41 +127,39 @@ mock.module('../db/recipes', () => ({
 // ---------------------------------------------------------------------------
 
 describe('HomeScreen', () => {
-  it('imports without error', async () => {
-    const mod = await import('../screens/HomeScreen');
+  it('imports without error', () => {
+    const mod = require('../screens/HomeScreen');
     expect(mod.default).toBeDefined();
     expect(typeof mod.default).toBe('function');
   });
 
-  it('has required child components available for import', async () => {
-    const [homeScreen, capsuleFab, contextMenu, gridSkeleton] = await Promise.all([
-      import('../screens/HomeScreen'),
-      import('../components/CapsuleFab'),
-      import('../components/RecipeContextMenu'),
-      import('../components/skeleton/HomeGridSkeleton'),
-    ]);
+  it('has required child components available for import', () => {
+    const homeScreen = require('../screens/HomeScreen');
+    const capsuleFab = require('../components/CapsuleFab');
+    const contextMenu = require('../components/RecipeContextMenu');
+    const gridSkeleton = require('../components/skeleton/HomeGridSkeleton');
     expect(homeScreen.default).toBeDefined();
     expect(capsuleFab.CapsuleFab).toBeDefined();
     expect(contextMenu.RecipeContextMenu).toBeDefined();
     expect(gridSkeleton.HomeGridSkeleton).toBeDefined();
   });
 
-  it('imports MagazineCard with overlay variant', async () => {
-    const { MagazineCard } = await import('../components/MagazineCard');
+  it('imports MagazineCard with overlay variant', () => {
+    const { MagazineCard } = require('../components/MagazineCard');
     expect(MagazineCard).toBeDefined();
   });
 
-  it('imports PressableScale with onLongPress', async () => {
-    const { PressableScale } = await import('../components/PressableScale');
+  it('imports PressableScale with onLongPress', () => {
+    const { PressableScale } = require('../components/PressableScale');
     expect(PressableScale).toBeDefined();
   });
 
-  it('imports settings icon in icon registry', async () => {
-    const { Icon } = await import('../components/icons/Icon');
+  it('imports settings icon in icon registry', () => {
+    const { Icon } = require('../components/icons/Icon');
     expect(Icon).toBeDefined();
 
     // Verify 'settings' icon name is registered (type-level check via rendering)
-    const iconModule = await import('../components/icons');
+    const iconModule = require('../components/icons');
     expect(iconModule.SettingsIcon).toBeDefined();
   });
 });

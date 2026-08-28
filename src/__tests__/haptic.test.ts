@@ -1,25 +1,28 @@
-import { describe, it, expect, jest, mock, beforeEach } from 'bun:test';
+import RNHapticFeedback, { HapticFeedbackTypes } from 'react-native-haptic-feedback';
+import {
+  hapticLight,
+  hapticMedium,
+  hapticSelection,
+  hapticSuccess,
+  hapticWarning,
+  hapticError,
+} from '../utils/haptic';
 
-const HapticFeedbackTypes = {
-  impactLight: 'impactLight',
-  impactMedium: 'impactMedium',
-  selection: 'selection',
-  notificationSuccess: 'notificationSuccess',
-  notificationWarning: 'notificationWarning',
-  notificationError: 'notificationError',
-} as const;
-
-const trigger = jest.fn();
-
-mock.module('react-native-haptic-feedback', () => ({
+jest.mock('react-native-haptic-feedback', () => ({
   __esModule: true,
-  default: { trigger },
-  trigger,
-  HapticFeedbackTypes,
+  default: { trigger: jest.fn() },
+  trigger: jest.fn(),
+  HapticFeedbackTypes: {
+    impactLight: 'impactLight',
+    impactMedium: 'impactMedium',
+    selection: 'selection',
+    notificationSuccess: 'notificationSuccess',
+    notificationWarning: 'notificationWarning',
+    notificationError: 'notificationError',
+  },
 }));
 
-const { hapticLight, hapticMedium, hapticSelection, hapticSuccess, hapticWarning, hapticError } =
-  await import('../utils/haptic');
+const trigger = (RNHapticFeedback as unknown as { trigger: jest.Mock }).trigger;
 
 describe('haptic utils', () => {
   beforeEach(() => {

@@ -2,7 +2,6 @@ export { settingsStorage } from './storage';
 
 export { ApiProxy, ApiProxyError } from './api-proxy';
 export type { ApiClient } from './api-proxy';
-export { createMockApiProxy } from './api-proxy.mock';
 
 export { TimerService } from './timer';
 
@@ -20,12 +19,6 @@ export { STTError } from './stt-error';
 export { STTService, recordAudio, releaseRecorder } from './stt';
 export { VoiceCommandService } from './voice-commands';
 export type { VoiceCommand } from './voice-commands';
-
-export { GestureService, GestureError } from './gesture';
-export type { GestureKind } from './gesture';
-
-export { HeadsetService, HeadsetError, HID_SERVICE_UUID } from './headset';
-export type { ButtonEvent } from './headset';
 
 export type {
   ParseRecipeRequest,

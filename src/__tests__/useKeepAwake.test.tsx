@@ -1,19 +1,18 @@
-import { describe, it, expect, jest, mock, beforeEach } from 'bun:test';
 import { create as createRenderer, act } from 'react-test-renderer';
 import React from 'react';
+import KeepAwake from 'react-native-keep-awake';
+import { useKeepAwake } from '../hooks/useKeepAwake';
 
-const activate = jest.fn();
-const deactivate = jest.fn();
-
-mock.module('react-native-keep-awake', () => ({
+jest.mock('react-native-keep-awake', () => ({
   __esModule: true,
-  default: class KeepAwake {
-    static activate = activate;
-    static deactivate = deactivate;
+  default: class {
+    static activate = jest.fn();
+    static deactivate = jest.fn();
   },
 }));
 
-const { useKeepAwake } = await import('../hooks/useKeepAwake');
+const activate = (KeepAwake as unknown as { activate: jest.Mock }).activate;
+const deactivate = (KeepAwake as unknown as { deactivate: jest.Mock }).deactivate;
 
 function TestComponent({ active }: { active: boolean }) {
   useKeepAwake(active);

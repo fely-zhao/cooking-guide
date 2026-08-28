@@ -1,4 +1,3 @@
-export { useAsync } from './useAsync';
 export { useRecipes } from './useRecipes';
 export { useSettings, useSetting } from './useSettings';
 
