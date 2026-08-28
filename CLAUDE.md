@@ -39,11 +39,12 @@ description: 'React Native 移动端 App — 三层上下文记忆体系：L1 �
 1. **包管理统一使用 yarn。严禁 npm install，严禁生成 package-lock.json。**
 2. **严禁私自改动 FSM 状态转换图**（`src/machines/cooking-machine.ts`），除非 `docs/架构与技术文档.md` 同步更新。
 3. **严禁私自改动数据库 schema**（`src/db/` 下 4 张表），除非 `docs/架构与技术文档.md` 同步更新。
-4. **密钥、token 严禁进代码、严禁进 commit。API Key 仅存在于 llm-server/.env。**
+4. **密钥、token 严禁进代码、严禁进 commit。LLM key 仅存在于 llm-server/.env；Azure Speech key 仅由用户在设置页录入存 MMKV（`azureSpeechKey`）。**
 5. **严禁 emoji 作为 UI 图标。** 所有图标必须用 `<Icon name="..." />`。
 6. **严禁硬编码颜色 `#xxxxxx` / `rgba()`。** 所有颜色必须使用 `src/theme/colors.ts` 语义化 token。
 7. **严禁动画 `width`/`height`。** 全部使用 `react-native-reanimated`，只动画 `opacity`/`transform`。
 8. **严禁在根目录执行 npm 命令。严禁生成 bun.lock、package-lock.json。**
+9. **依赖变更（`yarn add` / `yarn remove`）与 `yarn install` / `yarn android` / `yarn start` 严禁在 WSL 执行，必须在 Windows PowerShell 手动操作。改依赖后必须重跑 `npx patch-package` 并确认 `patches/` 全部应用。**
 
 ---
 
@@ -104,6 +105,7 @@ AI Agent 按以下层级获取记忆，不得越级依赖：
 yarn lint          # ESLint 零 error、零 warning
 npx tsc --noEmit   # TypeScript 严格模式零错误
 yarn format:check  # Prettier 零格式差异
+yarn test:all      # 单测 + e2e 全部通过
 ```
 
 **Linter 未通过的代码严禁生成 Commit。违反即回滚。**
@@ -130,7 +132,7 @@ yarn format:check  # Prettier 零格式差异
 | ------------------------ | ------------------------------------------------- |
 | `docs/架构与技术文档.md` | 修改 FSM / 数据库 / 技术栈 / 数据流之前           |
 | `docs/Phase-D-UI规范.md` | 新增图标/颜色 token/动画/插画/Button variant 之前 |
-| `docs/运行与打包指南.md` | 修改网络请求/服务地址/打包配置之前                |
+| `docs/运行与打包指南.md` | 修改网络请求/服务地址/打包配置/**依赖**之前       |
 | `docs/STT-实现备忘.md`   | 修改录音/VAD/关键词匹配/语音命令相关代码之前      |
 | `docs/TTS-实现备忘.md`   | 修改播放器/Provider/预缓存/TTS 相关代码之前       |
 | `README.md`              | 首次进入项目或新人 onboarding                     |
