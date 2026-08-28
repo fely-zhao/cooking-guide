@@ -39,11 +39,7 @@
 import { SafeAreaContainer } from '../components/SafeAreaContainer';
 
 export default function MyScreen() {
-  return (
-    <SafeAreaContainer>
-      {/* 所有内容自动避开状态栏 */}
-    </SafeAreaContainer>
-  );
+  return <SafeAreaContainer>{/* 所有内容自动避开状态栏 */}</SafeAreaContainer>;
 }
 ```
 

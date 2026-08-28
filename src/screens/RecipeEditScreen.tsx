@@ -337,7 +337,11 @@ ${stepsText}`;
               </View>
 
               <Text style={[styles.label, styles.labelSpacing]}>封面图片</Text>
-              <TouchableOpacity style={styles.coverPlaceholder} activeOpacity={0.9} onPress={handlePickImage}>
+              <TouchableOpacity
+                style={styles.coverPlaceholder}
+                activeOpacity={0.9}
+                onPress={handlePickImage}
+              >
                 {coverImage ? (
                   <ImageBackground source={{ uri: coverImage }} style={styles.coverImagePreview} />
                 ) : (
@@ -349,7 +353,9 @@ ${stepsText}`;
                 )}
                 <View style={styles.coverOverlay}>
                   <Icon name="camera" size={24} color={colors.primary} />
-                  <Text style={styles.coverPlaceholderText}>{coverImage ? '更换封面' : '添加封面'}</Text>
+                  <Text style={styles.coverPlaceholderText}>
+                    {coverImage ? '更换封面' : '添加封面'}
+                  </Text>
                 </View>
               </TouchableOpacity>
             </View>

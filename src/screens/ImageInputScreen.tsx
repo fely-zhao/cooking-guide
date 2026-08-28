@@ -89,12 +89,12 @@ export default function ImageInputScreen() {
 
   return (
     <SafeAreaContainer style={styles.container}>
-        <HeaderBar
-          title="截图识别"
-          onBack={handleCancel}
-          rightTitle="完成"
-          onRightPress={handleRecognize}
-        />
+      <HeaderBar
+        title="截图识别"
+        onBack={handleCancel}
+        rightTitle="完成"
+        onRightPress={handleRecognize}
+      />
 
       <View style={styles.content}>
         {/* Preview Area */}

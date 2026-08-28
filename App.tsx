@@ -14,9 +14,7 @@ export default function App() {
   useEffect(() => {
     try {
       const recipes = getAllRecipes();
-      const activeCovers = new Set(
-        recipes.map(r => r.coverImage).filter((v): v is string => !!v),
-      );
+      const activeCovers = new Set(recipes.map(r => r.coverImage).filter((v): v is string => !!v));
       cleanupOrphanCovers(activeCovers);
     } catch {
       // Silently skip — startup cleanup is best-effort

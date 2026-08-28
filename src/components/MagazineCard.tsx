@@ -126,10 +126,7 @@ export function MagazineCard({
         </ImageBackground>
       ) : (
         <View
-          style={[
-            styles.placeholderArea,
-            isFeatured ? styles.featuredImage : styles.compactImage,
-          ]}
+          style={[styles.placeholderArea, isFeatured ? styles.featuredImage : styles.compactImage]}
         >
           {isOverlay ? (
             <>
@@ -141,7 +138,11 @@ export function MagazineCard({
               {/* Text + play button at bottom */}
               <View style={styles.placeholderOverlayBottom}>
                 <View style={styles.contentTextColumn}>
-                  <Text style={styles.placeholderOverlayTitle} numberOfLines={2} ellipsizeMode="tail">
+                  <Text
+                    style={styles.placeholderOverlayTitle}
+                    numberOfLines={2}
+                    ellipsizeMode="tail"
+                  >
                     {title}
                   </Text>
                   {subtitle && (

@@ -1,4 +1,6 @@
-import { describe, it, expect, jest, mock, beforeEach } from 'bun:test';
+import { describe, it, expect, jest, mock } from 'bun:test';
+
+/* eslint-disable @typescript-eslint/no-var-requires -- mock.module 工厂内必须用 require，不能用静态 import */
 
 // ---------------------------------------------------------------------------
 // This test file validates HomeScreen structure and logic.
@@ -41,10 +43,13 @@ mock.module('react-native-safe-area-context', () => ({
 
 mock.module('react-native-reanimated', () => ({
   __esModule: true,
-  default: { View: MockView, Text: ({ children }: Record<string, unknown>) => {
-    const { createElement } = require('react');
-    return createElement('Text', null, children);
-  }},
+  default: {
+    View: MockView,
+    Text: ({ children }: Record<string, unknown>) => {
+      const { createElement } = require('react');
+      return createElement('Text', null, children);
+    },
+  },
   useSharedValue: (v: number) => ({ value: v }),
   useAnimatedStyle: (fn: () => Record<string, unknown>) => fn(),
   withSpring: (v: number) => v,
@@ -54,10 +59,13 @@ mock.module('react-native-reanimated', () => ({
   FadeIn: { duration: () => ({}) },
   FadeOut: { duration: () => ({}) },
   FadeInUp: { duration: () => ({ delay: () => ({}) }) },
-  Animated: { View: MockView, Text: ({ children }: Record<string, unknown>) => {
-    const { createElement } = require('react');
-    return createElement('Text', null, children);
-  }},
+  Animated: {
+    View: MockView,
+    Text: ({ children }: Record<string, unknown>) => {
+      const { createElement } = require('react');
+      return createElement('Text', null, children);
+    },
+  },
 }));
 
 mock.module('react-native-svg', () => ({
@@ -98,7 +106,7 @@ mock.module('../components/SafeAreaContainer', () => ({
 mock.module('@react-navigation/native', () => ({
   __esModule: true,
   useNavigation: () => ({ navigate: jest.fn() }),
-  useFocusEffect: (cb: () => void) => {},
+  useFocusEffect: (_cb: () => void) => {},
 }));
 
 mock.module('../hooks/useRecipes', () => ({
