@@ -13,7 +13,7 @@ STT（语音输入）管线已打通。烹饪时 app 持续监听麦克风，识
 
 STT（语音输入）管线已打通。烹饪时 app 持续监听麦克风，识别中文语音指令（"下一步"、"再说一遍"、"我想问…"），通过 `VoiceCommandService` 匹配关键词并触发 FSM 事件，完成交互闭环。
 
-> **网络说明**：STT 请求走独立 `stt-server`（`POST /v1/audio/transcriptions`，multipart/form-data，localhost:5000），LLM 请求走 `llm-server`（`POST /v1/chat/completions`，localhost:3001）。模拟器通过 `adb reverse` 映射宿主机端口，真机通过局域网 IP 直连（STT + TTS 真机调试已通过，详见 AGENTS.md「真机运行」）。STT 已直连 stt-server（无 mock），LLM 仍使用 `createMockApiProxy()` 待 llm-server 就绪。
+> **网络说明**（2026-08-27 更新）：STT 已切换 Azure AI Speech REST 短音频转写（区域 eastasia，key 由设置页录入存 MMKV），无需本地服务与端口转发；本地 stt-server 代码注释保留可切回。LLM 请求走 `llm-server`（`POST /v1/chat/completions`，localhost:3001）DeepSeek 代理，已接入（Phase B 完成）。
 
 ### 架构
 
@@ -197,13 +197,13 @@ yarn android --no-packager
 
 - [x] `src/screens/VoiceInputScreen.tsx` — STT 已直连 stt-server（`new STTService()`），不再走 mock proxy
 - [ ] 需要测试语音录入菜谱的完整流程：录音 → STT → LLM 解析
-- [ ] 该页面的 `processRecording` 调用 `STTService.speechToTextForCommand()` → `LLMService.parseRecipe()`，与烹饪命令走不同分支。LLM 部分仍用 mock
+- [x] 该页面的 `processRecording` 调用 `STTService.speechToTextForCommand()` → `LLMService.parseRecipe()`，与烹饪命令走不同分支。LLM 部分已接入 llm-server
 
 ### 3. 后端服务（独立项目）
 
-- [x] **stt-server**（`/mnt/d/project/stt-server/`）— **已接入**。Python faster-whisper，端口 5000，`STTService` 直连（multipart/form-data 上传 WAV）
-- [ ] **llm-server**（`/mnt/d/project/llm-server/`）— OpenAI 代理，端口 3001，待实现
-- [x] STT 已脱离 mock，LLM 仍使用 `createMockApiProxy()`
+- [x] **llm-server**（`/mnt/d/project/llm-server/`）— **已接入**。OpenAI 兼容代理，端口 3001，转发 DeepSeek（Phase B 完成）
+- [x] STT/LLM 均已脱离 mock（`api-proxy.mock.ts` 已删除）
+- [x] **STT 切换 Azure AI Speech**（2026-08-27）— `STTService` 改 REST 短音频直调；本地 stt-server 停用，代码注释保留可切回
 - [x] **一键启动脚本** — `scripts/start-services.ps1`（Windows）或 `scripts/start-services.sh`（WSL），自动创建 Windows venv、启动 STT + TTS、设置 adb reverse、健康检查。按任意键统一关闭。
 
 ### 4. 体验优化（可选）

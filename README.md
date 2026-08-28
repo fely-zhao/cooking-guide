@@ -8,10 +8,10 @@
 
 ## 核心特性
 
-- **12 种录入方式** — 文本、图片（OCR）、网页 URL、语音、自由格式全部支持，AI 一次性解析为带标签的结构化步骤
+- **4 种录入入口** — 文本、拍照（OCR）、网页 URL、语音，AI 一次性解析为带标签的结构化步骤
 - **全程本地 FSM 驱动** — 大模型仅在录入时调用一次，烹饪中 100% 本地状态机控制，零网络依赖
-- **耳机主交互** — 语音播报每一步、主动提醒翻面/关火，用户语音确认推进流程
-- **四级交互降级** — 耳机 > 语音 > 屏幕按钮 > 挥手手势，自动检测可用设备
+- **语音主交互** — 语音播报每一步、主动提醒翻面/关火，用户语音确认推进流程
+- **交互降级** — 语音 > 屏幕按钮；耳机按键、挥手手势为 V2 规划（见 ROADMAP）
 - **计时器自动提醒** — 带计时器的步骤到点 AI 主动语音提醒（如"该关火了"）
 - **离线优先** — 所有数据存本地 SQLite，不依赖云端
 
@@ -19,18 +19,18 @@
 
 ## 技术栈
 
-| 层       | 选型                                             |
-| -------- | ------------------------------------------------ |
-| 框架     | React Native 0.86                                |
-| 语言     | TypeScript（严格模式）                           |
-| 状态机   | XState v5                                        |
-| 本地存储 | SQLite（op-sqlite）                              |
-| 导航     | React Navigation 6                               |
-| 动画     | react-native-reanimated 4.4                      |
-| 图标     | react-native-svg（18 个 SVG 图标）               |
-| LLM      | DeepSeek V4 Flash（function calling 结构化解析） |
-| TTS      | MiniMax Speech-02 Turbo（本地代理转发）          |
-| STT      | faster-whisper（独立 Python 服务）               |
+| 层       | 选型                                                 |
+| -------- | ---------------------------------------------------- |
+| 框架     | React Native 0.86                                    |
+| 语言     | TypeScript（严格模式）                               |
+| 状态机   | XState v5                                            |
+| 本地存储 | SQLite（op-sqlite）                                  |
+| 导航     | React Navigation 6                                   |
+| 动画     | react-native-reanimated 4.4                          |
+| 图标     | react-native-svg（25 个 SVG 图标）                   |
+| LLM      | DeepSeek V4 Flash（function calling 结构化解析）     |
+| TTS      | Azure AI Speech（REST + SSML，zh-CN-XiaoxiaoNeural） |
+| STT      | Azure AI Speech（REST 短音频转写）                   |
 
 ---
 
@@ -106,7 +106,7 @@ node scripts/adb-reverse.js
 ```
 cooking-guide/
 ├── src/
-│   ├── components/     # UI 组件（Button, Card, HeaderBar, Icon, Modal 等 22 个）
+│   ├── components/     # UI 组件（Button, Card, HeaderBar, Icon, Modal 等 29 个，另有 25 个图标组件）
 │   ├── screens/         # 页面级别组件（11 个屏幕）
 │   ├── machines/        # XState v5 FSM 定义（烹饪引导状态机）
 │   ├── services/        # 外部服务调用（TTS, STT, LLM API）
@@ -131,7 +131,7 @@ cooking-guide/
 - 包管理统一使用 **yarn**
 - 文件名使用 **kebab-case**
 - 样式使用 `StyleSheet.create()`，颜色使用语义化 token（`src/theme/colors.ts`）
-- 图标使用 `<Icon name="..." />`（18 个 SVG 图标），禁止 emoji
+- 图标使用 `<Icon name="..." />`（25 个 SVG 图标），禁止 emoji
 - 动画使用 react-native-reanimated，禁止 RN 内置 Animated API
 - 空/错误状态使用插画组件（`EmptyRecipeIllustration` 等），禁止纯文字占位
 - 加载状态使用骨架屏组件，禁止"加载中..."裸文本

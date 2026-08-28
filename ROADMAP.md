@@ -7,20 +7,21 @@
 
 ## 当前状态（2026-08-27）
 
-| 指标       | 数值                                                                      |
-| ---------- | ------------------------------------------------------------------------- |
-| 源文件     | 125 TS/TSX（不含测试）                                                    |
-| 代码量     | ~12000 行                                                                 |
-| 屏幕       | 11                                                                        |
-| 共享组件   | 28（新增 PressableScale）                                                 |
-| 测试       | 4 个（cooking-machine ✅, haptic ✅, useKeepAwake ✅, e2e-flow ✅）       |
-| 后端服务   | LLM 本地代理 1 个；STT/TTS 已切 Azure AI Speech（本地服务代码保留可切回） |
-| 图标       | 23 个 SVG 图标组件                                                        |
-| 插画       | 3 个空/错误状态插画                                                       |
-| 颜色 token | 44 个语义化 token                                                         |
+| 指标       | 数值                                                                                      |
+| ---------- | ----------------------------------------------------------------------------------------- |
+| 源文件     | 129 TS/TSX（不含测试）                                                                    |
+| 代码量     | ~11500 行                                                                                 |
+| 屏幕       | 10                                                                                        |
+| 共享组件   | 29（不含 25 个图标组件）                                                                  |
+| 测试       | 6 套件全过（cooking-machine, haptic, useKeepAwake, HomeScreen, voice-commands, e2e-flow） |
+| 后端服务   | LLM 本地代理 1 个；STT/TTS 已切 Azure AI Speech（本地服务代码保留可切回）                 |
+| 图标       | 25 个 SVG 图标组件                                                                        |
+| 插画       | 3 个空/错误状态插画                                                                       |
+| 颜色 token | 44 个语义化 token                                                                         |
 
 **已完成**：
 
+- **审计整改第一批** (2026-08-27)：删死代码（react-native-reanimated-dnd 依赖、SkeletonCircle、api-proxy.mock、useAsync、headset/gesture stub、bun-types）；测试去 bun 化统一 jest 并自动发现测试文件；uuid 移入 dependencies；新增 voice-commands 关键词匹配单测；修正 README/架构文档/Phase-D/STT/TTS 备忘事实漂移（图标 25、录入入口 4 种、Azure 选型、新增实现状态表）；删除 docs/oc和omo使用技巧.md
 - **首页改造收尾** (2026-08-27)：HomeScreen 已是完整菜谱首页（筛选/杂志流/长按菜单/录入 FAB），删除无入口的孤儿屏幕 RecipeListScreen 及其路由注册（AppNavigator + navigation/types）；HomeScreen「收藏」筛选为占位实现，做实后见待解决
 - **质量闸门恢复全绿** (2026-08-27)：清理 ESLint/Prettier 历史欠账（36 error → 0），yarn lint / tsc / format:check / test:all 全部通过；新增《项目审计报告》（docs/项目审计报告.md，架构/视觉/交互/废代码静态走查）
 - **语音服务切换 Azure AI Speech** (2026-08-27)：

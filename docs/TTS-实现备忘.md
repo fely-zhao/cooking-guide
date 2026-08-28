@@ -9,7 +9,7 @@ TTS 已从本地 tts-server（Windows SAPI，:4000）切换到 **Azure AI Speech
 
 ### 历史现状 (2026-06-16，本地 tts-server 时期)
 
-TTS 管线已打通，模拟器和真机均已验证通过（已出声）。当前使用 `LocalTTSProvider` 连接本地 tts-server 服务（Windows SAPI）。
+TTS 管线已打通，模拟器和真机均已验证通过（已出声）。当时使用 `LocalTTSProvider` 连接本地 tts-server 服务（Windows SAPI）；**2026-08-27 起切换为 AzureTTSProvider，本地服务停用**（见文首 Azure 切换要点）。
 
 > **网络说明**：模拟器通过 `adb reverse tcp:4000 tcp:4000` 映射宿主机端口（代码使用 `http://localhost:4000`）；真机通过局域网 IP 直连（修改 `src/config.ts` 中 `TTS_URL`）。真机 + WiFi 5GHz 下 TTS 播报正常可用。
 
@@ -26,9 +26,9 @@ TTSProvider (interface)           ← 策略接口
 切换 Provider 只需在 `createServices()` 中改一行：
 
 ```typescript
-new TTSService(new LocalTTSProvider('http://host:4000'));
-new TTSService(new MiniMaxTTSProvider('Bearer ...'));
-new TTSService(new MockTTSProvider());
+new TTSService(new AzureTTSProvider({ apiKey, region })); // 当前使用
+new TTSService(new LocalTTSProvider('http://host:4000')); // 本地回退
+new TTSService(new MockTTSProvider()); // 测试
 ```
 
 ### 当前各层状态
@@ -39,7 +39,7 @@ new TTSService(new MockTTSProvider());
 | TTS Service               | `src/services/tts.ts`                  | **已重构** — 接受 `TTSProvider` 而非 `ApiClient`                                  |
 | TTS Provider 接口         | `src/services/tts-provider.ts`         | **已完成** — `TTSProvider` + `TTSProviderOptions` + `MockTTSProvider`             |
 | LocalTTSProvider          | `src/services/tts-provider-local.ts`   | **已完成** — POST `/tts` `{ text, voice?, rate? }` → `audio/wav`                  |
-| MiniMaxTTSProvider (stub) | `src/services/tts-provider-minimax.ts` | **占位** — 待实现                                                                 |
+| MiniMaxTTSProvider (stub) | `src/services/tts-provider-minimax.ts` | **占位** — 未实现，已被 Azure 替代，保留作未来备选                                |
 | ApiProxy                  | `src/services/api-proxy.ts`            | **已清理** — 移除 `textToSpeech`，只处理 LLM/STT                                  |
 | FSM 调用                  | `src/hooks/useCookingMachine.ts`       | **已完成** — `tts.textToSpeech()` → `ttsPlayer.play()`                            |
 | TTSCache                  | `src/services/tts-cache.ts`            | 预缓存逻辑正常                                                                    |
@@ -100,10 +100,10 @@ TTS 本地服务（`D:\project\tts-server\local-tts-server.js`，Express + Windo
 
 - [x] LocalTTSProvider 真实出声验证通过（模拟器听到语音，FSM 自动走到下一步）
 
-### 2. MiniMax TTS Provider
+### 2. Azure TTS Provider
 
-- [ ] 实现 `src/services/tts-provider-minimax.ts` 中的 `synthesize()`
-- [ ] 参考 MiniMax Speech-02 Turbo 的 API 文档
+- [x] 已实现 `src/services/tts-provider-azure.ts`（REST + SSML，2026-08-27 切换，真机验证通过）
+- MiniMax Provider 保留 stub，未排期
 
 ### 3. 启动服务
 

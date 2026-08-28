@@ -85,7 +85,7 @@ import type { IconName } from '../components/icons';
 <Icon name="cooking" size={24} color={colors.primary} />;
 ```
 
-### 可用图标（22 个）
+### 可用图标（25 个）
 
 | 名称            | 用途          |
 | --------------- | ------------- |
@@ -110,6 +110,9 @@ import type { IconName } from '../components/icons';
 | `drag`          | 拖拽排序手柄  |
 | `plus`          | 添加 / FAB    |
 | `chevron-right` | 向右展开      |
+| `chevron-left`  | 返回          |
+| `play`          | 开始烹饪/播放 |
+| `settings`      | 设置          |
 | `sparkle`       | 庆祝粒子      |
 
 ### 规范
