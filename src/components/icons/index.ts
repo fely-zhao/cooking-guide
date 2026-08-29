@@ -24,3 +24,4 @@ export { default as PlusIcon } from './PlusIcon';
 export { default as ChevronRightIcon } from './ChevronRightIcon';
 export { default as SparkleIcon } from './SparkleIcon';
 export { default as SettingsIcon } from './SettingsIcon';
+export { default as HeartIcon } from './HeartIcon';

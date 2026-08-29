@@ -13,7 +13,9 @@ type RecipeInput = {
   coverImage?: string;
 };
 
-type RecipeUpdateInput = Partial<Omit<Recipe, 'id' | 'createdAt' | 'ingredients' | 'steps'>> & {
+type RecipeUpdateInput = Partial<
+  Omit<Recipe, 'id' | 'createdAt' | 'ingredients' | 'steps' | 'isFavorite'>
+> & {
   coverImage?: string;
 };
 
@@ -25,6 +27,7 @@ function mapRowToRecipe(
     name: row.name as string,
     coverImage: (row.cover_image as string) ?? undefined,
     servings: (row.servings as number) ?? 1,
+    isFavorite: row.is_favorite === 1,
     createdAt: row.created_at as string,
     updatedAt: row.updated_at as string,
   };
@@ -134,6 +137,19 @@ export function updateRecipe(id: string, partial: RecipeUpdateInput): boolean {
 
   const result = db.executeSync(`UPDATE recipes SET ${fields.join(', ')} WHERE id = ?`, values);
 
+  return result.rowsAffected > 0;
+}
+
+/**
+ * 切换收藏状态。与 updateRecipe 分开：收藏不应刷新 updated_at，
+ * 否则随手收藏会把菜谱顶到首页「最近」筛选的第一位。
+ */
+export function setRecipeFavorite(id: string, isFavorite: boolean): boolean {
+  const db = getDatabase();
+  const result = db.executeSync(`UPDATE recipes SET is_favorite = ? WHERE id = ?`, [
+    isFavorite ? 1 : 0,
+    id,
+  ]);
   return result.rowsAffected > 0;
 }
 

@@ -120,6 +120,7 @@ jest.mock('../hooks/useRecipes', () => ({
 jest.mock('../db/recipes', () => ({
   __esModule: true,
   deleteRecipe: jest.fn(),
+  setRecipeFavorite: jest.fn(),
 }));
 
 // ---------------------------------------------------------------------------

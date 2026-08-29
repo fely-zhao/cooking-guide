@@ -19,6 +19,7 @@ export interface Recipe {
   steps: Step[];
   servings: number;
   coverImage?: string;
+  isFavorite: boolean;
   createdAt: string;
   updatedAt: string;
 }

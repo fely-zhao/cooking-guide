@@ -1,0 +1,17 @@
+diff --git a/node_modules/react-native-audio-api/scripts/download-prebuilt-binaries.sh b/node_modules/react-native-audio-api/scripts/download-prebuilt-binaries.sh
+index 9f695b2..ec76339 100644
+--- a/node_modules/react-native-audio-api/scripts/download-prebuilt-binaries.sh
++++ b/node_modules/react-native-audio-api/scripts/download-prebuilt-binaries.sh
+@@ -18,6 +18,12 @@ mkdir -p "$TEMP_DOWNLOAD_DIR"
+ 
+ if [ "$1" == "android" ]; then
+     PROJECT_ROOT="$(pwd)/.."
++    # Android builds only need android.zip + jniLibs.zip; the iOS/macOS
++    # archives are dead weight and just gamble on GitHub connectivity.
++    DOWNLOAD_NAMES=(
++        "android.zip"
++        "jniLibs.zip"
++    )
+ else
+     PROJECT_ROOT="$(pwd)"
+ fi

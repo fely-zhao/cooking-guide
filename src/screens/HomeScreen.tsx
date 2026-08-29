@@ -1,12 +1,13 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeInUp, FadeIn } from 'react-native-reanimated';
 import type { RootStackNavigationProp } from '../navigation/types';
 import { useRecipes } from '../hooks/useRecipes';
-import { deleteRecipe } from '../db/recipes';
+import { deleteRecipe, setRecipeFavorite } from '../db/recipes';
 import type { Recipe } from '../types/cooking';
+import { Icon } from '../components/icons';
 import { colors } from '../theme/colors';
 import { spacing } from '../theme/spacing';
 import { typography } from '../theme/typography';
@@ -66,21 +67,30 @@ function getGreeting(): string {
 interface CompactItemProps {
   recipe: Recipe;
   index: number;
+  animate: boolean;
   onPress: () => void;
   onLongPress: () => void;
   onPlayPress: () => void;
 }
 
-function CompactCardItem({ recipe, index, onPress, onLongPress, onPlayPress }: CompactItemProps) {
+function CompactCardItem({
+  recipe,
+  index,
+  animate,
+  onPress,
+  onLongPress,
+  onPlayPress,
+}: CompactItemProps) {
   return (
     <Animated.View
       style={styles.compactCardWrapper}
-      entering={FadeInUp.duration(400).delay(Math.min(index * 80, 600))}
+      entering={animate ? FadeInUp.duration(400).delay(Math.min(index * 80, 600)) : undefined}
     >
       <MagazineCard
         title={recipe.name}
         subtitle={formatSubtitle(recipe)}
         image={recipe.coverImage ? { uri: recipe.coverImage } : undefined}
+        badge={recipe.isFavorite ? <FavoriteBadge /> : undefined}
         size="compact"
         variant="overlay"
         onPress={onPress}
@@ -88,6 +98,14 @@ function CompactCardItem({ recipe, index, onPress, onLongPress, onPlayPress }: C
         onPlayPress={onPlayPress}
       />
     </Animated.View>
+  );
+}
+
+function FavoriteBadge() {
+  return (
+    <View style={styles.favoriteBadge}>
+      <Icon name="heart-filled" size={14} color={colors.text.inverse} />
+    </View>
   );
 }
 
@@ -135,6 +153,14 @@ export default function HomeScreen() {
   const [activeFilter, setActiveFilter] = useState<FilterOption>('all');
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
   const [menuVisible, setMenuVisible] = useState(false);
+  // 进入动画只在首次进首页播放；筛选/收藏刷新会重建 FlatList 行导致 entering 重放，
+  // 视觉上是全屏卡片反复淡入（像闪烁），所以首帧后关闭
+  const [cardsAnimate, setCardsAnimate] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setCardsAnimate(false), 1200);
+    return () => clearTimeout(timer);
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
@@ -149,7 +175,7 @@ export default function HomeScreen() {
           (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
         );
       case 'favorite':
-        return recipes;
+        return recipes.filter(r => r.isFavorite);
       case 'all':
       default:
         return recipes;
@@ -205,12 +231,22 @@ export default function HomeScreen() {
     setMenuVisible(true);
   }, []);
 
+  const handleToggleFavorite = useCallback(
+    (recipeId: string) => {
+      const recipe = recipes.find(r => r.id === recipeId);
+      if (!recipe) return;
+      setRecipeFavorite(recipeId, !recipe.isFavorite);
+      refetch();
+    },
+    [recipes, refetch],
+  );
+
   // -----------------------------------------------------------------------
   // FlatList header — greeting + hero + filter bar
   // -----------------------------------------------------------------------
 
   const renderListHeader = () => (
-    <Animated.View entering={FadeInUp.duration(500)}>
+    <Animated.View entering={cardsAnimate ? FadeInUp.duration(500) : undefined}>
       {/* Greeting + Headline */}
       <View style={styles.header}>
         <Text style={styles.greeting}>{getGreeting()}</Text>
@@ -219,11 +255,15 @@ export default function HomeScreen() {
 
       {/* Featured hero card */}
       {featuredRecipe && (
-        <Animated.View entering={FadeInUp.duration(500).delay(50)} style={styles.featuredWrapper}>
+        <Animated.View
+          entering={cardsAnimate ? FadeInUp.duration(500).delay(50) : undefined}
+          style={styles.featuredWrapper}
+        >
           <MagazineCard
             title={featuredRecipe.name}
             subtitle={formatSubtitle(featuredRecipe)}
             image={featuredRecipe.coverImage ? { uri: featuredRecipe.coverImage } : undefined}
+            badge={featuredRecipe.isFavorite ? <FavoriteBadge /> : undefined}
             size="featured"
             onPress={() => handleRecipePress(featuredRecipe.id)}
             onPlayPress={() => handleStartCooking(featuredRecipe.id)}
@@ -240,6 +280,7 @@ export default function HomeScreen() {
     <CompactCardItem
       recipe={item}
       index={index}
+      animate={cardsAnimate}
       onPress={() => handleRecipePress(item.id)}
       onLongPress={() => handleLongPress(item)}
       onPlayPress={() => handleStartCooking(item.id)}
@@ -335,6 +376,7 @@ export default function HomeScreen() {
         visible={menuVisible}
         recipe={selectedRecipe}
         onClose={() => setMenuVisible(false)}
+        onToggleFavorite={handleToggleFavorite}
         onEdit={handleEditRecipe}
         onDelete={handleDeleteRecipe}
       />
@@ -388,6 +430,14 @@ const styles = StyleSheet.create({
   // --- Featured hero card ---
   featuredWrapper: {
     marginBottom: spacing.xl,
+  },
+
+  favoriteBadge: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.danger,
+    borderRadius: spacing.radius.full,
+    padding: spacing.xs,
   },
 
   // --- Filter bar ---

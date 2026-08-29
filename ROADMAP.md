@@ -12,16 +12,18 @@
 | 源文件     | 129 TS/TSX（不含测试）                                                                    |
 | 代码量     | ~11500 行                                                                                 |
 | 屏幕       | 10                                                                                        |
-| 共享组件   | 29（不含 25 个图标组件）                                                                  |
+| 共享组件   | 29（不含 26 个图标组件）                                                                  |
 | 测试       | 6 套件全过（cooking-machine, haptic, useKeepAwake, HomeScreen, voice-commands, e2e-flow） |
 | 后端服务   | LLM 本地代理 1 个；STT/TTS 已切 Azure AI Speech（本地服务代码保留可切回）                 |
-| 图标       | 25 个 SVG 图标组件                                                                        |
+| 图标       | 26 个 SVG 图标组件                                                                        |
 | 插画       | 3 个空/错误状态插画                                                                       |
 | 颜色 token | 44 个语义化 token                                                                         |
 
 **已完成**：
 
-- **AI 解析主题动画** (2026-08-27，真机验证通过)：AiProcessingOverlay 升级为做饭主题全屏遮罩（暖色剪影厨师帽轻跳 + 三缕蒸汽错相上飘 + 三步轮换文案 + 圆点进度），文本录入页接入；菜谱编辑页 AI 辅助修改同步受益；Phase-D §10 同步组件文档
+- **audio-api 构建下载裁剪** (2026-08-29)：库自带 Gradle 任务在 Android 构建时强下 4 个 iOS/macOS 无用包（iphonesimulator 等），每次赌 GitHub 网络。patch 修改其 download-prebuilt-binaries.sh，Android 只保留 android.zip + jniLibs.zip（项目 download-audio-libs.js 已预置，构建零下载）；patch 以 `npx patch-package react-native-audio-api --include "scripts"` 生成（必须带 --include，否则解压产物混入 patch 导致重装 install 失败），避坑记录进运行与打包指南
+- **首页列表闪烁修复** (2026-08-29，真机验证通过)：筛选切换/收藏 refetch 重建 FlatList 行导致 reanimated entering 重放，内容区域反复播淡入像闪烁。修复：卡片/header 的 entering 动画仅首次进页播放（1.2s 后关闭）；RecipeContextMenu 的 Modal 改常驻挂载（Android Modal 挂卸触发窗口焦点切换重绘）+ statusBarTranslucent
+- **收藏功能做实** (2026-08-27，真机验证通过)：recipes 表新增 is_favorite 列（init.ts 幂等补列迁移：PRAGMA 检测缺列则 ALTER TABLE，老安装覆盖升级自动补列默认 0，架构文档 Schema 同步）；长按菜单新增「收藏/取消收藏」（独立 setRecipeFavorite 不刷新 updated_at，避免影响「最近」排序）；首页「收藏」筛选接真数据；已收藏菜谱卡片右上角红色心形角标；新增 heart / heart-filled 图标（25→26，Phase-D 图标表同步）- **AI 解析主题动画** (2026-08-27，真机验证通过)：AiProcessingOverlay 升级为做饭主题全屏遮罩（暖色剪影厨师帽轻跳 + 三缕蒸汽错相上飘 + 三步轮换文案 + 圆点进度），文本录入页接入；菜谱编辑页 AI 辅助修改同步受益；Phase-D §10 同步组件文档
 - **录入重复入库修复** (2026-08-27，真机验证通过：重录只生成一条)：文本/语音录入双触发竞态导致同秒重复入库；修复三处——录入入库点 useRef 幂等拦截、文本录入 handleSave 补 isParsing 守卫与 HeaderBar rightDisabled、右上角完成入口移除；图片录入补 rightDisabled 置灰
 - **烹饪页重播功能补全** (2026-08-27，真机验证通过)：WAITING_TIMER/WAITING_AUTO 状态新增 REPEAT 事件（转 ANNOUNCING_STEP 重播当前步骤，计时/延迟重置），「再说一遍」按钮在这两个状态启用，语音「再说一遍」同步生效；架构文档 FSM 图同步（此前文档写了「任意状态可重播」但代码缺边）；e2e 新增 2 用例
 - **审计整改后真机回归通过** (2026-08-27)：构建 + 启动 + 首页加载正常，老菜谱数据在覆盖安装后完好；双 patch（document-picker/keep-awake）真机构建验证在位。顺带修两个构建运维问题：android script 补 `--appId com.cookingguidern.arm64`（flavor 的 applicationIdSuffix 导致 CLI 启动 Error type 3）；download-audio-libs 幂等化（目标已存在则跳过下载，不再每次 install 赌 GitHub 网络）
@@ -92,7 +94,9 @@
 
 **待解决**：
 
-- 收藏功能做实：HomeScreen「收藏」筛选目前直接返回全部（Recipe 模型无收藏字段），需加 isFavorite 字段 + DB 迁移 + 长按菜单切换收藏
+**待解决**：
+
+（当前无）
 
 ## 长期（V2）
 
