@@ -4,7 +4,6 @@ import { BlurView } from '@react-native-community/blur';
 import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
 import type { RouteProp } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Animated, { FadeIn, FadeInUp } from 'react-native-reanimated';
 import type { RootStackNavigationProp, RootStackParamList } from '../navigation/types';
 import { getRecipe, deleteRecipe } from '../db';
 import type { Recipe, Step } from '../types/cooking';
@@ -65,9 +64,10 @@ export default function RecipeDetailScreen() {
   const [prepMode, setPrepMode] = useState(false);
   const [checkedIngredients, setCheckedIngredients] = useState<Set<string>>(new Set());
 
+  // focus 时静默刷新（同步读库批处理后一次 commit，不闪骨架屏）；
+  // 首次挂载 loading=true 的骨架屏仅作转场期间兜底
   useFocusEffect(
     useCallback(() => {
-      setLoading(true);
       try {
         const data = getRecipe(recipeId);
         if (data) {
@@ -148,7 +148,7 @@ export default function RecipeDetailScreen() {
         showsVerticalScrollIndicator={false}
       >
         {/* Hero */}
-        <Animated.View entering={FadeIn.duration(700)}>
+        <View>
           <View style={[styles.hero, { height: HERO_HEIGHT }]}>
             <View style={styles.heroGradientBase} />
             <View style={styles.heroGradientBlobTop} />
@@ -182,10 +182,10 @@ export default function RecipeDetailScreen() {
               </Text>
             </View>
           </View>
-        </Animated.View>
+        </View>
 
         {/* Info card */}
-        <Animated.View entering={FadeInUp.duration(500).delay(150)} style={styles.infoCard}>
+        <View style={styles.infoCard}>
           <View style={styles.infoRow}>
             <View style={[styles.infoCell, styles.infoCellWide]}>
               <Text style={styles.infoLabel}>人份</Text>
@@ -225,10 +225,10 @@ export default function RecipeDetailScreen() {
               <Text style={styles.infoValue}>{recipe.steps.length} 步</Text>
             </View>
           </View>
-        </Animated.View>
+        </View>
 
         {/* Ingredients */}
-        <Animated.View entering={FadeInUp.duration(500).delay(250)} style={styles.section}>
+        <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <SectionTitle title="食材" style={styles.sectionTitle} />
             <Button
@@ -274,10 +274,10 @@ export default function RecipeDetailScreen() {
               );
             })}
           </View>
-        </Animated.View>
+        </View>
 
         {/* Steps */}
-        <Animated.View entering={FadeInUp.duration(500).delay(350)} style={styles.section}>
+        <View style={styles.section}>
           <SectionTitle title="步骤" style={styles.sectionTitle} />
           <View style={styles.stepListContainer}>
             <View style={styles.stepConnectorLine} />
@@ -293,11 +293,11 @@ export default function RecipeDetailScreen() {
               </View>
             ))}
           </View>
-        </Animated.View>
+        </View>
       </ScrollView>
 
       {/* Glass bottom action bar */}
-      <Animated.View entering={FadeInUp.duration(500).delay(450)} style={styles.glassBar}>
+      <View style={styles.glassBar}>
         {Platform.OS === 'ios' && (
           <BlurView blurType="dark" blurAmount={20} style={StyleSheet.absoluteFill} />
         )}
@@ -308,7 +308,7 @@ export default function RecipeDetailScreen() {
           variant="primary"
           style={styles.actionBtn}
         />
-      </Animated.View>
+      </View>
     </SafeAreaContainer>
   );
 }

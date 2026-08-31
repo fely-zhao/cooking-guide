@@ -7,54 +7,30 @@ import Animated, {
   withTiming,
   interpolate,
   Easing,
-  FadeIn,
-  Extrapolation,
 } from 'react-native-reanimated';
 import Svg, { Circle, Rect, Path } from 'react-native-svg';
 import { colors } from '../theme/colors';
 import { spacing } from '../theme/spacing';
 import { typography } from '../theme/typography';
 
-interface AiProcessingOverlayProps {
+interface LoadingOverlayProps {
   visible: boolean;
+  /** 加载提示文案，默认「加载中…」 */
+  message?: string;
 }
 
-/** 解析过程的分段文案（实际为一次 LLM 调用，轮换仅作感知进度） */
-const PROCESS_STEPS = ['正在识别食材…', '正在提取步骤…', '正在整理菜谱…'];
-
-const STEAM_CYCLE_MS = 2700;
-
-export function AiProcessingOverlay({ visible }: AiProcessingOverlayProps) {
+export function LoadingOverlay({ visible, message = '加载中…' }: LoadingOverlayProps) {
   if (!visible) {
     return null;
   }
-  return <ProcessingContent />;
-}
-
-// ---------------------------------------------------------------------------
-// ProcessingContent — 动画/hooks 全部收在子组件，仅在 visible 时挂载
-// ---------------------------------------------------------------------------
-
-function ProcessingContent() {
-  const [stepIndex, setStepIndex] = useState(0);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setStepIndex(i => (i + 1) % PROCESS_STEPS.length);
-    }, 2200);
-    return () => clearInterval(timer);
-  }, []);
-
   return (
     <View style={styles.overlay}>
       <View style={styles.box}>
         <ChefHatWithSteam />
-        <Animated.Text key={stepIndex} style={styles.text} entering={FadeIn.duration(300)}>
-          {PROCESS_STEPS[stepIndex]}
-        </Animated.Text>
+        <Animated.Text style={styles.text}>{message}</Animated.Text>
         <View style={styles.dotsRow}>
-          {PROCESS_STEPS.map((_, i) => (
-            <View key={i} style={[styles.dot, i === stepIndex && styles.dotActive]} />
+          {[0, 1, 2].map(i => (
+            <View key={i} style={[styles.dot, i === 0 && styles.dotActive]} />
           ))}
         </View>
       </View>
@@ -67,6 +43,8 @@ function ProcessingContent() {
 // ---------------------------------------------------------------------------
 
 function ChefHatWithSteam() {
+  const STEAM_CYCLE_MS = 2700;
+
   // 帽子：上下轻跳（auto-reverse 往返）
   const hatY = useSharedValue(0);
   useEffect(() => {
@@ -98,9 +76,9 @@ function ChefHatWithSteam() {
         cycle.value,
         [s, s + 0.1, s + 0.25, s + 0.33],
         [0, 0.85, 0.5, 0],
-        Extrapolation.CLAMP,
+        'clamp',
       );
-      const translateY = interpolate(cycle.value, [s, s + 0.33], [0, -16], Extrapolation.CLAMP);
+      const translateY = interpolate(cycle.value, [s, s + 0.33], [0, -16], 'clamp');
       return { opacity, transform: [{ translateY }] };
     }),
   );
@@ -123,7 +101,7 @@ function ChefHatWithSteam() {
           </Animated.View>
         ))}
       </View>
-      {/* 厨师帽（暖色剪影，与插画体系一致） */}
+      {/* 厨师帽（暖色剪影） */}
       <Animated.View style={[styles.hatWrapper, hatStyle]}>
         <Svg width={72} height={72} viewBox="0 0 48 48">
           <Circle cx={15} cy={16} r={7} fill={colors.primary} />
@@ -133,6 +111,44 @@ function ChefHatWithSteam() {
           <Rect x={9} y={32} width={30} height={5} rx={2.5} fill={colors.primary} />
         </Svg>
       </Animated.View>
+    </View>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// AI 解析专用（预设三步轮换文案，保持向后兼容）
+// ---------------------------------------------------------------------------
+
+const AI_PROCESS_STEPS = ['正在识别食材…', '正在提取步骤…', '正在整理菜谱…'];
+
+export function AiProcessingOverlay({ visible }: { visible: boolean }) {
+  const [stepIndex, setStepIndex] = useState(0);
+
+  useEffect(() => {
+    if (!visible) return;
+    const timer = setInterval(() => {
+      setStepIndex(i => (i + 1) % AI_PROCESS_STEPS.length);
+    }, 2200);
+    return () => clearInterval(timer);
+  }, [visible]);
+
+  if (!visible) {
+    return null;
+  }
+
+  return (
+    <View style={styles.overlay}>
+      <View style={styles.box}>
+        <ChefHatWithSteam />
+        <Animated.Text key={stepIndex} style={styles.text}>
+          {AI_PROCESS_STEPS[stepIndex]}
+        </Animated.Text>
+        <View style={styles.dotsRow}>
+          {AI_PROCESS_STEPS.map((_, i) => (
+            <View key={i} style={[styles.dot, i === stepIndex && styles.dotActive]} />
+          ))}
+        </View>
+      </View>
     </View>
   );
 }

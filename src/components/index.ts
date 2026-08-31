@@ -12,3 +12,4 @@ export { StepNumber } from './StepNumber';
 export { TranscriptBar } from './TranscriptBar';
 export { MagazineCard } from './MagazineCard';
 export { PressableScale } from './PressableScale';
+export { LoadingOverlay, AiProcessingOverlay } from './LoadingOverlay';

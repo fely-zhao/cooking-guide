@@ -361,6 +361,7 @@ const animatedStyle = useAnimatedStyle(() => ({
 - **全部使用 reanimated** — 弃用 RN 内置 `Animated` API（`Animated.Value`、`Animated.timing`）
 - **只用 native-driver 属性**：`opacity`、`transform`（scale/rotate/translate），禁止动画 `width`/`height`
 - **页面转场**：在 `AppNavigator.tsx` 的 `screenOptions` 中统一配置，不要在单个屏幕中自定义
+- **页面进场禁止叠加内容浮现动画**：push/modal 转场本身即过渡动画，屏幕内容不要再加 `entering` 阶梯动画逐块浮现。转场期间挂载重组件 + 动画叠加会互相争抢 JS/UI 线程导致掉帧卡顿（2026-08-31 详情页/编辑页已移除，真机体感卡顿的根因）
 - **按钮反馈**：统一使用 `Button` 组件，不要手写 `TouchableOpacity` 动画
 - **步骤过渡**：使用 `FadeIn`/`FadeOut` 或 `entering`/`exiting` props
 
@@ -515,17 +516,22 @@ import { MagazineCard } from '../components/MagazineCard';
 
 ---
 
-### `AiProcessingOverlay`
+### `LoadingOverlay` & `AiProcessingOverlay`
 
 ```tsx
-import { AiProcessingOverlay } from '../components/AiProcessingOverlay';
+import { LoadingOverlay, AiProcessingOverlay } from '../components/LoadingOverlay';
 
+// 通用加载（自定义文案）
+<LoadingOverlay visible={loading} message="加载中…" />;
+
+// AI 解析专用（三步轮换文案，保持向后兼容）
 <AiProcessingOverlay visible={isParsing} />;
 ```
 
-- AI 解析/处理中的全屏遮罩：暖色剪影厨师帽轻跳 + 三缕蒸汽错相上飘 + 三步轮换文案（识别食材→提取步骤→整理菜谱）+ 圆点进度指示。
-- 动画仅 `transform`/`opacity`（reanimated `withRepeat`），蒸汽用单一线性周期插值错相。
-- 适用于所有 LLM 解析等待场景（文本录入、菜谱 AI 辅助修改等），`visible` 控制显隐。
+- 共享底层厨师帽 + 三缕蒸汽动画（reanimated，仅 `transform`/`opacity`）。
+- `LoadingOverlay`：通用全屏加载遮罩，`message` prop 自定义文案，默认「加载中…」。
+- `AiProcessingOverlay`：AI 解析专用，固定三步轮换文案（识别食材→提取步骤→整理菜谱），内部实现透传 `LoadingOverlay` 动画层。
+- 两者 `visible` 控制显隐，组件在非可见状态返回 `null`，不占布局。
 
 ---
 

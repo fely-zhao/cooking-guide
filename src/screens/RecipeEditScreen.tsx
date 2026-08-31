@@ -13,7 +13,6 @@ import {
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { RouteProp } from '@react-navigation/native';
-import Animated, { FadeInUp } from 'react-native-reanimated';
 import type { RootStackNavigationProp, RootStackParamList } from '../navigation/types';
 import { getRecipe, updateRecipe } from '../db/recipes';
 import { deleteByRecipe as deleteIngredientsByRecipe, createIngredient } from '../db/ingredients';
@@ -37,17 +36,34 @@ import {
   TAG_OPTIONS,
   generateTempId,
 } from '../utils/recipe-edit';
-import { AiProcessingOverlay } from '../components/AiProcessingOverlay';
+import { AiProcessingOverlay } from '../components/LoadingOverlay';
 import { AiOptionsModal } from '../components/AiOptionsModal';
 import { AiDiffPreviewModal } from '../components/AiDiffPreviewModal';
 import { Icon } from '../components/icons';
-import { DraggableStep } from '../components/DraggableStep';
+import { DraggableStep, STEP_ITEM_HEIGHT } from '../components/DraggableStep';
 import { DraggableIngredient } from '../components/DraggableIngredient';
+import { SkeletonBox } from '../components/skeleton';
 import { saveCoverImagePermanent, deleteCoverImage } from '../utils/cover-image';
 
 type RecipeEditRouteProp = RouteProp<RootStackParamList, 'RecipeEdit'>;
 
-const SECTION_STAGGER = 80;
+// 与 AppNavigator 的 animationDuration: 300 对齐 + 余量；
+// 转场期间只挂载轻量首屏，重组件列表延后填充
+const LISTS_MOUNT_DELAY_MS = 350;
+
+// ---------------------------------------------------------------------------
+// ListPlaceholder — 列表挂载前的骨架占位（视觉连续，高度近似真实行）
+// ---------------------------------------------------------------------------
+
+function ListPlaceholder({ rows, rowHeight }: { rows: number; rowHeight: number }) {
+  return (
+    <View style={styles.placeholderList}>
+      {Array.from({ length: rows }).map((_, i) => (
+        <SkeletonBox key={i} width="100%" height={rowHeight} borderRadius={spacing.radius.sm} />
+      ))}
+    </View>
+  );
+}
 
 export default function RecipeEditScreen() {
   const navigation = useNavigation<RootStackNavigationProp>();
@@ -60,6 +76,9 @@ export default function RecipeEditScreen() {
   const [ingredients, setIngredients] = useState<EditableIngredient[]>([]);
   const [steps, setSteps] = useState<EditableStep[]>([]);
   const [loading, setLoading] = useState(true);
+  // 转场期间只挂载轻量首屏；食材/步骤列表为 Draggable* 重组件
+  // （每行手势 + 多输入框），延迟到转场结束后挂载，避免与转场动画争抢线程导致掉帧
+  const [listsReady, setListsReady] = useState(false);
   const [aiModalVisible, setAiModalVisible] = useState(false);
   const [aiProcessing, setAiProcessing] = useState(false);
   const [previewVisible, setPreviewVisible] = useState(false);
@@ -94,6 +113,11 @@ export default function RecipeEditScreen() {
     setCoverImage(recipe.coverImage);
     setLoading(false);
   }, [recipeId, navigation]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setListsReady(true), LISTS_MOUNT_DELAY_MS);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handlePickImage = useCallback(async () => {
     try {
@@ -313,7 +337,7 @@ ${stepsText}`;
           keyboardShouldPersistTaps="handled"
         >
           {/* Section 1: 基本信息 */}
-          <Animated.View entering={FadeInUp.duration(400).delay(SECTION_STAGGER * 0)}>
+          <View>
             <SectionTitle title="基本信息" style={styles.sectionTitle} />
             <View style={styles.card}>
               <Text style={styles.label}>名称</Text>
@@ -359,60 +383,68 @@ ${stepsText}`;
                 </View>
               </TouchableOpacity>
             </View>
-          </Animated.View>
+          </View>
 
           {/* Section 2: 食材列表 */}
-          <Animated.View entering={FadeInUp.duration(400).delay(SECTION_STAGGER * 1)}>
+          <View>
             <SectionTitle title="食材列表" style={styles.sectionTitle} />
-            <View>
-              {ingredients.map((ing, index) => (
-                <DraggableIngredient
-                  key={ing.tempId}
-                  ingredient={ing}
-                  index={index}
-                  totalCount={ingredients.length}
-                  onMove={moveIngredient}
-                  onUpdate={updateIngredient}
-                  onRemove={removeIngredient}
+            {listsReady ? (
+              <View>
+                {ingredients.map((ing, index) => (
+                  <DraggableIngredient
+                    key={ing.tempId}
+                    ingredient={ing}
+                    index={index}
+                    totalCount={ingredients.length}
+                    onMove={moveIngredient}
+                    onUpdate={updateIngredient}
+                    onRemove={removeIngredient}
+                  />
+                ))}
+                <Button
+                  variant="secondary"
+                  title="添加食材"
+                  icon={<Icon name="plus" size={18} color={colors.text.secondary} />}
+                  onPress={addIngredient}
+                  style={styles.addButton}
                 />
-              ))}
-              <Button
-                variant="secondary"
-                title="添加食材"
-                icon={<Icon name="plus" size={18} color={colors.text.secondary} />}
-                onPress={addIngredient}
-                style={styles.addButton}
-              />
-            </View>
-          </Animated.View>
+              </View>
+            ) : (
+              <ListPlaceholder rows={3} rowHeight={60} />
+            )}
+          </View>
 
           {/* Section 3: 步骤列表 */}
-          <Animated.View entering={FadeInUp.duration(400).delay(SECTION_STAGGER * 2)}>
+          <View>
             <SectionTitle title="步骤列表" style={styles.sectionTitle} />
-            <View>
-              {steps.map((step, index) => (
-                <DraggableStep
-                  key={step.tempId}
-                  step={step}
-                  index={index}
-                  totalCount={steps.length}
-                  onMove={moveStep}
-                  onUpdate={updateStep}
-                  onRemove={removeStep}
+            {listsReady ? (
+              <View>
+                {steps.map((step, index) => (
+                  <DraggableStep
+                    key={step.tempId}
+                    step={step}
+                    index={index}
+                    totalCount={steps.length}
+                    onMove={moveStep}
+                    onUpdate={updateStep}
+                    onRemove={removeStep}
+                  />
+                ))}
+                <Button
+                  variant="secondary"
+                  title="添加步骤"
+                  icon={<Icon name="plus" size={18} color={colors.text.secondary} />}
+                  onPress={addStep}
+                  style={styles.addButton}
                 />
-              ))}
-              <Button
-                variant="secondary"
-                title="添加步骤"
-                icon={<Icon name="plus" size={18} color={colors.text.secondary} />}
-                onPress={addStep}
-                style={styles.addButton}
-              />
-            </View>
-          </Animated.View>
+              </View>
+            ) : (
+              <ListPlaceholder rows={2} rowHeight={STEP_ITEM_HEIGHT} />
+            )}
+          </View>
 
           {/* AI 辅助按钮 */}
-          <Animated.View entering={FadeInUp.duration(400).delay(SECTION_STAGGER * 3)}>
+          <View>
             <Button
               variant="outline"
               title="AI 优化步骤"
@@ -422,7 +454,7 @@ ${stepsText}`;
               loading={aiProcessing}
               style={styles.aiButton}
             />
-          </Animated.View>
+          </View>
 
           <View style={styles.bottomSpacer} />
         </ScrollView>
@@ -576,6 +608,9 @@ const styles = StyleSheet.create({
   },
   addButton: {
     marginTop: spacing.xs,
+  },
+  placeholderList: {
+    gap: spacing.md,
   },
   aiButton: {
     marginTop: spacing.xl,

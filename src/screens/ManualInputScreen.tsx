@@ -13,7 +13,7 @@ import { spacing } from '../theme/spacing';
 import { typography } from '../theme/typography';
 import { SafeAreaContainer } from '../components/SafeAreaContainer';
 import { HeaderBar } from '../components/HeaderBar';
-import { AiProcessingOverlay } from '../components/AiProcessingOverlay';
+import { AiProcessingOverlay } from '../components/LoadingOverlay';
 import { Button } from '../components/Button';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { RouteProp } from '@react-navigation/native';
