@@ -72,6 +72,7 @@ interface CompactItemProps {
   recipe: Recipe;
   index: number;
   animate: boolean;
+  subtitle: string;
   onPress: () => void;
   onLongPress: () => void;
   onPlayPress: () => void;
@@ -85,6 +86,7 @@ function CompactCardItem({
   recipe,
   index,
   animate,
+  subtitle,
   onPress,
   onLongPress,
   onPlayPress,
@@ -100,7 +102,7 @@ function CompactCardItem({
     >
       <MagazineCard
         title={recipe.name}
-        subtitle={formatSubtitle(recipe)}
+        subtitle={subtitle}
         image={recipe.coverImage ? { uri: recipe.coverImage } : undefined}
         badge={recipe.isFavorite ? <FavoriteBadge /> : undefined}
         size="compact"
@@ -185,14 +187,16 @@ export default function HomeScreen() {
     }, [refetch]),
   );
 
+  // 每道菜最后烹饪时间，「最近」tab 的排序与时间展示共用
+  const lastCookedAtMap = useMemo(() => getLastCookedAtMap(), [recipes]);
+
   const filteredRecipes = useMemo(() => {
     switch (activeFilter) {
       case 'recent': {
         // 最近做过：只显示有烹饪记录的菜谱，按最后烹饪时间取前 10
-        const lastCookedAt = getLastCookedAtMap();
         return recipes
-          .filter(r => lastCookedAt.has(r.id))
-          .sort((a, b) => (lastCookedAt.get(b.id) ?? 0) - (lastCookedAt.get(a.id) ?? 0))
+          .filter(r => lastCookedAtMap.has(r.id))
+          .sort((a, b) => (lastCookedAtMap.get(b.id) ?? 0) - (lastCookedAtMap.get(a.id) ?? 0))
           .slice(0, 10);
       }
       case 'favorite':
@@ -201,7 +205,7 @@ export default function HomeScreen() {
       default:
         return [...recipes].sort(byCreatedAtDesc);
     }
-  }, [recipes, activeFilter]);
+  }, [recipes, activeFilter, lastCookedAtMap]);
 
   // 大卡片固定推荐最新添加的菜谱，与 tab 无关（新菜优先曝光，任何 tab 下焦点位不空）
   const featuredRecipe = useMemo(() => [...recipes].sort(byCreatedAtDesc)[0], [recipes]);
@@ -297,20 +301,30 @@ export default function HomeScreen() {
     </Animated.View>
   );
 
-  const renderCompactItem = ({ item, index }: { item: Recipe; index: number }) => (
-    <CompactCardItem
-      recipe={item}
-      index={index}
-      animate={cardsAnimate}
-      onPress={() => handleRecipePress(item.id)}
-      onLongPress={() => handleLongPress(item)}
-      onPlayPress={() => handleStartCooking(item.id)}
-      menuVisible={menuRecipeId === item.id}
-      onToggleFavorite={() => handleToggleFavorite(item.id)}
-      onEditPress={() => handleEditRecipe(item.id)}
-      onCloseMenu={handleCloseMenu}
-    />
-  );
+  const renderCompactItem = ({ item, index }: { item: Recipe; index: number }) => {
+    // 「最近」tab 显示做过时间（与排序依据一致），其余 tab 显示编辑时间
+    const cookedAt = activeFilter === 'recent' ? lastCookedAtMap.get(item.id) : undefined;
+    const subtitle =
+      cookedAt !== undefined
+        ? `${formatRelativeTime(new Date(cookedAt).toISOString())}做过`
+        : formatSubtitle(item);
+
+    return (
+      <CompactCardItem
+        recipe={item}
+        index={index}
+        animate={cardsAnimate}
+        subtitle={subtitle}
+        onPress={() => handleRecipePress(item.id)}
+        onLongPress={() => handleLongPress(item)}
+        onPlayPress={() => handleStartCooking(item.id)}
+        menuVisible={menuRecipeId === item.id}
+        onToggleFavorite={() => handleToggleFavorite(item.id)}
+        onEditPress={() => handleEditRecipe(item.id)}
+        onCloseMenu={handleCloseMenu}
+      />
+    );
+  };
 
   // -----------------------------------------------------------------------
   // Loading state
