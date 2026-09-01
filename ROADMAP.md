@@ -45,6 +45,11 @@
 
 **待解决**：
 
+- 待做：播报音量控制（TTS 增强两级方案，需求与方案已定，待实施）：
+  - 全局播报音量档位（用户手动调，适应爆炒/安静场景）：设置项存 MMKV（`src/types/settings.ts` + storage + 设置页 UI），档位制不用滑杆
+  - 计时到点提醒播报（`ANNOUNCING_REMINDER`）临时拉高增益，播完恢复，只作用提醒、不作用普通步骤播报
+  - 实现：`src/services/tts.player.ts` 播放链路 `source → GainNode → destination`，两级增益相乘（用户档位 × 提醒 boost）；player 由 `cooking-machine-shared.ts` 创建，播放调用在 `useCookingFsm.ts` 的 ttsService actor；提醒态判断需从 FSM 状态传入播放调用
+  - 不碰系统音量、不需要权限；验证时注意高增益下语音是否失真
 - 待复现：首页偶现筛选栏与卡片瞬态重叠（真机截图一次后自恢复，疑与 FadeInUp entering 中间帧相关；再出现时记录是否在进首页/切筛选动画期间、长按菜单是否弹出过）
 
 ## 长期（V2）
