@@ -9,11 +9,13 @@ import {
   GestureResponderEvent,
 } from 'react-native';
 import Svg, { Defs, LinearGradient, Stop, Rect } from 'react-native-svg';
+import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { colors } from '../theme/colors';
 import { spacing } from '../theme/spacing';
 import { typography } from '../theme/typography';
 import { shadows } from '../theme/shadows';
 import { Icon } from './icons';
+import { IconButton } from './IconButton';
 import { PressableScale } from './PressableScale';
 
 type MagazineCardSize = 'featured' | 'compact';
@@ -29,6 +31,12 @@ interface MagazineCardProps {
   onPlayPress?: () => void;
   size?: MagazineCardSize;
   variant?: MagazineCardVariant;
+  /** 长按菜单覆盖层显隐；不传时渲染普通卡片 */
+  menuVisible?: boolean;
+  isFavorite?: boolean;
+  onToggleFavorite?: () => void;
+  onEditPress?: () => void;
+  onCloseMenu?: () => void;
 }
 
 export function MagazineCard({
@@ -41,6 +49,11 @@ export function MagazineCard({
   onPlayPress,
   size = 'compact',
   variant = 'default',
+  menuVisible = false,
+  isFavorite = false,
+  onToggleFavorite,
+  onEditPress,
+  onCloseMenu,
 }: MagazineCardProps) {
   const isFeatured = size === 'featured';
   const isOverlay = variant === 'overlay' && !isFeatured;
@@ -202,6 +215,42 @@ export function MagazineCard({
           )}
         </View>
       )}
+
+      {menuVisible && onToggleFavorite && onEditPress && onCloseMenu && (
+        // 卡片级纱罩：盖住卡片内容，空白处点击不关闭（关闭入口仅右上角 ×）
+        <Animated.View
+          style={styles.menuOverlay}
+          entering={FadeIn.duration(200)}
+          exiting={FadeOut.duration(150)}
+        >
+          {/* 空 onPress 的 Pressable 拦截触摸，防止穿透触发卡片 onPress */}
+          <Pressable style={StyleSheet.absoluteFill} onPress={() => {}} />
+          <IconButton
+            name="close"
+            variant="secondary"
+            size={14}
+            onPress={onCloseMenu}
+            style={styles.menuCloseButton}
+          />
+          <View style={styles.menuActions}>
+            <IconButton
+              name={isFavorite ? 'heart-filled' : 'heart'}
+              variant="secondary"
+              size={20}
+              color={isFavorite ? colors.danger : colors.text.primary}
+              onPress={onToggleFavorite}
+              style={styles.menuActionButton}
+            />
+            <IconButton
+              name="edit"
+              variant="secondary"
+              size={20}
+              onPress={onEditPress}
+              style={styles.menuActionButton}
+            />
+          </View>
+        </Animated.View>
+      )}
     </PressableScale>
   );
 }
@@ -259,9 +308,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: colors.surface,
-    paddingLeft: spacing.lg,
-    paddingRight: spacing.md,
-    paddingVertical: spacing.md,
+    paddingLeft: spacing.md,
+    paddingRight: spacing.sm,
+    paddingVertical: spacing.sm,
   },
   placeholderOverlayTitle: {
     ...typography.button,
@@ -375,5 +424,32 @@ const styles = StyleSheet.create({
     ...typography.caption,
     color: colors.text.muted,
     marginTop: spacing.xs,
+  },
+  menuOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: colors.overlay50,
+  },
+  menuCloseButton: {
+    position: 'absolute',
+    // 对齐未遮罩时收藏红心徽章的位置（badge 中心距角 19dp，× 28 中心距角 18dp）
+    top: spacing.xs,
+    right: spacing.xs,
+    width: 28,
+    height: 28,
+  },
+  menuActions: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.md,
+  },
+  menuActionButton: {
+    width: 40,
+    height: 40,
   },
 });

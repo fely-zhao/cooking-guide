@@ -85,7 +85,7 @@ import type { IconName } from '../components/icons';
 <Icon name="cooking" size={24} color={colors.primary} />;
 ```
 
-### 可用图标（26 个）
+### 可用图标（27 个）
 
 | 名称            | 用途          |
 | --------------- | ------------- |
@@ -116,6 +116,7 @@ import type { IconName } from '../components/icons';
 | `heart`         | 收藏（描边）  |
 | `heart-filled`  | 已收藏角标    |
 | `sparkle`       | 庆祝粒子      |
+| `edit`          | 编辑          |
 
 ### 规范
 
@@ -512,7 +513,8 @@ import { MagazineCard } from '../components/MagazineCard';
 ```
 
 - 杂志风格菜谱卡片。
-- Props：`title`, `subtitle?`, `image?`, `badge?`, `onPress`, `size?: 'featured' | 'compact'`。
+- Props：`title`, `subtitle?`, `image?`, `badge?`, `onPress`, `size?: 'featured' | 'compact'`, `menuVisible?`, `isFavorite?`, `onToggleFavorite?`, `onEditPress?`, `onCloseMenu?`。
+- 长按菜单（卡片级覆盖层）：`menuVisible` 为 true 时在卡片内渲染深色纱罩（`overlay50`，压暗卡片内容），右上角 × 关闭（对齐未遮罩时收藏角标位置），居中两个 `IconButton`（收藏 heart/heart-filled、编辑 edit，secondary variant 暖灰底）；菜单相关 props 均不传时为普通卡片，触摸拦截由纱罩内空 `onPress` 的 `Pressable` 承担。
 
 ---
 

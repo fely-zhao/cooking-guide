@@ -25,6 +25,7 @@ import ChevronRightIcon from './ChevronRightIcon';
 import SparkleIcon from './SparkleIcon';
 import SettingsIcon from './SettingsIcon';
 import HeartIcon from './HeartIcon';
+import EditIcon from './EditIcon';
 
 export type IconName =
   | 'cooking'
@@ -53,7 +54,8 @@ export type IconName =
   | 'sparkle'
   | 'settings'
   | 'heart'
-  | 'heart-filled';
+  | 'heart-filled'
+  | 'edit';
 
 const HeartFilledIcon: React.FC<{ size?: number; color?: string }> = props => (
   <HeartIcon {...props} filled />
@@ -87,6 +89,7 @@ const ICON_MAP: Record<IconName, React.FC<{ size?: number; color?: string }>> = 
   settings: SettingsIcon,
   heart: HeartIcon,
   'heart-filled': HeartFilledIcon,
+  edit: EditIcon,
 };
 
 interface IconProps {

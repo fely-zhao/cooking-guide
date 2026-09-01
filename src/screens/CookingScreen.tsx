@@ -16,6 +16,7 @@ import type { RouteProp } from '@react-navigation/native';
 import type { RootStackNavigationProp, RootStackParamList } from '../navigation/types';
 import { useCookingMachine } from '../hooks/useCookingMachine';
 import { useKeepAwake } from '../hooks/useKeepAwake';
+import { createSession, finishSession } from '../db/cook-sessions';
 import { hapticSuccess, hapticWarning } from '../utils/haptic';
 import type { TimerInfo } from '../machines/cooking-machine';
 import { colors } from '../theme/colors';
@@ -225,6 +226,29 @@ export default function CookingScreen() {
     state.matches('WAITING_TIMER') ||
     state.matches('WAITING_AUTO') ||
     state.matches('ANNOUNCING_REMINDER');
+
+  // ── Cooking session record ─────────────────────────────────────────
+
+  // 进入烹饪页即开一条会话；完成时标记 completed，其余退出路径（返回键、手势返回）
+  // 由卸载 cleanup 统一收尾为未完成，不留悬挂记录
+  const sessionIdRef = useRef<string | null>(null);
+  const finishedRef = useRef(false);
+
+  useEffect(() => {
+    sessionIdRef.current = createSession(recipeId);
+    return () => {
+      if (sessionIdRef.current && !finishedRef.current) {
+        finishSession(sessionIdRef.current, false);
+      }
+    };
+  }, [recipeId]);
+
+  useEffect(() => {
+    if (isCompleted && !finishedRef.current && sessionIdRef.current) {
+      finishedRef.current = true;
+      finishSession(sessionIdRef.current, true);
+    }
+  }, [isCompleted]);
 
   // ── Keep screen awake while actively cooking ───────────────────────────
 

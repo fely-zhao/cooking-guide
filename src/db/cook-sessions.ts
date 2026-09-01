@@ -46,3 +46,17 @@ export function getSessionsByRecipe(recipeId: string): CookSession[] {
 
   return result.rows.map(mapRowToCookSession);
 }
+
+/** 每道菜最后一次烹饪时间（recipe_id → 毫秒时间戳），用于「最近」tab 排序 */
+export function getLastCookedAtMap(): Map<string, number> {
+  const db = getDatabase();
+  const result = db.executeSync(
+    `SELECT recipe_id, MAX(started_at) AS last_cooked_at FROM cook_sessions GROUP BY recipe_id`,
+  );
+
+  const map = new Map<string, number>();
+  for (const row of result.rows) {
+    map.set(row.recipe_id as string, Number(row.last_cooked_at));
+  }
+  return map;
+}

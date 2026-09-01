@@ -5,7 +5,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeInUp, FadeIn } from 'react-native-reanimated';
 import type { RootStackNavigationProp } from '../navigation/types';
 import { useRecipes } from '../hooks/useRecipes';
-import { deleteRecipe, setRecipeFavorite } from '../db/recipes';
+import { setRecipeFavorite } from '../db/recipes';
+import { getLastCookedAtMap } from '../db/cook-sessions';
 import type { Recipe } from '../types/cooking';
 import { Icon } from '../components/icons';
 import { colors } from '../theme/colors';
@@ -17,7 +18,6 @@ import { Button } from '../components/Button';
 import { PressableScale } from '../components/PressableScale';
 import { MagazineCard } from '../components/MagazineCard';
 import { CapsuleFab } from '../components/CapsuleFab';
-import { RecipeContextMenu } from '../components/RecipeContextMenu';
 import { HomeGridSkeleton } from '../components/skeleton';
 import { EmptyRecipeIllustration } from '../components/illustrations';
 
@@ -53,6 +53,10 @@ function formatSubtitle(recipe: Recipe): string {
   return formatRelativeTime(recipe.updatedAt);
 }
 
+function byCreatedAtDesc(a: Recipe, b: Recipe): number {
+  return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+}
+
 function getGreeting(): string {
   const hour = new Date().getHours();
   if (hour < 12) return '早上好，主厨';
@@ -71,6 +75,10 @@ interface CompactItemProps {
   onPress: () => void;
   onLongPress: () => void;
   onPlayPress: () => void;
+  menuVisible: boolean;
+  onToggleFavorite: () => void;
+  onEditPress: () => void;
+  onCloseMenu: () => void;
 }
 
 function CompactCardItem({
@@ -80,6 +88,10 @@ function CompactCardItem({
   onPress,
   onLongPress,
   onPlayPress,
+  menuVisible,
+  onToggleFavorite,
+  onEditPress,
+  onCloseMenu,
 }: CompactItemProps) {
   return (
     <Animated.View
@@ -96,6 +108,11 @@ function CompactCardItem({
         onPress={onPress}
         onLongPress={onLongPress}
         onPlayPress={onPlayPress}
+        menuVisible={menuVisible}
+        isFavorite={recipe.isFavorite}
+        onToggleFavorite={onToggleFavorite}
+        onEditPress={onEditPress}
+        onCloseMenu={onCloseMenu}
       />
     </Animated.View>
   );
@@ -151,8 +168,8 @@ export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const { recipes, loading, refetch } = useRecipes();
   const [activeFilter, setActiveFilter] = useState<FilterOption>('all');
-  const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
-  const [menuVisible, setMenuVisible] = useState(false);
+  // 长按菜单改为卡片内覆盖层，只记卡片 id；null 表示无菜单打开
+  const [menuRecipeId, setMenuRecipeId] = useState<string | null>(null);
   // 进入动画只在首次进首页播放；筛选/收藏刷新会重建 FlatList 行导致 entering 重放，
   // 视觉上是全屏卡片反复淡入（像闪烁），所以首帧后关闭
   const [cardsAnimate, setCardsAnimate] = useState(true);
@@ -170,20 +187,28 @@ export default function HomeScreen() {
 
   const filteredRecipes = useMemo(() => {
     switch (activeFilter) {
-      case 'recent':
-        return [...recipes].sort(
-          (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
-        );
+      case 'recent': {
+        // 最近做过：只显示有烹饪记录的菜谱，按最后烹饪时间取前 10
+        const lastCookedAt = getLastCookedAtMap();
+        return recipes
+          .filter(r => lastCookedAt.has(r.id))
+          .sort((a, b) => (lastCookedAt.get(b.id) ?? 0) - (lastCookedAt.get(a.id) ?? 0))
+          .slice(0, 10);
+      }
       case 'favorite':
-        return recipes.filter(r => r.isFavorite);
+        return recipes.filter(r => r.isFavorite).sort(byCreatedAtDesc);
       case 'all':
       default:
-        return recipes;
+        return [...recipes].sort(byCreatedAtDesc);
     }
   }, [recipes, activeFilter]);
 
-  const featuredRecipe = filteredRecipes[0];
-  const compactRecipes = filteredRecipes.slice(1);
+  // 大卡片固定推荐最新添加的菜谱，与 tab 无关（新菜优先曝光，任何 tab 下焦点位不空）
+  const featuredRecipe = useMemo(() => [...recipes].sort(byCreatedAtDesc)[0], [recipes]);
+
+  // 列表 = 完整筛选结果（含大卡片菜谱）：大卡片是焦点位，列表是全量清单，
+  // 避免互斥方案下切 tab 时列表数量对不上、单条收藏时列表空白的割裂
+  const compactRecipes = filteredRecipes;
 
   // -----------------------------------------------------------------------
   // Handlers
@@ -213,28 +238,24 @@ export default function HomeScreen() {
 
   const handleEditRecipe = useCallback(
     (recipeId: string) => {
+      // 先关菜单再跳转，否则从编辑页返回时菜单还开着
+      setMenuRecipeId(null);
       navigation.navigate('RecipeEdit', { recipeId });
     },
     [navigation],
   );
 
-  const handleDeleteRecipe = useCallback(
-    (recipeId: string) => {
-      deleteRecipe(recipeId);
-      refetch();
-    },
-    [refetch],
-  );
-
   const handleLongPress = useCallback((recipe: Recipe) => {
-    setSelectedRecipe(recipe);
-    setMenuVisible(true);
+    setMenuRecipeId(recipe.id);
   }, []);
+
+  const handleCloseMenu = useCallback(() => setMenuRecipeId(null), []);
 
   const handleToggleFavorite = useCallback(
     (recipeId: string) => {
       const recipe = recipes.find(r => r.id === recipeId);
       if (!recipe) return;
+      setMenuRecipeId(null);
       setRecipeFavorite(recipeId, !recipe.isFavorite);
       refetch();
     },
@@ -284,6 +305,10 @@ export default function HomeScreen() {
       onPress={() => handleRecipePress(item.id)}
       onLongPress={() => handleLongPress(item)}
       onPlayPress={() => handleStartCooking(item.id)}
+      menuVisible={menuRecipeId === item.id}
+      onToggleFavorite={() => handleToggleFavorite(item.id)}
+      onEditPress={() => handleEditRecipe(item.id)}
+      onCloseMenu={handleCloseMenu}
     />
   );
 
@@ -300,10 +325,11 @@ export default function HomeScreen() {
   }
 
   // -----------------------------------------------------------------------
-  // Empty state (State B) — no cards, no filter, no FAB
+  // Empty state (State B) — no recipes at all: no cards, no filter, no FAB
+  //（某个 tab 无结果时页面结构不变，由 FlatList 的 ListEmptyComponent 在列表区展示提示）
   // -----------------------------------------------------------------------
 
-  if (filteredRecipes.length === 0) {
+  if (recipes.length === 0) {
     return (
       <SafeAreaContainer>
         {/* Settings icon — ghost style, top-right */}
@@ -365,21 +391,23 @@ export default function HomeScreen() {
         numColumns={2}
         renderItem={renderCompactItem}
         ListHeaderComponent={renderListHeader}
+        ListEmptyComponent={
+          <View style={styles.tabEmptyState}>
+            <EmptyRecipeIllustration size={120} />
+            <Text style={styles.emptyTitle}>
+              {activeFilter === 'favorite' ? '暂无收藏' : '还没有烹饪记录'}
+            </Text>
+            <Text style={styles.emptySubtitle}>
+              {activeFilter === 'favorite' ? '长按菜谱即可收藏' : '做过的菜会出现在这里'}
+            </Text>
+          </View>
+        }
         contentContainerStyle={styles.listContent}
         columnWrapperStyle={styles.columnWrapper}
         showsVerticalScrollIndicator={false}
       />
 
       <CapsuleFab title="录入新菜谱" onPress={handleCreateRecipe} />
-
-      <RecipeContextMenu
-        visible={menuVisible}
-        recipe={selectedRecipe}
-        onClose={() => setMenuVisible(false)}
-        onToggleFavorite={handleToggleFavorite}
-        onEdit={handleEditRecipe}
-        onDelete={handleDeleteRecipe}
-      />
     </SafeAreaContainer>
   );
 }
@@ -459,7 +487,7 @@ const styles = StyleSheet.create({
     color: colors.text.primary,
   },
   filterUnderline: {
-    width: 20,
+    alignSelf: 'stretch',
     height: 1,
     backgroundColor: colors.text.primary,
   },
@@ -470,6 +498,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: spacing.screenTopPadding,
     paddingHorizontal: spacing.xxxl,
+    gap: spacing.lg,
+  },
+  tabEmptyState: {
+    alignItems: 'center',
+    paddingTop: spacing.xxxl,
     gap: spacing.lg,
   },
   emptyTitle: {

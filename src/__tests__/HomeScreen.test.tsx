@@ -119,8 +119,12 @@ jest.mock('../hooks/useRecipes', () => ({
 
 jest.mock('../db/recipes', () => ({
   __esModule: true,
-  deleteRecipe: jest.fn(),
   setRecipeFavorite: jest.fn(),
+}));
+
+jest.mock('../db/cook-sessions', () => ({
+  __esModule: true,
+  getLastCookedAtMap: () => new Map(),
 }));
 
 // ---------------------------------------------------------------------------
@@ -137,11 +141,11 @@ describe('HomeScreen', () => {
   it('has required child components available for import', () => {
     const homeScreen = require('../screens/HomeScreen');
     const capsuleFab = require('../components/CapsuleFab');
-    const contextMenu = require('../components/RecipeContextMenu');
+    const iconButton = require('../components/IconButton');
     const gridSkeleton = require('../components/skeleton/HomeGridSkeleton');
     expect(homeScreen.default).toBeDefined();
     expect(capsuleFab.CapsuleFab).toBeDefined();
-    expect(contextMenu.RecipeContextMenu).toBeDefined();
+    expect(iconButton.IconButton).toBeDefined();
     expect(gridSkeleton.HomeGridSkeleton).toBeDefined();
   });
 

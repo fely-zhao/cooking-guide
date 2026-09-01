@@ -72,7 +72,7 @@ AI Agent 按以下层级获取记忆，不得越级依赖：
 
 - ID 生成统一使用 `generateUuid()`（`src/utils/uuid.ts`，uuid v4），禁止 `Date.now() + Math.random()`
 - 多表写入必须包裹 `withTransaction()`（`src/db/transaction.ts`）
-- `cook_sessions` 表为 V2 预留，V1 只写不读
+- `cook_sessions` 表 V1 已接入读写：烹饪页挂载时写入会话，完成/退出时收尾（completed 标记）；「最近」tab 只显示做过的菜，按最后烹饪时间取前 10
 
 > **[强制工具调用] 修改 DB 相关代码前，执行 `cat docs/架构与技术文档.md | grep -A 80 "本地存储"` 刷新完整 Schema。**
 
