@@ -14,6 +14,7 @@ import type { ParseRecipeResponse } from '../types/api';
 import { LLMService } from '../services/llm';
 import { createApiClient } from '../config';
 import { Icon } from '../components/icons';
+import { useTranslation } from 'react-i18next';
 
 type ImageInputRouteProp = RouteProp<RecipeInputStackParamList, 'ImageInput'>;
 
@@ -27,6 +28,7 @@ const MOCK_IMAGE_BASE64 =
   'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgMCAgMDAwMEAwMEBQgFBQQEBQoHBwYIDAoMCwsKCwsM';
 
 export default function ImageInputScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<RecipeInputNavigationProp>();
   const route = useRoute<ImageInputRouteProp>();
   const { onSave } = route.params;
@@ -76,30 +78,30 @@ export default function ImageInputScreen() {
 
       onSave?.(response);
     } catch {
-      Alert.alert('识别失败', '无法解析图片内容，请重试或换一张图片。');
+      Alert.alert(t('common.recognizeFailed'), t('image.parseFailedMsg'));
     } finally {
       setIsRecognizing(false);
     }
   }, [imageUri, isRecognizing, onSave, navigation]);
 
   const actionSheetOptions: ActionSheetOption[] = [
-    { label: '拍照', onPress: handleActionCamera },
-    { label: '从相册选择', onPress: handleActionSelect },
+    { label: t('image.camera'), onPress: handleActionCamera },
+    { label: t('image.gallery'), onPress: handleActionSelect },
   ];
 
   return (
     <SafeAreaContainer style={styles.container}>
       <HeaderBar
-        title="截图识别"
+        title={t('image.title')}
         onBack={handleCancel}
-        rightTitle="完成"
+        rightTitle={t('common.done')}
         onRightPress={handleRecognize}
         rightDisabled={isRecognizing}
       />
 
       <View style={styles.content}>
         {/* Preview Area */}
-        <SectionTitle title="选择图片" style={styles.sectionTitle} />
+        <SectionTitle title={t('image.pickImage')} style={styles.sectionTitle} />
         <TouchableOpacity
           style={styles.previewArea}
           onPress={handlePreviewPress}
@@ -110,8 +112,8 @@ export default function ImageInputScreen() {
           ) : (
             <View style={styles.previewPlaceholder}>
               <Icon name="camera" size={40} color={colors.text.placeholder} />
-              <Text style={styles.previewPlaceholderText}>点击选择图片</Text>
-              <Text style={styles.previewPlaceholderHint}>支持拍照或从相册选取</Text>
+              <Text style={styles.previewPlaceholderText}>{t('image.tapToPick')}</Text>
+              <Text style={styles.previewPlaceholderHint}>{t('image.pickHint')}</Text>
             </View>
           )}
         </TouchableOpacity>
@@ -119,7 +121,7 @@ export default function ImageInputScreen() {
         {/* Recognize Button */}
         {imageUri && (
           <Button
-            title="识别菜谱"
+            title={t('image.recognizeCta')}
             onPress={handleRecognize}
             variant="primary"
             loading={isRecognizing}
@@ -160,7 +162,7 @@ export default function ImageInputScreen() {
                 style={styles.actionSheetOption}
                 onPress={() => setActionSheetVisible(false)}
               >
-                <Text style={styles.actionSheetCancelText}>取消</Text>
+                <Text style={styles.actionSheetCancelText}>{t('common.cancel')}</Text>
               </TouchableOpacity>
             </View>
           </View>

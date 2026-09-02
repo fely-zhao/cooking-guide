@@ -2,6 +2,7 @@ import DocumentPicker from 'react-native-document-picker';
 import RNFS from 'react-native-fs';
 import { createRecipe } from '../db/recipes';
 import { withTransaction } from '../db/transaction';
+import i18n from '../i18n';
 
 interface ExportData {
   version: number;
@@ -33,7 +34,7 @@ export async function importRecipesFromFile(): Promise<number> {
     const data: ExportData = JSON.parse(content);
 
     if (!data.version || !Array.isArray(data.recipes)) {
-      throw new Error('无效的菜谱备份文件');
+      throw new Error(i18n.t('errors.invalidBackup'));
     }
 
     let importedCount = 0;

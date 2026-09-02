@@ -21,6 +21,8 @@ import { NotFoundIllustration } from '../components/illustrations';
 import { IconButton } from '../components/IconButton';
 import { Icon } from '../components/icons';
 import { PressableScale } from '../components/PressableScale';
+import { useTranslation } from 'react-i18next';
+import i18n from '../i18n';
 
 type RecipeDetailRouteProp = RouteProp<RootStackParamList, 'RecipeDetail'>;
 
@@ -30,9 +32,9 @@ const HERO_ICON_SIZE = 72;
 function formatDuration(seconds: number): string {
   const min = Math.floor(seconds / 60);
   const sec = seconds % 60;
-  if (min > 0 && sec > 0) return `${min}分${sec}秒`;
-  if (min > 0) return `${min}分`;
-  return `${sec}秒`;
+  if (min > 0 && sec > 0) return i18n.t('common.durationMinSec', { m: min, s: sec });
+  if (min > 0) return i18n.t('common.durationMinOnly', { m: min });
+  return i18n.t('common.seconds', { n: sec });
 }
 
 function computeTotalTime(steps: Step[]): number {
@@ -43,15 +45,18 @@ function computeTotalTime(steps: Step[]): number {
 }
 
 function getStepBadgeLabel(step: Step): string {
-  if (step.tag === 'instant') return '自动';
-  if (step.tag === 'wait_user') return '确认';
+  if (step.tag === 'instant') return i18n.t('detail.badgeAuto');
+  if (step.tag === 'wait_user') return i18n.t('detail.badgeConfirm');
   if (step.tag === 'wait_timer') {
-    return step.durationSeconds ? `计时 ${formatDuration(step.durationSeconds)}` : '计时';
+    return step.durationSeconds
+      ? i18n.t('detail.badgeTimerWithDuration', { duration: formatDuration(step.durationSeconds) })
+      : i18n.t('detail.badgeTimer');
   }
   return '';
 }
 
 export default function RecipeDetailScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<RootStackNavigationProp>();
   const route = useRoute<RecipeDetailRouteProp>();
   const insets = useSafeAreaInsets();
@@ -85,10 +90,10 @@ export default function RecipeDetailScreen() {
   );
 
   const handleDelete = useCallback(() => {
-    Alert.alert('删除菜谱', `确定要删除「${recipe?.name ?? ''}」吗？此操作不可恢复。`, [
-      { text: '取消', style: 'cancel' },
+    Alert.alert(t('detail.deleteTitle'), t('detail.deleteMsg', { name: recipe?.name ?? '' }), [
+      { text: t('common.cancel'), style: 'cancel' },
       {
-        text: '删除',
+        text: t('detail.delete'),
         style: 'destructive',
         onPress: () => {
           deleteRecipe(recipeId);
@@ -131,8 +136,8 @@ export default function RecipeDetailScreen() {
       <SafeAreaContainer style={styles.container}>
         <View style={styles.centeredState}>
           <NotFoundIllustration size={100} />
-          <Text style={styles.centeredText}>菜谱不存在</Text>
-          <Button title="返回" onPress={() => navigation.goBack()} variant="outline" />
+          <Text style={styles.centeredText}>{t('detail.notFound')}</Text>
+          <Button title={t('detail.back')} onPress={() => navigation.goBack()} variant="outline" />
         </View>
       </SafeAreaContainer>
     );
@@ -164,7 +169,7 @@ export default function RecipeDetailScreen() {
                 style={styles.heroNavBtn}
               />
               <Button
-                title="编辑"
+                title={t('detail.edit')}
                 variant="text"
                 onPress={handleEdit}
                 style={styles.heroEditBtn}
@@ -188,7 +193,7 @@ export default function RecipeDetailScreen() {
         <View style={styles.infoCard}>
           <View style={styles.infoRow}>
             <View style={[styles.infoCell, styles.infoCellWide]}>
-              <Text style={styles.infoLabel}>人份</Text>
+              <Text style={styles.infoLabel}>{t('detail.servings')}</Text>
               <View style={styles.stepper}>
                 <Button
                   title="-"
@@ -212,7 +217,7 @@ export default function RecipeDetailScreen() {
             <View style={styles.infoDivider} />
 
             <View style={styles.infoCell}>
-              <Text style={styles.infoLabel}>总时长</Text>
+              <Text style={styles.infoLabel}>{t('detail.totalTime')}</Text>
               <Text style={styles.infoValue}>
                 {totalTime > 0 ? formatDuration(totalTime) : '-'}
               </Text>
@@ -221,8 +226,10 @@ export default function RecipeDetailScreen() {
             <View style={styles.infoDivider} />
 
             <View style={styles.infoCell}>
-              <Text style={styles.infoLabel}>步骤</Text>
-              <Text style={styles.infoValue}>{recipe.steps.length} 步</Text>
+              <Text style={styles.infoLabel}>{t('detail.steps')}</Text>
+              <Text style={styles.infoValue}>
+                {t('detail.stepsCount', { n: recipe.steps.length })}
+              </Text>
             </View>
           </View>
         </View>
@@ -230,9 +237,9 @@ export default function RecipeDetailScreen() {
         {/* Ingredients */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <SectionTitle title="食材" style={styles.sectionTitle} />
+            <SectionTitle title={t('detail.ingredients')} style={styles.sectionTitle} />
             <Button
-              title={prepMode ? '完成' : '备料'}
+              title={prepMode ? t('common.done') : t('detail.prep')}
               variant="text"
               onPress={() => setPrepMode(p => !p)}
               icon={prepMode ? <Icon name="check" size={16} color={colors.success} /> : undefined}
@@ -278,7 +285,7 @@ export default function RecipeDetailScreen() {
 
         {/* Steps */}
         <View style={styles.section}>
-          <SectionTitle title="步骤" style={styles.sectionTitle} />
+          <SectionTitle title={t('detail.steps')} style={styles.sectionTitle} />
           <View style={styles.stepListContainer}>
             <View style={styles.stepConnectorLine} />
             {recipe.steps.map((step, index) => (
@@ -301,9 +308,14 @@ export default function RecipeDetailScreen() {
         {Platform.OS === 'ios' && (
           <BlurView blurType="dark" blurAmount={20} style={StyleSheet.absoluteFill} />
         )}
-        <Button title="删除" onPress={handleDelete} variant="danger" style={styles.actionBtn} />
         <Button
-          title="开始烹饪"
+          title={t('detail.delete')}
+          onPress={handleDelete}
+          variant="danger"
+          style={styles.actionBtn}
+        />
+        <Button
+          title={t('components.startCooking')}
           onPress={handleStartCooking}
           variant="primary"
           style={styles.actionBtn}

@@ -14,17 +14,13 @@ import { shadows } from '../theme/shadows';
 import { Icon } from './icons';
 import { IconButton } from './IconButton';
 import { StepNumber } from './StepNumber';
+import { useTranslation } from 'react-i18next';
 import type { EditableStep } from '../utils/recipe-edit';
 import { TAG_OPTIONS } from '../utils/recipe-edit';
 
 export const STEP_ITEM_HEIGHT = 220;
 
-const TIMER_PRESETS = [
-  { label: '30秒', value: 30 },
-  { label: '1分钟', value: 60 },
-  { label: '3分钟', value: 180 },
-  { label: '5分钟', value: 300 },
-];
+const TIMER_PRESETS = [30, 60, 180, 300];
 
 export interface DraggableStepProps {
   step: EditableStep;
@@ -43,6 +39,7 @@ export const DraggableStep = React.memo(function DraggableStep({
   onUpdate,
   onRemove,
 }: DraggableStepProps) {
+  const { t } = useTranslation();
   const translateY = useSharedValue(0);
   const isDragging = useSharedValue(false);
   const fromIndex = useSharedValue(0);
@@ -117,7 +114,7 @@ export const DraggableStep = React.memo(function DraggableStep({
           style={[styles.input, styles.stepTextInput]}
           value={step.text}
           onChangeText={value => onUpdate(step.tempId, 'text', value)}
-          placeholder="输入步骤说明"
+          placeholder={t('components.stepPlaceholder')}
           placeholderTextColor={colors.text.inputPlaceholder}
           multiline
         />
@@ -132,7 +129,7 @@ export const DraggableStep = React.memo(function DraggableStep({
                 onPress={() => onUpdate(step.tempId, 'tag', option.value)}
               >
                 <Text style={[styles.tagChipText, isActive && styles.tagChipTextActive]}>
-                  {option.label}
+                  {t(option.label)}
                 </Text>
               </TouchableOpacity>
             );
@@ -142,7 +139,7 @@ export const DraggableStep = React.memo(function DraggableStep({
         {step.tag === 'wait_timer' && (
           <View style={styles.timerSection}>
             <View style={styles.durationRow}>
-              <Text style={styles.durationLabel}>时长（秒）</Text>
+              <Text style={styles.durationLabel}>{t('components.durationLabel')}</Text>
               <TextInput
                 style={[styles.input, styles.durationInput]}
                 value={step.durationSeconds}
@@ -153,13 +150,17 @@ export const DraggableStep = React.memo(function DraggableStep({
               />
             </View>
             <View style={styles.presetRow}>
-              {TIMER_PRESETS.map(preset => (
+              {TIMER_PRESETS.map(seconds => (
                 <TouchableOpacity
-                  key={preset.value}
+                  key={seconds}
                   style={styles.presetButton}
-                  onPress={() => applyTimerPreset(preset.value)}
+                  onPress={() => applyTimerPreset(seconds)}
                 >
-                  <Text style={styles.presetButtonText}>{preset.label}</Text>
+                  <Text style={styles.presetButtonText}>
+                    {seconds < 60
+                      ? t('common.seconds', { n: seconds })
+                      : t('common.minutes', { n: seconds / 60 })}
+                  </Text>
                 </TouchableOpacity>
               ))}
             </View>

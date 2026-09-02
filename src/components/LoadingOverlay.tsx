@@ -9,17 +9,19 @@ import Animated, {
   Easing,
 } from 'react-native-reanimated';
 import Svg, { Circle, Rect, Path } from 'react-native-svg';
+import { useTranslation } from 'react-i18next';
 import { colors } from '../theme/colors';
 import { spacing } from '../theme/spacing';
 import { typography } from '../theme/typography';
 
 interface LoadingOverlayProps {
   visible: boolean;
-  /** 加载提示文案，默认「加载中…」 */
+  /** 加载提示文案，默认 t('common.loading') */
   message?: string;
 }
 
-export function LoadingOverlay({ visible, message = '加载中…' }: LoadingOverlayProps) {
+export function LoadingOverlay({ visible, message }: LoadingOverlayProps) {
+  const { t } = useTranslation();
   if (!visible) {
     return null;
   }
@@ -27,7 +29,7 @@ export function LoadingOverlay({ visible, message = '加载中…' }: LoadingOve
     <View style={styles.overlay}>
       <View style={styles.box}>
         <ChefHatWithSteam />
-        <Animated.Text style={styles.text}>{message}</Animated.Text>
+        <Animated.Text style={styles.text}>{message ?? t('common.loading')}</Animated.Text>
         <View style={styles.dotsRow}>
           {[0, 1, 2].map(i => (
             <View key={i} style={[styles.dot, i === 0 && styles.dotActive]} />
@@ -119,10 +121,16 @@ function ChefHatWithSteam() {
 // AI 解析专用（预设三步轮换文案，保持向后兼容）
 // ---------------------------------------------------------------------------
 
-const AI_PROCESS_STEPS = ['正在识别食材…', '正在提取步骤…', '正在整理菜谱…'];
+// 显示名渲染时经 t() 求值（模块级固化语言会导致切语言后文案不更新）
+const AI_PROCESS_STEPS = [
+  'components.aiRecognizing',
+  'components.aiExtracting',
+  'components.aiOrganizing',
+] as const;
 
 export function AiProcessingOverlay({ visible }: { visible: boolean }) {
   const [stepIndex, setStepIndex] = useState(0);
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (!visible) return;
@@ -141,7 +149,7 @@ export function AiProcessingOverlay({ visible }: { visible: boolean }) {
       <View style={styles.box}>
         <ChefHatWithSteam />
         <Animated.Text key={stepIndex} style={styles.text}>
-          {AI_PROCESS_STEPS[stepIndex]}
+          {t(AI_PROCESS_STEPS[stepIndex])}
         </Animated.Text>
         <View style={styles.dotsRow}>
           {AI_PROCESS_STEPS.map((_, i) => (

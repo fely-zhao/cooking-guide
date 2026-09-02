@@ -6,6 +6,7 @@ import { spacing } from '../theme/spacing';
 import { typography } from '../theme/typography';
 import { Button } from './Button';
 import { ErrorIllustration } from './illustrations';
+import i18n from '../i18n';
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -41,9 +42,11 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       return (
         <SafeAreaView style={styles.container}>
           <ErrorIllustration size={80} />
-          <Text style={styles.title}>出现了一些问题</Text>
-          <Text style={styles.message}>{this.state.error?.message ?? '未知错误'}</Text>
-          <Button title="重试" onPress={this.handleReset} variant="primary" />
+          <Text style={styles.title}>{i18n.t('common.somethingWentWrong')}</Text>
+          <Text style={styles.message}>
+            {this.state.error?.message ?? i18n.t('common.unknownError')}
+          </Text>
+          <Button title={i18n.t('common.retry')} onPress={this.handleReset} variant="primary" />
         </SafeAreaView>
       );
     }

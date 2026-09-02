@@ -21,6 +21,7 @@ import { STTService, recordAudio } from '../services/stt';
 import { LLMService } from '../services/llm';
 import { settingsStorage } from '../services/storage';
 import { AZURE_REGION, createApiClient } from '../config';
+import { useTranslation } from 'react-i18next';
 
 type VoiceInputRouteProp = RouteProp<RecipeInputStackParamList, 'VoiceInput'>;
 
@@ -43,6 +44,7 @@ function formatTime(totalSeconds: number): string {
 }
 
 export default function VoiceInputScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<RecipeInputNavigationProp>();
   const route = useRoute<VoiceInputRouteProp>();
   const { onSave } = route.params;
@@ -59,7 +61,7 @@ export default function VoiceInputScreen() {
     async (durationSeconds: number) => {
       const speechKey = settingsStorage.get('azureSpeechKey') ?? '';
       if (!speechKey) {
-        Alert.alert('未配置 Azure Key', '请先在「设置」页填写 Azure Speech Key，再使用语音录入。');
+        Alert.alert(t('voice.keyMissingTitle'), t('voice.keyMissingMsg'));
         return;
       }
       const speechRegion = settingsStorage.get('azureRegion') ?? AZURE_REGION;
@@ -74,7 +76,7 @@ export default function VoiceInputScreen() {
         const text = await sttService.speechToTextForCommand(filePath);
 
         if (text.trim().length === 0) {
-          Alert.alert('未识别到语音', '请重新录制。');
+          Alert.alert(t('voice.noSpeechTitle'), t('voice.noSpeechMsg'));
           return;
         }
 
@@ -86,7 +88,7 @@ export default function VoiceInputScreen() {
 
         onSave?.(response);
       } catch {
-        Alert.alert('识别失败', '语音识别或解析出错，请重试。');
+        Alert.alert(t('common.recognizeFailed'), t('voice.parseFailedMsg'));
       } finally {
         setIsProcessing(false);
       }
@@ -191,16 +193,20 @@ export default function VoiceInputScreen() {
   return (
     <SafeAreaContainer style={styles.container}>
       <HeaderBar
-        title="语音录入"
+        title={t('voice.title')}
         onBack={handleCancel}
-        rightTitle="完成"
+        rightTitle={t('common.done')}
         onRightPress={handleConfirm}
       />
 
       <View style={styles.content}>
         {/* Status */}
         <Text style={styles.statusText}>
-          {isRecording ? '录音中...' : isProcessing ? '识别中...' : '点击开始录音'}
+          {isRecording
+            ? t('voice.recording')
+            : isProcessing
+              ? t('voice.recognizing')
+              : t('voice.tapToStart')}
         </Text>
 
         {/* Timer */}
@@ -247,10 +253,10 @@ export default function VoiceInputScreen() {
         {/* Hint */}
         <Text style={styles.hintText}>
           {isRecording
-            ? '再次点击停止录音'
+            ? t('voice.tapToStop')
             : isProcessing
-              ? '正在识别语音...'
-              : `最长录制 ${MAX_RECORD_SECONDS} 秒`}
+              ? t('voice.transcribing')
+              : t('voice.maxDuration', { n: MAX_RECORD_SECONDS })}
         </Text>
       </View>
     </SafeAreaContainer>

@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Modal, TextInput, Pressable } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import type { VoiceCommand } from '../services/voice-commands';
 import { colors } from '../theme/colors';
 import { spacing } from '../theme/spacing';
@@ -95,6 +96,7 @@ interface AskModalProps {
 
 function AskModal({ visible, onSubmit, onCancel }: AskModalProps) {
   const [text, setText] = useState('');
+  const { t } = useTranslation();
 
   const handleSubmit = useCallback(() => {
     const trimmed = text.trim();
@@ -113,10 +115,10 @@ function AskModal({ visible, onSubmit, onCancel }: AskModalProps) {
     <Modal visible={visible} transparent animationType="fade">
       <Pressable style={styles.modalOverlay} onPress={handleCancel}>
         <Pressable style={styles.modalContent} onPress={e => e.stopPropagation()}>
-          <Text style={styles.modalTitle}>提问</Text>
+          <Text style={styles.modalTitle}>{t('components.ask')}</Text>
           <TextInput
             style={styles.modalInput}
-            placeholder="输入你的问题..."
+            placeholder={t('components.askPlaceholder')}
             placeholderTextColor={colors.text.placeholder}
             value={text}
             onChangeText={setText}
@@ -124,8 +126,13 @@ function AskModal({ visible, onSubmit, onCancel }: AskModalProps) {
             multiline
           />
           <View style={styles.modalActions}>
-            <Button title="取消" variant="text" onPress={handleCancel} />
-            <Button title="发送" variant="primary" onPress={handleSubmit} disabled={!text.trim()} />
+            <Button title={t('common.cancel')} variant="text" onPress={handleCancel} />
+            <Button
+              title={t('components.send')}
+              variant="primary"
+              onPress={handleSubmit}
+              disabled={!text.trim()}
+            />
           </View>
         </Pressable>
       </Pressable>
@@ -149,6 +156,7 @@ export default function InteractionControls({
   style,
 }: InteractionControlsProps) {
   const [askVisible, setAskVisible] = useState(false);
+  const { t } = useTranslation();
   const buttons = getButtonStates(fsmState);
 
   // ---- Priority 2: Voice command integration ----------------------------
@@ -215,7 +223,7 @@ export default function InteractionControls({
     <View style={[styles.container, style]}>
       {/* Primary: "下一步" — full width, large */}
       <Button
-        title="下一步"
+        title={t('components.next')}
         variant="primary"
         icon={<Icon name="next" size={18} color={colors.text.inverse} />}
         onPress={onNext}
@@ -225,7 +233,7 @@ export default function InteractionControls({
       {/* Confirm — visible only in WAITING_USER */}
       {buttons.confirm && (
         <Button
-          title="确认完成"
+          title={t('components.confirmDone')}
           variant="success"
           icon={<Icon name="check" size={18} color={colors.text.inverse} />}
           onPress={onConfirm}
@@ -235,7 +243,7 @@ export default function InteractionControls({
       {/* Secondary row: "再说一遍" + "提问" */}
       <View style={styles.secondaryRow}>
         <Button
-          title="再说一遍"
+          title={t('components.repeat')}
           variant="secondary"
           icon={<Icon name="repeat" size={16} color={colors.text.secondary} />}
           onPress={onRepeat}
@@ -243,7 +251,7 @@ export default function InteractionControls({
           style={styles.halfButton}
         />
         <Button
-          title="提问"
+          title={t('components.ask')}
           variant="outline"
           icon={<Icon name="chat" size={16} color={colors.primary} />}
           onPress={handleAskPress}
@@ -253,7 +261,12 @@ export default function InteractionControls({
       </View>
 
       {/* Exit — always rendered, enabled per state */}
-      <Button title="退出烹饪" variant="text" onPress={onExit} disabled={!buttons.exit} />
+      <Button
+        title={t('components.exitCooking')}
+        variant="text"
+        onPress={onExit}
+        disabled={!buttons.exit}
+      />
 
       <AskModal visible={askVisible} onSubmit={handleAskSubmit} onCancel={handleAskCancel} />
     </View>

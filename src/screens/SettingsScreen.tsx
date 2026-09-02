@@ -233,7 +233,7 @@ export default function SettingsScreen() {
       const filePath = await exportRecipesToJson();
       Alert.alert(t('settings.exportSuccess'), t('settings.exportSuccessMsg', { path: filePath }));
     } catch (err) {
-      Alert.alert(t('settings.exportFailed'), (err as Error).message || t('settings.unknownError'));
+      Alert.alert(t('settings.exportFailed'), (err as Error).message || t('common.unknownError'));
     }
   };
 
@@ -243,7 +243,7 @@ export default function SettingsScreen() {
       if (count === 0) return; // user cancelled
       Alert.alert(t('settings.importSuccess'), t('settings.importSuccessMsg', { count }));
     } catch (err) {
-      Alert.alert(t('settings.importFailed'), (err as Error).message || t('settings.unknownError'));
+      Alert.alert(t('settings.importFailed'), (err as Error).message || t('common.unknownError'));
     }
   };
 

@@ -30,12 +30,7 @@ import { Button } from '../components/Button';
 import { SectionTitle } from '../components/SectionTitle';
 import { RecipeEditSkeleton } from '../components/skeleton';
 import DocumentPicker from 'react-native-document-picker';
-import {
-  EditableIngredient,
-  EditableStep,
-  TAG_OPTIONS,
-  generateTempId,
-} from '../utils/recipe-edit';
+import { EditableIngredient, EditableStep, generateTempId } from '../utils/recipe-edit';
 import { AiProcessingOverlay } from '../components/LoadingOverlay';
 import { AiOptionsModal } from '../components/AiOptionsModal';
 import { AiDiffPreviewModal } from '../components/AiDiffPreviewModal';
@@ -44,6 +39,7 @@ import { DraggableStep, STEP_ITEM_HEIGHT } from '../components/DraggableStep';
 import { DraggableIngredient } from '../components/DraggableIngredient';
 import { SkeletonBox } from '../components/skeleton';
 import { saveCoverImagePermanent, deleteCoverImage } from '../utils/cover-image';
+import { useTranslation } from 'react-i18next';
 
 type RecipeEditRouteProp = RouteProp<RootStackParamList, 'RecipeEdit'>;
 
@@ -66,6 +62,7 @@ function ListPlaceholder({ rows, rowHeight }: { rows: number; rowHeight: number 
 }
 
 export default function RecipeEditScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<RootStackNavigationProp>();
   const route = useRoute<RecipeEditRouteProp>();
   const { recipeId } = route.params;
@@ -88,7 +85,7 @@ export default function RecipeEditScreen() {
   useEffect(() => {
     const recipe = getRecipe(recipeId);
     if (!recipe) {
-      Alert.alert('错误', '菜谱不存在');
+      Alert.alert(t('common.error'), t('edit.notFound'));
       navigation.goBack();
       return;
     }
@@ -131,14 +128,14 @@ export default function RecipeEditScreen() {
       }
     } catch (err) {
       if (!DocumentPicker.isCancel(err)) {
-        Alert.alert('选图失败', '无法选择图片');
+        Alert.alert(t('edit.pickImageFailed'), t('edit.pickImageFailedMsg'));
       }
     }
   }, [coverImage]);
 
   const handleSave = useCallback(() => {
     if (!recipeName.trim()) {
-      Alert.alert('提示', '请输入菜谱名称');
+      Alert.alert(t('common.notice'), t('edit.nameRequired'));
       return;
     }
 
@@ -243,7 +240,7 @@ export default function RecipeEditScreen() {
       const stepsText = steps
         .map(
           (s, i) =>
-            `${i + 1}. ${s.text} (${TAG_OPTIONS.find(t => t.value === s.tag)?.label ?? s.tag})${s.durationSeconds ? ` ${s.durationSeconds}秒` : ''}`,
+            `${i + 1}. ${s.text} (${t(`tags.${s.tag}`)})${s.durationSeconds ? ` ${t('common.seconds', { n: Number(s.durationSeconds) })}` : ''}`,
         )
         .join('\n');
       const ingredientsText = ingredients.map(i => `${i.name}: ${i.amount}`).join('\n');
@@ -291,7 +288,10 @@ ${stepsText}`;
         setPreviewMode(mode);
         setPreviewVisible(true);
       } catch (error) {
-        Alert.alert('AI 处理失败', error instanceof Error ? error.message : '未知错误');
+        Alert.alert(
+          t('edit.aiFailedTitle'),
+          error instanceof Error ? error.message : t('common.unknownError'),
+        );
       } finally {
         setAiProcessing(false);
       }
@@ -325,9 +325,9 @@ ${stepsText}`;
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
         <HeaderBar
-          title="编辑菜谱"
+          title={t('edit.title')}
           onBack={navigation.goBack}
-          rightTitle="保存"
+          rightTitle={t('common.save')}
           onRightPress={handleSave}
         />
 
@@ -338,29 +338,29 @@ ${stepsText}`;
         >
           {/* Section 1: 基本信息 */}
           <View>
-            <SectionTitle title="基本信息" style={styles.sectionTitle} />
+            <SectionTitle title={t('edit.basicInfo')} style={styles.sectionTitle} />
             <View style={styles.card}>
-              <Text style={styles.label}>名称</Text>
+              <Text style={styles.label}>{t('edit.name')}</Text>
               <TextInput
                 style={styles.input}
                 value={recipeName}
                 onChangeText={setRecipeName}
-                placeholder="输入菜谱名称"
+                placeholder={t('edit.namePlaceholder')}
                 placeholderTextColor={colors.text.inputPlaceholder}
               />
 
-              <Text style={[styles.label, styles.labelSpacing]}>分量</Text>
+              <Text style={[styles.label, styles.labelSpacing]}>{t('edit.servings')}</Text>
               <View style={styles.stepperRow}>
                 <TouchableOpacity style={styles.stepperButton} onPress={() => changeServings(-1)}>
                   <Text style={styles.stepperButtonText}>−</Text>
                 </TouchableOpacity>
-                <Text style={styles.stepperValue}>{servings} 人份</Text>
+                <Text style={styles.stepperValue}>{t('edit.servingsValue', { n: servings })}</Text>
                 <TouchableOpacity style={styles.stepperButton} onPress={() => changeServings(1)}>
                   <Text style={styles.stepperButtonText}>+</Text>
                 </TouchableOpacity>
               </View>
 
-              <Text style={[styles.label, styles.labelSpacing]}>封面图片</Text>
+              <Text style={[styles.label, styles.labelSpacing]}>{t('edit.coverImage')}</Text>
               <TouchableOpacity
                 style={styles.coverPlaceholder}
                 activeOpacity={0.9}
@@ -378,7 +378,7 @@ ${stepsText}`;
                 <View style={styles.coverOverlay}>
                   <Icon name="camera" size={24} color={colors.primary} />
                   <Text style={styles.coverPlaceholderText}>
-                    {coverImage ? '更换封面' : '添加封面'}
+                    {coverImage ? t('edit.changeCover') : t('edit.addCover')}
                   </Text>
                 </View>
               </TouchableOpacity>
@@ -387,7 +387,7 @@ ${stepsText}`;
 
           {/* Section 2: 食材列表 */}
           <View>
-            <SectionTitle title="食材列表" style={styles.sectionTitle} />
+            <SectionTitle title={t('edit.ingredientsSection')} style={styles.sectionTitle} />
             {listsReady ? (
               <View>
                 {ingredients.map((ing, index) => (
@@ -403,7 +403,7 @@ ${stepsText}`;
                 ))}
                 <Button
                   variant="secondary"
-                  title="添加食材"
+                  title={t('edit.addIngredient')}
                   icon={<Icon name="plus" size={18} color={colors.text.secondary} />}
                   onPress={addIngredient}
                   style={styles.addButton}
@@ -416,7 +416,7 @@ ${stepsText}`;
 
           {/* Section 3: 步骤列表 */}
           <View>
-            <SectionTitle title="步骤列表" style={styles.sectionTitle} />
+            <SectionTitle title={t('edit.stepsSection')} style={styles.sectionTitle} />
             {listsReady ? (
               <View>
                 {steps.map((step, index) => (
@@ -432,7 +432,7 @@ ${stepsText}`;
                 ))}
                 <Button
                   variant="secondary"
-                  title="添加步骤"
+                  title={t('edit.addStep')}
                   icon={<Icon name="plus" size={18} color={colors.text.secondary} />}
                   onPress={addStep}
                   style={styles.addButton}
@@ -447,7 +447,7 @@ ${stepsText}`;
           <View>
             <Button
               variant="outline"
-              title="AI 优化步骤"
+              title={t('edit.aiButton')}
               icon={<Icon name="ai" size={18} color={colors.primary} />}
               onPress={() => setAiModalVisible(true)}
               disabled={aiProcessing}
@@ -461,7 +461,7 @@ ${stepsText}`;
 
         {/* Fixed bottom save button */}
         <View style={styles.bottomBar}>
-          <Button variant="primary" title="保存菜谱" onPress={handleSave} />
+          <Button variant="primary" title={t('edit.saveRecipe')} onPress={handleSave} />
         </View>
       </KeyboardAvoidingView>
 

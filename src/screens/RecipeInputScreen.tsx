@@ -18,14 +18,15 @@ import { SafeAreaContainer } from '../components/SafeAreaContainer';
 import { HeaderBar } from '../components/HeaderBar';
 import { Icon } from '../components/icons';
 import type { IconName } from '../components/icons';
+import { useTranslation } from 'react-i18next';
 
 type TargetScreen = 'ManualInput' | 'ImageInput' | 'UrlInput' | 'VoiceInput';
 
 type InputMethod = {
   id: string;
   icon: IconName;
-  title: string;
-  description: string;
+  title: 'input.manualTitle' | 'input.imageTitle' | 'input.urlTitle' | 'input.voiceTitle';
+  description: 'input.manualDesc' | 'input.imageDesc' | 'input.urlDesc' | 'input.voiceDesc';
   screen: TargetScreen;
 };
 
@@ -33,29 +34,29 @@ const INPUT_METHODS: InputMethod[] = [
   {
     id: 'manual',
     icon: 'text-input',
-    title: '文本录入',
-    description: '输入或粘贴菜谱文本',
+    title: 'input.manualTitle',
+    description: 'input.manualDesc',
     screen: 'ManualInput',
   },
   {
     id: 'image',
     icon: 'camera',
-    title: '截图识别',
-    description: '拍照或相册选图解析',
+    title: 'input.imageTitle',
+    description: 'input.imageDesc',
     screen: 'ImageInput',
   },
   {
     id: 'url',
     icon: 'link',
-    title: '链接导入',
-    description: '粘贴菜谱链接自动提取',
+    title: 'input.urlTitle',
+    description: 'input.urlDesc',
     screen: 'UrlInput',
   },
   {
     id: 'voice',
     icon: 'microphone',
-    title: '语音录入',
-    description: '语音描述菜谱实时识别',
+    title: 'input.voiceTitle',
+    description: 'input.voiceDesc',
     screen: 'VoiceInput',
   },
 ];
@@ -71,6 +72,7 @@ function getAnimationDelay(rowIndex: number, columnIndex: number): number {
 type RecipeInputRouteProp = RouteProp<RecipeInputStackParamList, 'InputMethodSelect'>;
 
 export default function RecipeInputScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<RecipeInputNavigationProp>();
   const rootNavigation = useNavigation<RootStackNavigationProp>();
   const route = useRoute<RecipeInputRouteProp>();
@@ -118,7 +120,7 @@ export default function RecipeInputScreen() {
 
   return (
     <SafeAreaContainer>
-      <HeaderBar title="录入菜谱" variant="large" />
+      <HeaderBar title={t('input.title')} variant="large" />
 
       <View style={styles.content}>
         {BENTO_ROWS.map((row, rowIndex) => (
@@ -139,9 +141,9 @@ export default function RecipeInputScreen() {
                   </View>
 
                   <View>
-                    <Text style={styles.cardTitle}>{method.title}</Text>
+                    <Text style={styles.cardTitle}>{t(method.title)}</Text>
                     <Text style={styles.cardDesc} numberOfLines={1}>
-                      {method.description}
+                      {t(method.description)}
                     </Text>
                   </View>
                 </TouchableOpacity>

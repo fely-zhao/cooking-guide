@@ -14,6 +14,7 @@ import type { ParseRecipeResponse } from '../types/api';
 import { LLMService } from '../services/llm';
 import { createApiClient } from '../config';
 import { Icon } from '../components/icons';
+import { useTranslation } from 'react-i18next';
 
 type UrlInputRouteProp = RouteProp<RecipeInputStackParamList, 'UrlInput'>;
 
@@ -23,6 +24,7 @@ function isValidUrl(text: string): boolean {
 }
 
 export default function UrlInputScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<RecipeInputNavigationProp>();
   const route = useRoute<UrlInputRouteProp>();
   const { onSave } = route.params;
@@ -50,7 +52,7 @@ export default function UrlInputScreen() {
 
       onSave?.(response);
     } catch {
-      Alert.alert('解析失败', '无法解析该链接内容，请检查链接是否有效。');
+      Alert.alert(t('common.parseFailed'), t('url.parseFailedMsg'));
     } finally {
       setIsParsing(false);
     }
@@ -61,22 +63,22 @@ export default function UrlInputScreen() {
   return (
     <SafeAreaContainer style={styles.container}>
       <HeaderBar
-        title="链接导入"
+        title={t('url.title')}
         onBack={handleCancel}
-        rightTitle="完成"
+        rightTitle={t('common.done')}
         onRightPress={handleComplete}
         rightDisabled={!canParse}
       />
 
       <View style={styles.content}>
         {/* URL Input */}
-        <SectionTitle title="菜谱链接" style={styles.sectionTitle} />
+        <SectionTitle title={t('url.linkLabel')} style={styles.sectionTitle} />
         <View style={styles.inputWrapper}>
           <TextInput
             style={styles.urlInput}
             value={url}
             onChangeText={setUrl}
-            placeholder="粘贴菜谱链接"
+            placeholder={t('url.linkPlaceholder')}
             placeholderTextColor={colors.text.placeholder}
             autoCapitalize="none"
             autoCorrect={false}
@@ -91,12 +93,12 @@ export default function UrlInputScreen() {
           )}
         </View>
 
-        <Text style={styles.hint}>支持 http 和 https 链接</Text>
+        <Text style={styles.hint}>{t('url.hint')}</Text>
 
         {/* Parse Button */}
         <Button
           variant="primary"
-          title="解析菜谱"
+          title={t('url.parseCta')}
           onPress={handleComplete}
           disabled={!canParse}
           loading={isParsing}

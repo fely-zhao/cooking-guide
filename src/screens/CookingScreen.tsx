@@ -27,6 +27,8 @@ import { StepNumber } from '../components/StepNumber';
 import { TranscriptBar } from '../components/TranscriptBar';
 import { IconButton } from '../components/IconButton';
 import { Icon } from '../components/icons';
+import { useTranslation } from 'react-i18next';
+import i18n from '../i18n';
 import Svg, { Circle } from 'react-native-svg';
 
 // ---------------------------------------------------------------------------
@@ -133,14 +135,14 @@ const timerStyles = StyleSheet.create({
 type CookingMachineState = ReturnType<typeof useCookingMachine>['state'];
 
 function getStatusLabel(state: CookingMachineState): string {
-  if (state.matches('ANNOUNCING_STEP')) return '播报中…';
-  if (state.matches('WAITING_AUTO')) return '即将自动继续';
-  if (state.matches('WAITING_USER')) return '请确认完成';
-  if (state.matches('WAITING_TIMER')) return '计时中…';
-  if (state.matches('ANNOUNCING_REMINDER')) return '计时结束！';
-  if (state.matches('ANSWERING')) return 'AI 回答中…';
-  if (state.matches('COMPLETED')) return '烹饪完成！';
-  return '准备中…';
+  if (state.matches('ANNOUNCING_STEP')) return i18n.t('cooking.stateAnnouncing');
+  if (state.matches('WAITING_AUTO')) return i18n.t('cooking.stateAutoContinue');
+  if (state.matches('WAITING_USER')) return i18n.t('cooking.stateConfirm');
+  if (state.matches('WAITING_TIMER')) return i18n.t('cooking.stateTiming');
+  if (state.matches('ANNOUNCING_REMINDER')) return i18n.t('fsm.timerDoneShort');
+  if (state.matches('ANSWERING')) return i18n.t('cooking.stateAnswering');
+  if (state.matches('COMPLETED')) return i18n.t('fsm.completed');
+  return i18n.t('cooking.statePreparing');
 }
 
 function getStatusDotColor(state: CookingMachineState): string {
@@ -183,6 +185,7 @@ const SPARKLES = [
 // ---------------------------------------------------------------------------
 
 export default function CookingScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<RootStackNavigationProp>();
   const route = useRoute<CookingRouteProp>();
   const { recipeId } = route.params;
@@ -220,7 +223,10 @@ export default function CookingScreen() {
   const totalSteps = context.steps.length;
   const isCompleted = state.matches('COMPLETED');
   const isIdle = state.matches('IDLE');
-  const stepCounterText = `第 ${Math.min(context.currentStepIndex + 1, totalSteps)}/${totalSteps} 步`;
+  const stepCounterText = t('cooking.stepCounter', {
+    cur: Math.min(context.currentStepIndex + 1, totalSteps),
+    total: totalSteps,
+  });
   const isListening =
     state.matches('WAITING_USER') ||
     state.matches('WAITING_TIMER') ||
@@ -305,7 +311,7 @@ export default function CookingScreen() {
 
   const handleAsk = useCallback(
     (question?: string) => {
-      send({ type: 'ASK', question: question ?? '请重复一下当前步骤' });
+      send({ type: 'ASK', question: question ?? i18n.t('cooking.defaultQuestion') });
     },
     [send],
   );
@@ -330,7 +336,7 @@ export default function CookingScreen() {
         />
         <View style={styles.headerCenter}>
           <Text style={styles.headerTitle} numberOfLines={1}>
-            {context.recipe?.name ?? '烹饪中'}
+            {context.recipe?.name ?? i18n.t('cooking.fallbackTitle')}
           </Text>
           <Text style={styles.stepCounter}>{stepCounterText}</Text>
         </View>
@@ -338,7 +344,7 @@ export default function CookingScreen() {
       </View>
 
       <TranscriptBar
-        text="等待语音指令…"
+        text={t('cooking.listening')}
         isListening={isListening}
         style={styles.transcriptBar}
         textStyle={styles.transcriptText}
@@ -388,12 +394,12 @@ export default function CookingScreen() {
             <Animated.View style={celebrationAnimatedStyle}>
               <Icon name="celebration" size={48} color={colors.warning} />
             </Animated.View>
-            <Text style={styles.completedText}>烹饪完成！</Text>
+            <Text style={styles.completedText}>{t('fsm.completed')}</Text>
             <Text style={styles.completedSubtext}>{context.recipe?.name}</Text>
           </View>
         )}
 
-        {isIdle && <Text style={styles.idleText}>准备中…</Text>}
+        {isIdle && <Text style={styles.idleText}>{t('cooking.statePreparing')}</Text>}
 
         {!isIdle && (
           <View style={styles.statusContainer}>

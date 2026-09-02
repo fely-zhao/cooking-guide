@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { Alert } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import type { AzureTTSProvider } from '../services/tts-provider-azure';
 
 /**
@@ -9,14 +10,12 @@ import type { AzureTTSProvider } from '../services/tts-provider-azure';
  * the subscription key or the network is unreachable.
  */
 export function useTtsHealthCheck(ttsProvider: AzureTTSProvider): void {
+  const { t } = useTranslation();
   useEffect(() => {
     ttsProvider.checkHealth().then(ok => {
       if (!ok) {
-        Alert.alert(
-          '语音服务不可用',
-          '无法连接 Azure 语音服务：请检查设置页的 Azure Speech Key 是否有效，以及网络是否可用。',
-        );
+        Alert.alert(t('errors.ttsUnavailableTitle'), t('errors.ttsUnavailableMsg'));
       }
     });
-  }, [ttsProvider]);
+  }, [ttsProvider, t]);
 }

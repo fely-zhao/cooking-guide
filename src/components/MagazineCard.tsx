@@ -17,6 +17,7 @@ import { shadows } from '../theme/shadows';
 import { Icon } from './icons';
 import { IconButton } from './IconButton';
 import { PressableScale } from './PressableScale';
+import { useTranslation } from 'react-i18next';
 
 type MagazineCardSize = 'featured' | 'compact';
 type MagazineCardVariant = 'default' | 'overlay';
@@ -55,6 +56,7 @@ export function MagazineCard({
   onEditPress,
   onCloseMenu,
 }: MagazineCardProps) {
+  const { t } = useTranslation();
   const isFeatured = size === 'featured';
   const isOverlay = variant === 'overlay' && !isFeatured;
   const hasImage = !!image;
@@ -210,7 +212,7 @@ export function MagazineCard({
                 onPlayPress();
               }}
             >
-              <Text style={styles.featuredActionText}>开始烹饪</Text>
+              <Text style={styles.featuredActionText}>{t('components.startCooking')}</Text>
             </Pressable>
           )}
         </View>

@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeInUp, FadeIn } from 'react-native-reanimated';
 import type { RootStackNavigationProp } from '../navigation/types';
 import { useRecipes } from '../hooks/useRecipes';
+import i18n from '../i18n';
 import { setRecipeFavorite } from '../db/recipes';
 import { getLastCookedAtMap } from '../db/cook-sessions';
 import type { Recipe } from '../types/cooking';
@@ -20,18 +21,19 @@ import { MagazineCard } from '../components/MagazineCard';
 import { CapsuleFab } from '../components/CapsuleFab';
 import { HomeGridSkeleton } from '../components/skeleton';
 import { EmptyRecipeIllustration } from '../components/illustrations';
+import { useTranslation } from 'react-i18next';
 
 type FilterOption = 'all' | 'recent' | 'favorite';
 
 interface FilterConfig {
   key: FilterOption;
-  label: string;
+  label: 'home.filter.all' | 'home.filter.recent' | 'home.filter.favorite';
 }
 
 const FILTERS: FilterConfig[] = [
-  { key: 'all', label: '全部' },
-  { key: 'recent', label: '最近' },
-  { key: 'favorite', label: '收藏' },
+  { key: 'all', label: 'home.filter.all' },
+  { key: 'recent', label: 'home.filter.recent' },
+  { key: 'favorite', label: 'home.filter.favorite' },
 ];
 
 function formatRelativeTime(dateString: string): string {
@@ -39,14 +41,14 @@ function formatRelativeTime(dateString: string): string {
   const then = new Date(dateString).getTime();
   const diffMs = now - then;
   const diffMin = Math.floor(diffMs / 60000);
-  if (diffMin < 1) return '刚刚';
-  if (diffMin < 60) return `${diffMin} 分钟前`;
+  if (diffMin < 1) return i18n.t('home.justNow');
+  if (diffMin < 60) return i18n.t('home.minutesAgo', { n: diffMin });
   const diffHour = Math.floor(diffMin / 60);
-  if (diffHour < 24) return `${diffHour} 小时前`;
+  if (diffHour < 24) return i18n.t('home.hoursAgo', { n: diffHour });
   const diffDay = Math.floor(diffHour / 24);
-  if (diffDay < 30) return `${diffDay} 天前`;
+  if (diffDay < 30) return i18n.t('home.daysAgo', { n: diffDay });
   const diffMonth = Math.floor(diffDay / 30);
-  return `${diffMonth} 个月前`;
+  return i18n.t('home.monthsAgo', { n: diffMonth });
 }
 
 function formatSubtitle(recipe: Recipe): string {
@@ -59,9 +61,9 @@ function byCreatedAtDesc(a: Recipe, b: Recipe): number {
 
 function getGreeting(): string {
   const hour = new Date().getHours();
-  if (hour < 12) return '早上好，主厨';
-  if (hour < 18) return '下午好，主厨';
-  return '晚上好，主厨';
+  if (hour < 12) return i18n.t('home.greetingMorning');
+  if (hour < 18) return i18n.t('home.greetingAfternoon');
+  return i18n.t('home.greetingEvening');
 }
 
 // ---------------------------------------------------------------------------
@@ -138,6 +140,7 @@ interface FilterBarProps {
 }
 
 function FilterBar({ activeFilter, onFilterChange }: FilterBarProps) {
+  const { t } = useTranslation();
   return (
     <View style={styles.filterBar}>
       {FILTERS.map(filter => {
@@ -151,7 +154,7 @@ function FilterBar({ activeFilter, onFilterChange }: FilterBarProps) {
             style={styles.filterTab}
           >
             <Text style={[styles.filterText, isActive && styles.filterTextActive]}>
-              {filter.label}
+              {t(filter.label)}
             </Text>
             {isActive && <View style={styles.filterUnderline} />}
           </PressableScale>
@@ -168,6 +171,7 @@ function FilterBar({ activeFilter, onFilterChange }: FilterBarProps) {
 export default function HomeScreen() {
   const navigation = useNavigation<RootStackNavigationProp>();
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
   const { recipes, loading, refetch } = useRecipes();
   const [activeFilter, setActiveFilter] = useState<FilterOption>('all');
   // 长按菜单改为卡片内覆盖层，只记卡片 id；null 表示无菜单打开
@@ -275,7 +279,7 @@ export default function HomeScreen() {
       {/* Greeting + Headline */}
       <View style={styles.header}>
         <Text style={styles.greeting}>{getGreeting()}</Text>
-        <Text style={styles.headline}>今天想做什么？</Text>
+        <Text style={styles.headline}>{t('home.headline')}</Text>
       </View>
 
       {/* Featured hero card */}
@@ -306,7 +310,9 @@ export default function HomeScreen() {
     const cookedAt = activeFilter === 'recent' ? lastCookedAtMap.get(item.id) : undefined;
     const subtitle =
       cookedAt !== undefined
-        ? `${formatRelativeTime(new Date(cookedAt).toISOString())}做过`
+        ? t('home.cookedAt', {
+            time: formatRelativeTime(new Date(cookedAt).toISOString()),
+          })
         : formatSubtitle(item);
 
     return (
@@ -364,16 +370,16 @@ export default function HomeScreen() {
         <View style={{ paddingHorizontal: spacing.lg }}>
           <View style={styles.header}>
             <Text style={styles.greeting}>{getGreeting()}</Text>
-            <Text style={styles.headline}>今天想做什么？</Text>
+            <Text style={styles.headline}>{t('home.headline')}</Text>
           </View>
         </View>
 
         {/* Empty content — fills remaining space, centered */}
         <View style={styles.emptyState}>
           <EmptyRecipeIllustration size={120} />
-          <Text style={styles.emptyTitle}>暂无菜谱</Text>
-          <Text style={styles.emptySubtitle}>添加第一道菜，开始你的厨房之旅</Text>
-          <Button title="添加第一道菜" variant="primary" onPress={handleCreateRecipe} />
+          <Text style={styles.emptyTitle}>{t('home.emptyTitle')}</Text>
+          <Text style={styles.emptySubtitle}>{t('home.emptySubtitle')}</Text>
+          <Button title={t('home.emptyCta')} variant="primary" onPress={handleCreateRecipe} />
         </View>
       </SafeAreaContainer>
     );
@@ -409,10 +415,14 @@ export default function HomeScreen() {
           <View style={styles.tabEmptyState}>
             <EmptyRecipeIllustration size={120} />
             <Text style={styles.emptyTitle}>
-              {activeFilter === 'favorite' ? '暂无收藏' : '还没有烹饪记录'}
+              {activeFilter === 'favorite'
+                ? t('home.emptyFavoriteTitle')
+                : t('home.emptyRecentTitle')}
             </Text>
             <Text style={styles.emptySubtitle}>
-              {activeFilter === 'favorite' ? '长按菜谱即可收藏' : '做过的菜会出现在这里'}
+              {activeFilter === 'favorite'
+                ? t('home.emptyFavoriteHint')
+                : t('home.emptyRecentHint')}
             </Text>
           </View>
         }
@@ -421,7 +431,7 @@ export default function HomeScreen() {
         showsVerticalScrollIndicator={false}
       />
 
-      <CapsuleFab title="录入新菜谱" onPress={handleCreateRecipe} />
+      <CapsuleFab title={t('home.fab')} onPress={handleCreateRecipe} />
     </SafeAreaContainer>
   );
 }

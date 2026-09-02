@@ -1,4 +1,5 @@
 import { setup, assign, fromPromise } from 'xstate';
+import i18n from '../i18n';
 import type { Recipe, Step } from '../types/cooking';
 
 // ---------------------------------------------------------------------------
@@ -128,7 +129,7 @@ export const cookingMachine = setup({
 
     /** Finalise the session when all steps are done. */
     completeSession: assign({
-      lastAnnouncedText: () => '烹饪完成！',
+      lastAnnouncedText: () => i18n.t('fsm.completed'),
     }),
 
     /** Vibrate to alert the user that a timer has finished. */
@@ -368,7 +369,9 @@ export const cookingMachine = setup({
           invoke: {
             src: 'ttsService',
             input: ({ context }) => ({
-              text: `计时结束！${getCurrentStep(context)?.text ?? ''}`,
+              text: i18n.t('fsm.timerDone', {
+                step: getCurrentStep(context)?.text ?? '',
+              }),
               boost: true,
             }),
             onDone: 'pausing',
@@ -473,7 +476,7 @@ export const cookingMachine = setup({
       entry: 'completeSession',
       invoke: {
         src: 'ttsService',
-        input: () => ({ text: '烹饪完成！' }),
+        input: () => ({ text: i18n.t('fsm.completed') }),
       },
       on: {
         EXIT: 'IDLE',

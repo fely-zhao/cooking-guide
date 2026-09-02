@@ -13,10 +13,13 @@ export interface EditableStep {
   durationSeconds: string;
 }
 
-export const TAG_OPTIONS: { value: EditableStep['tag']; label: string }[] = [
-  { value: 'instant', label: '即时' },
-  { value: 'wait_user', label: '等确认' },
-  { value: 'wait_timer', label: '计时' },
+export const TAG_OPTIONS: {
+  value: EditableStep['tag'];
+  label: 'tags.instant' | 'tags.wait_user' | 'tags.wait_timer';
+}[] = [
+  { value: 'instant', label: 'tags.instant' },
+  { value: 'wait_user', label: 'tags.wait_user' },
+  { value: 'wait_timer', label: 'tags.wait_timer' },
 ];
 
 export function generateTempId(): string {

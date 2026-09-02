@@ -1,11 +1,11 @@
 import React from 'react';
 import { View, Text, ScrollView, Modal, StyleSheet } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { colors } from '../theme/colors';
 import { spacing } from '../theme/spacing';
 import { typography } from '../theme/typography';
 import { Button } from './Button';
 import type { EditableStep } from '../utils/recipe-edit';
-import { TAG_OPTIONS } from '../utils/recipe-edit';
 
 interface AiDiffPreviewModalProps {
   visible: boolean;
@@ -24,25 +24,26 @@ export function AiDiffPreviewModal({
   onAccept,
   onReject,
 }: AiDiffPreviewModalProps) {
+  const { t } = useTranslation();
   return (
     <Modal visible={visible} animationType="slide" transparent onRequestClose={onReject}>
       <View style={styles.overlay}>
         <View style={styles.container}>
           <Text style={styles.title}>
-            {previewMode === 'optimize' ? '预览文案优化' : '预览子步骤拆分'}
+            {t(
+              previewMode === 'optimize' ? 'components.previewOptimize' : 'components.previewSplit',
+            )}
           </Text>
 
           <ScrollView style={styles.scroll}>
             {/* Old steps section */}
-            <Text style={styles.sectionLabel}>原始步骤</Text>
+            <Text style={styles.sectionLabel}>{t('components.originalSteps')}</Text>
             {originalSteps.map((s, i) => (
               <View key={s.tempId} style={styles.stepRow}>
                 <Text style={styles.stepIndex}>{i + 1}</Text>
                 <View style={styles.stepContent}>
                   <Text style={styles.stepText}>{s.text}</Text>
-                  <Text style={styles.stepTag}>
-                    {TAG_OPTIONS.find(t => t.value === s.tag)?.label ?? s.tag}
-                  </Text>
+                  <Text style={styles.stepTag}>{t(`tags.${s.tag}`)}</Text>
                 </View>
               </View>
             ))}
@@ -53,7 +54,9 @@ export function AiDiffPreviewModal({
 
             {/* New steps section */}
             <Text style={styles.sectionLabel}>
-              {previewMode === 'optimize' ? '优化后步骤' : '拆分后步骤'}
+              {t(
+                previewMode === 'optimize' ? 'components.optimizedSteps' : 'components.splitSteps',
+              )}
             </Text>
             {proposedSteps.map((s, i) => (
               <View key={s.tempId} style={[styles.stepRow, styles.stepRowNew]}>
@@ -61,11 +64,11 @@ export function AiDiffPreviewModal({
                 <View style={styles.stepContent}>
                   <Text style={styles.stepText}>{s.text}</Text>
                   <View style={styles.stepMeta}>
-                    <Text style={[styles.stepTag, styles.stepTagNew]}>
-                      {TAG_OPTIONS.find(t => t.value === s.tag)?.label ?? s.tag}
-                    </Text>
+                    <Text style={[styles.stepTag, styles.stepTagNew]}>{t(`tags.${s.tag}`)}</Text>
                     {s.durationSeconds ? (
-                      <Text style={styles.stepDuration}>{s.durationSeconds}秒</Text>
+                      <Text style={styles.stepDuration}>
+                        {t('common.seconds', { n: Number(s.durationSeconds) })}
+                      </Text>
                     ) : null}
                   </View>
                 </View>
@@ -74,10 +77,15 @@ export function AiDiffPreviewModal({
           </ScrollView>
 
           <View style={styles.actions}>
-            <Button variant="outline" title="拒绝" onPress={onReject} style={styles.actionButton} />
+            <Button
+              variant="outline"
+              title={t('components.reject')}
+              onPress={onReject}
+              style={styles.actionButton}
+            />
             <Button
               variant="primary"
-              title="接受"
+              title={t('components.accept')}
               onPress={() => onAccept(proposedSteps)}
               style={styles.actionButton}
             />

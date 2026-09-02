@@ -21,10 +21,12 @@ import type { RecipeInputNavigationProp, RecipeInputStackParamList } from '../na
 import type { ParseRecipeResponse } from '../types/api';
 import { LLMService } from '../services/llm';
 import { createApiClient } from '../config';
+import { useTranslation } from 'react-i18next';
 
 type ManualInputRouteProp = RouteProp<RecipeInputStackParamList, 'ManualInput'>;
 
 export default function ManualInputScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation<RecipeInputNavigationProp>();
   const route = useRoute<ManualInputRouteProp>();
   const { onSave } = route.params;
@@ -34,7 +36,7 @@ export default function ManualInputScreen() {
 
   const handleSave = useCallback(async () => {
     if (!recipeText.trim()) {
-      Alert.alert('提示', '请输入菜谱内容');
+      Alert.alert(t('common.notice'), t('manual.emptyContent'));
       return;
     }
     if (isParsing) {
@@ -54,8 +56,10 @@ export default function ManualInputScreen() {
     } catch (error) {
       console.error('ManualInputScreen.parseRecipe failed:', error);
       Alert.alert(
-        '解析失败',
-        `无法解析输入的菜谱内容，请检查后重试。\n\n${error instanceof Error ? error.message : String(error)}`,
+        t('common.parseFailed'),
+        t('manual.parseFailedMsg', {
+          error: error instanceof Error ? error.message : String(error),
+        }),
       );
     } finally {
       setIsParsing(false);
@@ -68,7 +72,7 @@ export default function ManualInputScreen() {
         style={styles.flex}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
-        <HeaderBar title="手动录入" onBack={navigation.goBack} />
+        <HeaderBar title={t('manual.title')} onBack={navigation.goBack} />
 
         <ScrollView
           style={styles.scrollView}
@@ -80,24 +84,7 @@ export default function ManualInputScreen() {
               style={styles.textArea}
               value={recipeText}
               onChangeText={setRecipeText}
-              placeholder={`把菜谱粘贴在这里，或者直接输入...
-
-例如：
-番茄炒蛋
-
-食材：
-- 番茄 2个
-- 鸡蛋 3个
-- 葱 适量
-- 盐 适量
-- 糖 少许
-
-步骤：
-1. 番茄切块，鸡蛋打散备用
-2. 热锅凉油，倒入蛋液翻炒至凝固
-3. 加入番茄块翻炒出汁
-4. 加入盐和糖调味
-5. 小火炖煮3分钟让味道融合`}
+              placeholder={t('manual.placeholder')}
               placeholderTextColor={colors.text.inputPlaceholder}
               textAlignVertical="top"
               multiline
@@ -113,7 +100,7 @@ export default function ManualInputScreen() {
         {/* Fixed bottom save button */}
         <View style={styles.bottomBar}>
           <Button
-            title="完成"
+            title={t('common.done')}
             variant="primary"
             onPress={handleSave}
             disabled={isParsing}

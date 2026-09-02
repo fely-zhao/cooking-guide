@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Modal, StyleSheet } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { colors } from '../theme/colors';
 import { spacing } from '../theme/spacing';
 import { typography } from '../theme/typography';
@@ -12,23 +13,24 @@ interface AiOptionsModalProps {
 }
 
 export function AiOptionsModal({ visible, onClose, onSelect }: AiOptionsModalProps) {
+  const { t } = useTranslation();
   return (
     <Modal visible={visible} animationType="fade" transparent onRequestClose={onClose}>
       <View style={styles.overlay}>
         <View style={styles.container}>
-          <Text style={styles.title}>AI 辅助</Text>
+          <Text style={styles.title}>{t('components.aiTitle')}</Text>
 
           <TouchableOpacity style={styles.optionButton} onPress={() => onSelect('optimize')}>
-            <Text style={styles.optionLabel}>优化步骤文案</Text>
-            <Text style={styles.optionDesc}>让步骤描述更清晰、具体、可操作</Text>
+            <Text style={styles.optionLabel}>{t('components.optimizeSteps')}</Text>
+            <Text style={styles.optionDesc}>{t('components.optimizeStepsDesc')}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.optionButton} onPress={() => onSelect('split')}>
-            <Text style={styles.optionLabel}>自动拆分子步骤</Text>
-            <Text style={styles.optionDesc}>将多操作步骤拆分为独立子步骤</Text>
+            <Text style={styles.optionLabel}>{t('components.splitSubSteps')}</Text>
+            <Text style={styles.optionDesc}>{t('components.splitSubStepsDesc')}</Text>
           </TouchableOpacity>
 
-          <Button variant="secondary" title="取消" onPress={onClose} />
+          <Button variant="secondary" title={t('common.cancel')} onPress={onClose} />
         </View>
       </View>
     </Modal>

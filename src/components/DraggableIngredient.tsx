@@ -13,6 +13,7 @@ import { typography } from '../theme/typography';
 import { shadows } from '../theme/shadows';
 import { Icon } from './icons';
 import { IconButton } from './IconButton';
+import { useTranslation } from 'react-i18next';
 import type { EditableIngredient } from '../utils/recipe-edit';
 
 export const INGREDIENT_ITEM_HEIGHT = 72;
@@ -56,6 +57,7 @@ export const DraggableIngredient = React.memo(function DraggableIngredient({
   onUpdate,
   onRemove,
 }: DraggableIngredientProps) {
+  const { t } = useTranslation();
   const translateY = useSharedValue(0);
   const isDragging = useSharedValue(false);
   const fromIndex = useSharedValue(0);
@@ -123,7 +125,7 @@ export const DraggableIngredient = React.memo(function DraggableIngredient({
           style={[styles.input, styles.amountInput]}
           value={amountValue}
           onChangeText={handleAmountChange}
-          placeholder="数量"
+          placeholder={t('components.amountPlaceholder')}
           placeholderTextColor={colors.text.inputPlaceholder}
           keyboardType="numeric"
         />
@@ -132,7 +134,7 @@ export const DraggableIngredient = React.memo(function DraggableIngredient({
           style={[styles.input, styles.unitInput]}
           value={amountUnit}
           onChangeText={handleUnitChange}
-          placeholder="单位"
+          placeholder={t('components.unitPlaceholder')}
           placeholderTextColor={colors.text.inputPlaceholder}
         />
 
@@ -140,7 +142,7 @@ export const DraggableIngredient = React.memo(function DraggableIngredient({
           style={[styles.input, styles.nameInput]}
           value={ingredient.name}
           onChangeText={value => onUpdate(ingredient.tempId, 'name', value)}
-          placeholder="食材名称"
+          placeholder={t('components.ingredientPlaceholder')}
           placeholderTextColor={colors.text.inputPlaceholder}
         />
 
