@@ -13,6 +13,7 @@
 - **语音主交互** — 语音播报每一步、主动提醒翻面/关火，用户语音确认推进流程
 - **交互降级** — 语音 > 屏幕按钮；耳机按键、挥手手势为 V2 规划（见 ROADMAP）
 - **计时器自动提醒** — 带计时器的步骤到点 AI 主动语音提醒（如"该关火了"）
+- **中英双语** — 界面/语音命令/播报音色/LLM 录入解析全链路随设置页语言切换，英文模式录入中文菜谱直接得英文菜谱；新增语言只需加一个 JSON 资源文件
 - **离线优先** — 所有数据存本地 SQLite，不依赖云端
 
 ---
@@ -29,9 +30,10 @@
 | 导航     | React Navigation 6                                   |
 | 动画     | react-native-reanimated 4.4                          |
 | 图标     | react-native-svg（25 个 SVG 图标）                   |
+| i18n     | i18next + react-i18next + react-native-localize      |
 | LLM      | DeepSeek V4 Flash（function calling 结构化解析）     |
-| TTS      | Azure AI Speech（REST + SSML，zh-CN-XiaoxiaoNeural） |
-| STT      | Azure AI Speech（REST 短音频转写）                   |
+| TTS      | Azure AI Speech（REST + SSML，音色随界面语言切换）   |
+| STT      | Azure AI Speech（REST 短音频转写，语言随界面语言）   |
 
 ---
 
@@ -74,6 +76,8 @@ App 依赖三个本地后端服务。推荐一键启动：
 | TTS（Node.js Windows SAPI）  | 4000 | 文字转语音   |
 | LLM（Node.js DeepSeek 代理） | 3001 | LLM API 转发 |
 
+> STT/TTS 已切 Azure AI Speech（key 在设置页录入），日常开发仅需 LLM 服务；本地 STT/TTS 代码保留可切回。
+
 ### 3. 启动 Metro + 编译
 
 ```powershell
@@ -112,6 +116,7 @@ cooking-guide/
 │   ├── screens/         # 页面级别组件（11 个屏幕）
 │   ├── machines/        # XState v5 FSM 定义（烹饪引导状态机）
 │   ├── services/        # 外部服务调用（TTS, STT, LLM API）
+│   ├── i18n/            # 国际化（初始化、zh-CN/en 资源、语音配置映射）
 │   ├── db/              # SQLite 数据库操作（op-sqlite）
 │   ├── hooks/           # 自定义 React Hooks
 │   ├── theme/           # 设计 token（38 个颜色 + spacing + typography）
@@ -133,6 +138,7 @@ cooking-guide/
 - 包管理统一使用 **yarn**
 - 文件名使用 **kebab-case**
 - 样式使用 `StyleSheet.create()`，颜色使用语义化 token（`src/theme/colors.ts`）
+- UI 文案使用 `t()`（`src/i18n/`，zh-CN 源语言 + en），禁止硬编码中文
 - 图标使用 `<Icon name="..." />`（25 个 SVG 图标），禁止 emoji
 - 动画使用 react-native-reanimated，禁止 RN 内置 Animated API
 - 空/错误状态使用插画组件（`EmptyRecipeIllustration` 等），禁止纯文字占位
@@ -184,12 +190,13 @@ cooking-guide/
 
 ## 当前状态
 
-- **源文件** ~125 TS/TSX，~12000 行
-- **屏幕** 11 个，**共享组件** 28 个
-- **后端服务** STT ✅ / TTS ✅ / LLM ✅
+- **源文件** ~132 TS/TSX，~12800 行
+- **屏幕** 10 个，**共享组件** 28 个
+- **后端服务** STT ✅ / TTS ✅ / LLM ✅（均 Azure/DeepSeek 线上服务）
+- **i18n 四阶段全部完成**：界面/语音/播报/LLM 解析全链路中英双语，设置页切语言即时生效（2026-09-03）
 - **Phase A–D** 全部完成
 - **Phase 4 UI 微交互与打磨** 已完成：按压反馈、Haptic、列表动画、玻璃底栏、烹饪熄屏阻止
-- **测试环境** 已修复：`yarn test` / `yarn test:e2e` / `yarn test:all` 全部通过
+- **测试** `yarn test:all` 全绿（单测 33 + e2e 36）
 - **V2 规划中**：双菜并行、BLE 耳机按键、手势控制
 
 > 完整进度见 [`ROADMAP.md`](ROADMAP.md)

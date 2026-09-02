@@ -5,14 +5,15 @@
 
 ---
 
-## 当前状态（2026-08-31）
+## 当前状态（2026-09-03）
 
 <!-- prettier-ignore -->
 | 指标       | 数值                                                                                                      |
 | ---------- | --------------------------------------------------------------------------------------------------------- |
-| 源文件     | 130 TS/TSX（不含测试）                                                                                    |
-| 代码量     | ~14000 行（含测试）                                                                                       |
-| 测试       | 8 套件全过（cooking-machine, haptic, useKeepAwake, HomeScreen, voice-commands, LoadingOverlay, migrations, e2e-flow） |
+| 源文件     | 132 TS/TSX（不含测试）                                                                                    |
+| 代码量     | ~12800 行（不含测试）                                                                                     |
+| 测试       | 8 套件全过（单测 33 + e2e 36）：cooking-machine, haptic, useKeepAwake, HomeScreen, voice-commands, LoadingOverlay, migrations, e2e-flow |
+| i18n       | zh-CN/en 双语，193 key，全链路随设置页语言切换（UI/语音命令/播报音色/LLM 解析）                        |
 | 屏幕       | 10                                                                                                        |
 | 共享组件   | 28（不含图标）                                                                                            |
 | 图标       | 27 个 SVG 图标组件（icons/ 目录，不含 Icon.tsx 分发器）                                                   |
@@ -24,8 +25,13 @@
 
 近期（2026-09，细节见 git log）：
 
+- **i18n 多语言体系** (2026-09-03，四阶段真机验收全部通过)：
+  - 阶段 1 基建：架构文档新增 3.5 章节（先规范后代码）；src/i18n/（同步初始化 + 语言解析优先级 MMKV 覆盖 > 系统语言 > zh 兕底 + changeAppLanguage 唯一入口 + TS key 类型增强）；设置页语言项切语言即时生效、重启保持
+  - 阶段 2 全量抽取：10 屏 + 10 组件 + FSM 播报/服务层错误文案接入 t()；TAG_OPTIONS/音量档位名移入资源；jest.setup 全局初始化 i18n；grep 验收无硬编码 UI 文案
+  - 阶段 3 语音联动：voiceMap.ts 语言→语音配置枢纽；语音命令词表 zh/en 双表 dispatch 时按语言取；STT 转写语言随 UI 语言；TTS 音色随**播报文本**语言（晓晓/Jenny，真机教训：Jenny 念纯中文返回空音频）；英文模式 next/repeat/ok 控 FSM 真机验收通过
+  - 阶段 4 prompt 多语言化：llm.\* 域（解析 system prompt + AI 编辑指令），输出语言跟会话语言——英文模式录中文菜谱直接得地道英文菜谱（真机验证：to taste 等惯用表达）
+  - 数据语言原则：LLM 产出跟会话语言，录入后不做翻译；英文 UI + 中文菜谱混排是预期行为
 - **audio-libs 本地 vendor 缓存** (2026-09-02)：`scripts/download-audio-libs.js` 三级回退（vendor zip 直解 → 下载并回存 vendor → 明确报错提示代理）；修复幂等检查误判（原查解压根目录、npm 包自带 include 导致永不补库，改查产物目录）；恢复演练通过（删库后零网络本地恢复）。同日 i18n 三依赖（i18next/react-i18next/react-native-localize）已装，真机构建通过
-- i18n 阶段 1 基建：✅ 完成（2026-09-02，真机验收通过）：docs/架构与技术文档.md 新增 3.5 i18n 章节（先规范后代码）；src/i18n/（index.ts 语言解析 + changeAppLanguage 唯一入口 + TS key 类型增强 + zh-CN/en.json）；设置页 22 处文案接入 t()，语言 radio 选中态改由 i18n.language 驱动；TTS_VOLUME_LEVELS 显示名移入资源文件；jest mock react-native-localize；lint/tsc/format/test 四连全过
 
 近期（2026-08，细节见 git log）：
 
