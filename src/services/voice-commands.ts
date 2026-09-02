@@ -37,7 +37,7 @@ const KEYWORD_MAPS: Record<AppLanguage, Array<{ keywords: string[]; command: Voi
       command: 'repeat',
     },
     {
-      keywords: ['next', 'done', 'continue', 'go on'],
+      keywords: ['next', 'done', 'continue', 'go on', 'ok', 'okay'],
       command: 'next',
     },
   ],
@@ -217,7 +217,15 @@ export class VoiceCommandService {
 
     for (const { keywords, command } of getKeywordMap()) {
       for (const kw of keywords) {
-        const idx = normalized.indexOf(kw);
+        // 英文词用词边界匹配，避免子串误触发（"book" 含 "ok"）；
+        // \b 基于 [A-Za-z0-9_]，对 CJK 无效，中文保持 indexOf 子串匹配
+        let idx: number;
+        if (/[\u4e00-\u9fff]/.test(kw)) {
+          idx = normalized.indexOf(kw);
+        } else {
+          const match = normalized.match(new RegExp(`\\b${kw}\\b`));
+          idx = match?.index ?? -1;
+        }
         if (idx === -1) continue;
 
         this._lastCommandTime = now;
