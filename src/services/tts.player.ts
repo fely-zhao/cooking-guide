@@ -54,6 +54,7 @@ export class TTSPlayer implements TTSPlayerInterface {
     if (this.ctx.state === 'suspended') {
       console.log('[TTSPlayer] AudioContext was suspended — resuming');
       await this.ctx.resume();
+      console.log(`[TTSPlayer] state after resume: ${this.ctx.state}`);
     }
 
     const arrayBuffer = audioData.buffer.slice(

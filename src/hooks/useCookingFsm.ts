@@ -47,7 +47,7 @@ export function useCookingFsm(services: Services): {
             const level = settingsStorage.get('ttsVolumeLevel') ?? DEFAULT_SETTINGS.ttsVolumeLevel;
             ttsPlayer.setVolume(TTS_VOLUME_LEVELS[level]?.gain ?? 1);
             console.log(
-              `[TTS] play: voice=${voiceId} bytes=${audioData.byteLength} text=${JSON.stringify(input.text.slice(0, 30))}`,
+              `[TTS] play: voice=${voiceId} bytes=${audioData.byteLength} gain=${TTS_VOLUME_LEVELS[level]?.gain} text=${JSON.stringify(input.text.slice(0, 30))}`,
             );
             await ttsPlayer.play(audioData, input.boost ? { boost: REMINDER_BOOST } : undefined);
           } catch (err) {
