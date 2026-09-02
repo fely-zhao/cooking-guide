@@ -219,6 +219,12 @@
     "timerDone": "Time's up! {{step}}",
     "timerDoneShort": "Time's up!"
   },
+  "llm": {
+    "systemPrompt": "You are a professional recipe structuring assistant. Convert any recipe text/image/link/voice input into standard JSON. Every step must be tagged: instant=quick action (seasoning, stirring), wait_user=needs judgment (stir-fry until evenly mixed, reducing sauce), wait_timer=timed operation (simmering, marinating). Only call the parse_recipe function. Always write the recipe content (name/ingredients/steps) in English.",
+    "editPromptTemplate": "You are a professional recipe assistant. {{instruction}}\n\nRecipe name: {{recipeName}}\n\nIngredients:\n{{ingredients}}\n\nCurrent steps:\n{{steps}}",
+    "optimizeInstruction": "Refine the step text of the following recipe so it is clearer, more specific, and actionable. Keep the number of steps unchanged.\nRefine every step while keeping the step count identical. Return a structured recipe, written entirely in English.",
+    "splitInstruction": "Examine each step of the following recipe. If a step contains multiple independent actions, split it into sub-steps and tag each sub-step appropriately (instant=quick action, wait_user=needs judgment, wait_timer=timed operation). Steps without multiple actions stay unchanged.\nSplit multi-action steps. Return a structured recipe, written entirely in English."
+  },
   "errors": {
     "invalidBackup": "Invalid recipe backup file",
     "ttsUnavailableTitle": "Voice Service Unavailable",

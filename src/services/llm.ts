@@ -1,4 +1,5 @@
 import type { ApiClient, OpenAIChatRequest, OpenAIChatResponse } from './api-proxy';
+import i18n from '../i18n';
 import type {
   ParseRecipeRequest,
   ParseRecipeResponse,
@@ -23,8 +24,9 @@ export class LLMError extends Error {
 
 const MODEL = 'deepseek-v4-flash';
 
-const SYSTEM_PROMPT =
-  '你是专业菜谱结构化助手。将任意菜谱文本/图片/链接/语音转为标准 JSON。步骤必须打标签：instant=快速操作(调料、翻拌)、wait_user=需判断(翻炒均匀、收汁)、wait_timer=计时操作(炖煮、腌制)。只调用 parse_recipe 函数。';
+// 结构化解析 system prompt：i18n 阶段 4 起随 UI 语言取（llm.systemPrompt），
+// 并显式声明输出语言 —— 英文模式录中文菜谱直接得英文菜谱（数据语言跟会话语言）
+const getSystemPrompt = (): string => i18n.t('llm.systemPrompt');
 
 const PARSE_RECIPE_FUNCTION = {
   name: 'parse_recipe',
@@ -115,7 +117,7 @@ export class LLMService {
     return {
       model: MODEL,
       messages: [
-        { role: 'system', content: SYSTEM_PROMPT },
+        { role: 'system', content: getSystemPrompt() },
         { role: 'user', content: userContent },
       ],
       tools: [

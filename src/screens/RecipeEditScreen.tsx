@@ -246,21 +246,16 @@ export default function RecipeEditScreen() {
       const ingredientsText = ingredients.map(i => `${i.name}: ${i.amount}`).join('\n');
 
       const instruction =
-        mode === 'optimize'
-          ? '优化以下菜谱的步骤文案，使其更清晰、具体、可操作。保持步骤数量不变。\n请优化每一步的文案，保持步骤数量一致。返回结构化菜谱。'
-          : '检查以下菜谱的每一步，如果某步包含多个独立操作，将其拆分为多个子步骤，并为每个子步骤打上合适的标签（instant=快速操作, wait_user=需判断, wait_timer=计时操作）。不含多操作的步骤保持不变。\n请拆分多操作步骤。返回结构化菜谱。';
+        mode === 'optimize' ? t('llm.optimizeInstruction') : t('llm.splitInstruction');
 
-      return `你是专业菜谱助手。${instruction}
-
-菜谱名称: ${recipeName}
-
-食材:
-${ingredientsText}
-
-当前步骤:
-${stepsText}`;
+      return t('llm.editPromptTemplate', {
+        instruction,
+        recipeName,
+        ingredients: ingredientsText,
+        steps: stepsText,
+      });
     },
-    [recipeName, ingredients, steps],
+    [t, recipeName, ingredients, steps],
   );
 
   const createStepsFromResponse = useCallback(

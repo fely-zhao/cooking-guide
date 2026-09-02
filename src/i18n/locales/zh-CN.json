@@ -219,6 +219,12 @@
     "timerDone": "计时结束！{{step}}",
     "timerDoneShort": "计时结束！"
   },
+  "llm": {
+    "systemPrompt": "你是专业菜谱结构化助手。将任意菜谱文本/图片/链接/语音转为标准 JSON。步骤必须打标签：instant=快速操作(调料、翻拌)、wait_user=需判断(翻炒均匀、收汁)、wait_timer=计时操作(炖煮、腌制)。只调用 parse_recipe 函数。菜谱内容（名称/食材/步骤）一律以中文输出。",
+    "editPromptTemplate": "你是专业菜谱助手。{{instruction}}\n\n菜谱名称: {{recipeName}}\n\n食材:\n{{ingredients}}\n\n当前步骤:\n{{steps}}",
+    "optimizeInstruction": "优化以下菜谱的步骤文案，使其更清晰、具体、可操作。保持步骤数量不变。\n请优化每一步的文案，保持步骤数量一致。返回结构化菜谱，内容一律以中文输出。",
+    "splitInstruction": "检查以下菜谱的每一步，如果某步包含多个独立操作，将其拆分为多个子步骤，并为每个子步骤打上合适的标签（instant=快速操作, wait_user=需判断, wait_timer=计时操作）。不含多操作的步骤保持不变。\n请拆分多操作步骤。返回结构化菜谱，内容一律以中文输出。"
+  },
   "errors": {
     "invalidBackup": "无效的菜谱备份文件",
     "ttsUnavailableTitle": "语音服务不可用",
