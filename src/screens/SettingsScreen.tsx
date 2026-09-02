@@ -4,6 +4,7 @@ import Animated, { FadeIn } from 'react-native-reanimated';
 import { useNavigation } from '@react-navigation/native';
 import { useSettings } from '../hooks/useSettings';
 import { settingsStorage } from '../services/storage';
+import { TTS_VOLUME_LEVELS } from '../types/settings';
 import { colors } from '../theme/colors';
 import { spacing } from '../theme/spacing';
 import { typography } from '../theme/typography';
@@ -83,11 +84,14 @@ function Stepper({
   min,
   max,
   onChange,
+  formatValue,
 }: {
   value: number;
   min: number;
   max: number;
   onChange: (v: number) => void;
+  /** Optional display formatter (e.g. level labels instead of raw numbers) */
+  formatValue?: (v: number) => string;
 }) {
   const canDecrease = value > min;
   const canIncrease = value < max;
@@ -107,7 +111,7 @@ function Stepper({
           </Text>
         </View>
       </PressableScale>
-      <Text style={styles.stepperValue}>{value}</Text>
+      <Text style={styles.stepperValue}>{formatValue ? formatValue(value) : value}</Text>
       <PressableScale
         scale={0.92}
         haptic="light"
@@ -318,6 +322,18 @@ export default function SettingsScreen() {
             selectedId={settings.ttsVoiceId}
             onSelect={id => update('ttsVoiceId', id)}
           />
+
+          <Separator />
+
+          <SettingRow label="播报音量">
+            <Stepper
+              value={settings.ttsVolumeLevel}
+              min={0}
+              max={TTS_VOLUME_LEVELS.length - 1}
+              formatValue={v => TTS_VOLUME_LEVELS[v]?.label ?? '标准'}
+              onChange={v => update('ttsVolumeLevel', v)}
+            />
+          </SettingRow>
         </SectionCard>
 
         {/* 烹饪默认 */}

@@ -23,6 +23,7 @@
 
 近期（2026-08）：
 
+- **播报音量控制（TTS 两级增益）** (2026-08-31，真机验证通过)：设置页「TTS 设置」新增播报音量档位（静音/较低/标准/较高/最高，`ttsVolumeLevel` 存 MMKV，Stepper 切换不用滑杆）；播放链路 `source → GainNode → destination`（GainNode 只承载用户档位）；计时到点提醒（`ANNOUNCING_REMINDER`）ttsService input 带 `boost: true`，采样域叠加 `REMINDER_BOOST`（3×）+ tanh 软限幅防削波，只作用提醒播报，普通步骤播报不受影响；不改 FSM 状态/转换边，不碰系统音量；迭代记录：首版 boost 1.5×（+3.5dB）听感无差别 → 3× 线性增益硬削波有吱吱声 → tanh 软限幅真机复验通过；V2「音量自动增强」已由本项消化
 - **首页大卡片与列表策略调整** (2026-08-31，真机验证中)：大卡片固定推荐最新添加的菜谱（与 tab 无关，任何 tab 下焦点位不空）；列表改为完整筛选结果（全部/收藏 tab 含大卡片菜谱），消除互斥方案下切 tab 数量对不上、单条收藏时列表空白的割裂；全部/收藏 tab 按 created_at DESC
 - **烹饪记录接入 V1（cook_sessions 读写）** (2026-08-31，真机验证通过)：烹饪页挂载写入会话、完成标 completed、其余退出路径由卸载 cleanup 收尾（不留悬挂记录）；「最近」tab 改为最近做过：只显示有烹饪记录的菜，按最后烹饪时间取前 10，卡片时间显示「X 天前做过」（与排序依据一致，其余 tab 仍显示编辑时间）；tab 无结果时页面结构不变，由 FlatList ListEmptyComponent 在列表区显示专属空提示（顺带修正收藏 tab 为空的误导文案）；新增 getLastCookedAtMap 查询；CLAUDE.md/架构文档同步（原「V1 只写不读」描述与代码不符——实际此前连写入都未接入）
 - **首页筛选栏下划线自适应** (2026-08-31)：选中 tab 下划线从固定 20dp 改为 alignSelf stretch，与文字等宽；无封面图小卡片白条内边距收紧（上下 12→8、左 16→12、右 12→8）
@@ -45,11 +46,6 @@
 
 **待解决**：
 
-- 待做：播报音量控制（TTS 增强两级方案，需求与方案已定，待实施）：
-  - 全局播报音量档位（用户手动调，适应爆炒/安静场景）：设置项存 MMKV（`src/types/settings.ts` + storage + 设置页 UI），档位制不用滑杆
-  - 计时到点提醒播报（`ANNOUNCING_REMINDER`）临时拉高增益，播完恢复，只作用提醒、不作用普通步骤播报
-  - 实现：`src/services/tts.player.ts` 播放链路 `source → GainNode → destination`，两级增益相乘（用户档位 × 提醒 boost）；player 由 `cooking-machine-shared.ts` 创建，播放调用在 `useCookingFsm.ts` 的 ttsService actor；提醒态判断需从 FSM 状态传入播放调用
-  - 不碰系统音量、不需要权限；验证时注意高增益下语音是否失真
 - 待复现：首页偶现筛选栏与卡片瞬态重叠（真机截图一次后自恢复，疑与 FadeInUp entering 中间帧相关；再出现时记录是否在进首页/切筛选动画期间、长按菜单是否弹出过）
 
 ## 长期（V2）
@@ -61,7 +57,7 @@
 | 手势控制         | MediaPipe HandLandmarker 挥手控制（优先级 4）                     |
 | DB 迁移机制      | Schema 版本化，支持升级                                           |
 | Gesture/Headset  | 生产路径实现（当前为 stub）                                       |
-| **音量自动增强** | 提醒播报时自动提升音量（GainNode 增益 或 系统音量控制），播完恢复 |
+| ~~音量自动增强~~ | ✅ 已由 V1 播报音量控制消化（2026-08-31）：提醒播报 REMINDER_BOOST 3× + tanh 软限幅，播完恢复 |
 
 ---
 

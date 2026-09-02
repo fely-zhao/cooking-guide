@@ -35,13 +35,13 @@ new TTSService(new MockTTSProvider()); // 测试
 
 | 层                        | 文件                                   | 状态                                                                              |
 | ------------------------- | -------------------------------------- | --------------------------------------------------------------------------------- |
-| TTS Player                | `src/services/tts.player.ts`           | **已完成** — 使用 `react-native-audio-api`，`play()` 返回 Promise，播完才 resolve |
+| TTS Player                | `src/services/tts.player.ts`           | **已完成** — 使用 `react-native-audio-api`，`play()` 返回 Promise，播完才 resolve；播放链路 `source → GainNode → destination`（GainNode 只承载用户档位），提醒 boost 在采样域用 tanh 软限幅实现（防止削波吱吱声，2026-08-31） |
 | TTS Service               | `src/services/tts.ts`                  | **已重构** — 接受 `TTSProvider` 而非 `ApiClient`                                  |
 | TTS Provider 接口         | `src/services/tts-provider.ts`         | **已完成** — `TTSProvider` + `TTSProviderOptions` + `MockTTSProvider`             |
 | LocalTTSProvider          | `src/services/tts-provider-local.ts`   | **已完成** — POST `/tts` `{ text, voice?, rate? }` → `audio/wav`                  |
 | MiniMaxTTSProvider (stub) | `src/services/tts-provider-minimax.ts` | **占位** — 未实现，已被 Azure 替代，保留作未来备选                                |
 | ApiProxy                  | `src/services/api-proxy.ts`            | **已清理** — 移除 `textToSpeech`，只处理 LLM/STT                                  |
-| FSM 调用                  | `src/hooks/useCookingMachine.ts`       | **已完成** — `tts.textToSpeech()` → `ttsPlayer.play()`                            |
+| FSM 调用                  | `src/hooks/useCookingFsm.ts`           | **已完成** — `tts.textToSpeech()` → `ttsPlayer.setVolume()` + `ttsPlayer.play()`（含提醒 boost） |
 | TTSCache                  | `src/services/tts-cache.ts`            | 预缓存逻辑正常                                                                    |
 
 ### 完整数据流
@@ -50,10 +50,20 @@ new TTSService(new MockTTSProvider()); // 测试
 FSM invoke ttsService
   → tts.textToSpeech(text)          # TTSService → TTSProvider.synthesize()
   → LocalTTSProvider.synthesize()   # POST { text, voice?, rate? } → WAV
-  → ttsPlayer.play(audioData)       # decodeAudioData → AudioBufferSourceNode → 出声
+  → ttsPlayer.setVolume(userGain)   # 用户档位增益（每次播放前从 MMKV 读档位）
+  → ttsPlayer.play(audioData, { boost })  # boost 仅提醒播报传入（REMINDER_BOOST）
+  → decodeAudioData → boost>1 时采样域 tanh 软限幅 → GainNode → 出声
+                                     # tanh(x·boost)：峰位渐近满幅不硬削波，普通播报零处理
   → onEnded → Promise resolve       # 播完
   → FSM onDone → 下一步骤
 ```
+
+### 播报音量两级增益（2026-08-31）
+
+- **用户档位**：`ttsVolumeLevel` 存 MMKV，档位定义在 `src/types/settings.ts` 的 `TTS_VOLUME_LEVELS`（静音 0 / 较低 0.5 / 标准 1 / 较高 1.5 / 最高 2），设置页「TTS 设置 → 播报音量」Stepper 切换
+- **提醒 boost**：FSM `ANNOUNCING_REMINDER` 的 ttsService input 带 `boost: true`，播放时采样域叠加 `REMINDER_BOOST`（3×，约 +9.5dB）+ tanh 软限幅，只作用提醒播报、不作用普通步骤播报。首版 1.5× 仅 +3.5dB 听感无差别；改线性 GainNode 乘 3× 后真机有削波吱吱声（Azure TTS 音频接近满幅），最终改为采样域 tanh 软限幅
+- 不碰系统音量、不需要权限；`useCookingFsm.ts` 的 ttsService actor 每次播放前读档位（MMKV 内存读，开销可忽略），设置即时生效
+- 真机验证注意：高增益（较高/最高 × boost）下语音是否失真
 
 ### 本地服务请求格式
 

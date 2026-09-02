@@ -165,11 +165,15 @@ export const cookingMachine = setup({
   // ---- Actors (invoked services) -----------------------------------------
 
   actors: {
-    /** Text-to-Speech — called whenever the machine needs to announce a step. */
-    ttsService: fromPromise(async ({ input: _input }: { input: { text: string } }) => {
-      // Delegate to TTSService at runtime; placeholder for type-safety.
-      return { success: true as const };
-    }),
+    /** Text-to-Speech — called whenever the machine needs to announce a step.
+     *  `boost: true` marks reminder announcements (ANNOUNCING_REMINDER) so the
+     *  player can temporarily raise gain; normal steps play at user level. */
+    ttsService: fromPromise(
+      async ({ input: _input }: { input: { text: string; boost?: boolean } }) => {
+        // Delegate to TTSService at runtime; placeholder for type-safety.
+        return { success: true as const };
+      },
+    ),
 
     /** Countdown timer — resolves after `durationSeconds`. */
     timerService: fromPromise(
@@ -365,6 +369,7 @@ export const cookingMachine = setup({
             src: 'ttsService',
             input: ({ context }) => ({
               text: `计时结束！${getCurrentStep(context)?.text ?? ''}`,
+              boost: true,
             }),
             onDone: 'pausing',
           },

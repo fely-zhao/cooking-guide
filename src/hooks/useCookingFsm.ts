@@ -5,6 +5,8 @@ import { useActor } from '@xstate/react';
 import { cookingMachine } from '../machines/cooking-machine';
 import type { Services, CookingState, CookingSend } from './cooking-machine-shared';
 import { DEFAULT_TTS_VOICE } from './cooking-machine-shared';
+import { settingsStorage } from '../services/storage';
+import { DEFAULT_SETTINGS, REMINDER_BOOST, TTS_VOLUME_LEVELS } from '../types/settings';
 
 /**
  * Builds the provided cooking FSM with real service implementations
@@ -35,13 +37,17 @@ export function useCookingFsm(services: Services): {
         },
       },
       actors: {
-        ttsService: fromPromise(async ({ input }: { input: { text: string } }) => {
+        ttsService: fromPromise(async ({ input }: { input: { text: string; boost?: boolean } }) => {
           voice.pauseListening();
           try {
             const audioData = await tts.textToSpeech(input.text, {
               voiceId: DEFAULT_TTS_VOICE,
             });
-            await ttsPlayer.play(audioData);
+            // Read the volume level per playback (MMKV read, negligible
+            // cost) so setting changes apply without re-subscribing.
+            const level = settingsStorage.get('ttsVolumeLevel') ?? DEFAULT_SETTINGS.ttsVolumeLevel;
+            ttsPlayer.setVolume(TTS_VOLUME_LEVELS[level]?.gain ?? 1);
+            await ttsPlayer.play(audioData, input.boost ? { boost: REMINDER_BOOST } : undefined);
           } catch (err) {
             console.error('[TTS] textToSpeech/play failed:', err);
             // Degrade gracefully — TTS is non-critical; don't crash the app.

@@ -11,11 +11,27 @@ export interface AppSettings {
   /** Azure 资源所在区域，如 eastasia / japaneast；默认取 config.ts 的 AZURE_REGION */
   azureRegion: string;
   ttsVoiceId: string;
+  /** 播报音量档位 index，对应 TTS_VOLUME_LEVELS */
+  ttsVolumeLevel: number;
   defaultServings: number;
   gestureEnabled: boolean;
   headsetAutoDetect: boolean;
   language: 'zh' | 'en';
 }
+
+/** 播报音量档位（档位制不用滑杆，适应爆炒/安静场景） */
+export const TTS_VOLUME_LEVELS = [
+  { label: '静音', gain: 0 },
+  { label: '较低', gain: 0.5 },
+  { label: '标准', gain: 1 },
+  { label: '较高', gain: 1.5 },
+  { label: '最高', gain: 2 },
+] as const;
+
+export const DEFAULT_TTS_VOLUME_LEVEL = 2; // 标准
+
+/** 计时到点提醒播报（ANNOUNCING_REMINDER）的临时增益倍率，与用户档位相乘，播完恢复 */
+export const REMINDER_BOOST = 3; // +9.5dB，1.5× 仅 +3.5dB 真机听感无差别
 
 export const DEFAULT_SETTINGS: AppSettings = {
   llmUrl: LLM_URL,
@@ -24,6 +40,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   azureSpeechKey: '',
   azureRegion: AZURE_REGION,
   ttsVoiceId: '',
+  ttsVolumeLevel: DEFAULT_TTS_VOLUME_LEVEL,
   defaultServings: 2,
   gestureEnabled: true,
   headsetAutoDetect: true,

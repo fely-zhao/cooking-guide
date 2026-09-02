@@ -37,6 +37,7 @@ class SettingsStorage {
       azureSpeechKey: this.get('azureSpeechKey') ?? DEFAULT_SETTINGS.azureSpeechKey,
       azureRegion: this.get('azureRegion') ?? DEFAULT_SETTINGS.azureRegion,
       ttsVoiceId: this.get('ttsVoiceId') ?? DEFAULT_SETTINGS.ttsVoiceId,
+      ttsVolumeLevel: this.get('ttsVolumeLevel') ?? DEFAULT_SETTINGS.ttsVolumeLevel,
       defaultServings: this.get('defaultServings') ?? DEFAULT_SETTINGS.defaultServings,
       gestureEnabled: this.get('gestureEnabled') ?? DEFAULT_SETTINGS.gestureEnabled,
       headsetAutoDetect: this.get('headsetAutoDetect') ?? DEFAULT_SETTINGS.headsetAutoDetect,
@@ -52,6 +53,7 @@ class SettingsStorage {
     this.set('azureSpeechKey', DEFAULT_SETTINGS.azureSpeechKey);
     this.set('azureRegion', DEFAULT_SETTINGS.azureRegion);
     this.set('ttsVoiceId', DEFAULT_SETTINGS.ttsVoiceId);
+    this.set('ttsVolumeLevel', DEFAULT_SETTINGS.ttsVolumeLevel);
     this.set('defaultServings', DEFAULT_SETTINGS.defaultServings);
     this.set('gestureEnabled', DEFAULT_SETTINGS.gestureEnabled);
     this.set('headsetAutoDetect', DEFAULT_SETTINGS.headsetAutoDetect);
