@@ -87,6 +87,7 @@ import type { IconName } from '../components/icons';
 
 ### 可用图标（27 个）
 
+<!-- prettier-ignore -->
 | 名称            | 用途          |
 | --------------- | ------------- |
 | `cooking`       | 菜谱封面占位  |
@@ -139,6 +140,7 @@ style={{ backgroundColor: colors.primary, color: colors.text.inverse }}
 
 ### Token 清单
 
+<!-- prettier-ignore -->
 | 类别         | Token                   | 色值                 | 用途                       |
 | ------------ | ----------------------- | -------------------- | -------------------------- |
 | 背景/Surface | `background`            | `#FAF4EC`            | 页面背景，奶油色           |
@@ -199,6 +201,7 @@ style={{ backgroundColor: colors.primary, color: colors.text.inverse }}
 
 ### 字体族
 
+<!-- prettier-ignore -->
 | 用途                     | 字体                  | React Native `fontFamily`                            |
 | ------------------------ | --------------------- | ---------------------------------------------------- |
 | 大标题 / 菜谱名 / 步骤号 | **Playfair Display**  | `PlayfairDisplay-Bold`                               |
@@ -238,6 +241,7 @@ typography.timer; // Inter ExtraLight + tabular-nums, 48/56
 
 ### Token
 
+<!-- prettier-ignore -->
 | Token         | 值     | 用途             |
 | ------------- | ------ | ---------------- |
 | `radius.sm`   | `8`    | 小标签、输入框   |
@@ -265,6 +269,7 @@ style={{ ...shadows.md, backgroundColor: colors.surface }}
 
 ### Token
 
+<!-- prettier-ignore -->
 | Token           | 说明                      |
 | --------------- | ------------------------- |
 | `shadows.sm`    | 轻微阴影，用于小卡片/标签 |
@@ -389,6 +394,7 @@ import { NotFoundIllustration } from '../components/illustrations';
 
 ### 使用场景
 
+<!-- prettier-ignore -->
 | 组件                      | 场景                         |
 | ------------------------- | ---------------------------- |
 | `EmptyRecipeIllustration` | 列表为空、无数据             |
@@ -427,6 +433,7 @@ import { Button } from '../components/Button';
 
 ### Variant
 
+<!-- prettier-ignore -->
 | variant     | 用途     | 视觉                                 |
 | ----------- | -------- | ------------------------------------ |
 | `primary`   | 主操作   | 赤陶底（`colors.primary`）+ 白字     |
