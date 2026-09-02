@@ -39,17 +39,22 @@ export function useCookingFsm(services: Services): {
       actors: {
         ttsService: fromPromise(async ({ input }: { input: { text: string; boost?: boolean } }) => {
           voice.pauseListening();
+          const voiceId = getVoiceConfigForText(input.text).ttsVoiceId;
           try {
-            const audioData = await tts.textToSpeech(input.text, {
-              voiceId: getVoiceConfigForText(input.text).ttsVoiceId,
-            });
+            const audioData = await tts.textToSpeech(input.text, { voiceId });
             // Read the volume level per playback (MMKV read, negligible
             // cost) so setting changes apply without re-subscribing.
             const level = settingsStorage.get('ttsVolumeLevel') ?? DEFAULT_SETTINGS.ttsVolumeLevel;
             ttsPlayer.setVolume(TTS_VOLUME_LEVELS[level]?.gain ?? 1);
+            console.log(
+              `[TTS] play: voice=${voiceId} bytes=${audioData.byteLength} text=${JSON.stringify(input.text.slice(0, 30))}`,
+            );
             await ttsPlayer.play(audioData, input.boost ? { boost: REMINDER_BOOST } : undefined);
           } catch (err) {
-            console.error('[TTS] textToSpeech/play failed:', err);
+            console.error(
+              `[TTS] textToSpeech/play failed: voice=${voiceId} text=${JSON.stringify(input.text.slice(0, 30))}`,
+              err,
+            );
             // Degrade gracefully — TTS is non-critical; don't crash the app.
             // The user still sees step text on screen and can interact.
           } finally {
