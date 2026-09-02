@@ -33,16 +33,16 @@ new TTSService(new MockTTSProvider()); // 测试
 
 ### 当前各层状态
 
-| 层                        | 文件                                   | 状态                                                                              |
-| ------------------------- | -------------------------------------- | --------------------------------------------------------------------------------- |
+| 层                        | 文件                                   | 状态                                                                                                                                                                                                                          |
+| ------------------------- | -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | TTS Player                | `src/services/tts.player.ts`           | **已完成** — 使用 `react-native-audio-api`，`play()` 返回 Promise，播完才 resolve；播放链路 `source → GainNode → destination`（GainNode 只承载用户档位），提醒 boost 在采样域用 tanh 软限幅实现（防止削波吱吱声，2026-08-31） |
-| TTS Service               | `src/services/tts.ts`                  | **已重构** — 接受 `TTSProvider` 而非 `ApiClient`                                  |
-| TTS Provider 接口         | `src/services/tts-provider.ts`         | **已完成** — `TTSProvider` + `TTSProviderOptions` + `MockTTSProvider`             |
-| LocalTTSProvider          | `src/services/tts-provider-local.ts`   | **已完成** — POST `/tts` `{ text, voice?, rate? }` → `audio/wav`                  |
-| MiniMaxTTSProvider (stub) | `src/services/tts-provider-minimax.ts` | **占位** — 未实现，已被 Azure 替代，保留作未来备选                                |
-| ApiProxy                  | `src/services/api-proxy.ts`            | **已清理** — 移除 `textToSpeech`，只处理 LLM/STT                                  |
-| FSM 调用                  | `src/hooks/useCookingFsm.ts`           | **已完成** — `tts.textToSpeech()` → `ttsPlayer.setVolume()` + `ttsPlayer.play()`（含提醒 boost） |
-| TTSCache                  | `src/services/tts-cache.ts`            | 预缓存逻辑正常                                                                    |
+| TTS Service               | `src/services/tts.ts`                  | **已重构** — 接受 `TTSProvider` 而非 `ApiClient`                                                                                                                                                                              |
+| TTS Provider 接口         | `src/services/tts-provider.ts`         | **已完成** — `TTSProvider` + `TTSProviderOptions` + `MockTTSProvider`                                                                                                                                                         |
+| LocalTTSProvider          | `src/services/tts-provider-local.ts`   | **已完成** — POST `/tts` `{ text, voice?, rate? }` → `audio/wav`                                                                                                                                                              |
+| MiniMaxTTSProvider (stub) | `src/services/tts-provider-minimax.ts` | **占位** — 未实现，已被 Azure 替代，保留作未来备选                                                                                                                                                                            |
+| ApiProxy                  | `src/services/api-proxy.ts`            | **已清理** — 移除 `textToSpeech`，只处理 LLM/STT                                                                                                                                                                              |
+| FSM 调用                  | `src/hooks/useCookingFsm.ts`           | **已完成** — `tts.textToSpeech()` → `ttsPlayer.setVolume()` + `ttsPlayer.play()`（含提醒 boost）                                                                                                                              |
+| TTSCache                  | `src/services/tts-cache.ts`            | 预缓存逻辑正常                                                                                                                                                                                                                |
 
 ### 完整数据流
 
