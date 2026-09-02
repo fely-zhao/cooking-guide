@@ -33,7 +33,7 @@ const KEYWORD_MAPS: Record<AppLanguage, Array<{ keywords: string[]; command: Voi
       command: 'ask',
     },
     {
-      keywords: ['repeat', 'say it again', 'one more time'],
+      keywords: ['repeat', 'say it again', 'one more time', 'again'],
       command: 'repeat',
     },
     {
@@ -209,9 +209,15 @@ export class VoiceCommandService {
       return;
     }
 
+    // Azure 英文转写带大小写与句尾标点（"Next."），匹配前统一小写；
+    // toLowerCase 是 1:1 长度变换，idx 在原文与归一化文本中位置一致，
+    // ask 的 question 提取仍用原文切片，不影响。
+    // 中文无大小写差异，行为不变。
+    const normalized = trimmed.toLowerCase();
+
     for (const { keywords, command } of getKeywordMap()) {
       for (const kw of keywords) {
-        const idx = trimmed.indexOf(kw);
+        const idx = normalized.indexOf(kw);
         if (idx === -1) continue;
 
         this._lastCommandTime = now;
