@@ -25,7 +25,7 @@
 近期（2026-09，细节见 git log）：
 
 - **audio-libs 本地 vendor 缓存** (2026-09-02)：`scripts/download-audio-libs.js` 三级回退（vendor zip 直解 → 下载并回存 vendor → 明确报错提示代理）；修复幂等检查误判（原查解压根目录、npm 包自带 include 导致永不补库，改查产物目录）；恢复演练通过（删库后零网络本地恢复）。同日 i18n 三依赖（i18next/react-i18next/react-native-localize）已装，真机构建通过
-- i18n 阶段 1 基建：代码完成（2026-09-02）：docs/架构与技术文档.md 新增 3.5 i18n 章节（先规范后代码）；src/i18n/（index.ts 语言解析 + changeAppLanguage 唯一入口 + TS key 类型增强 + zh-CN/en.json）；设置页 22 处文案接入 t()，语言 radio 选中态改由 i18n.language 驱动；TTS_VOLUME_LEVELS 显示名移入资源文件；jest mock react-native-localize；lint/tsc/format/test 四连全过。待真机验收（切语言即时生效、重启保持）后标完成
+- i18n 阶段 1 基建：✅ 完成（2026-09-02，真机验收通过）：docs/架构与技术文档.md 新增 3.5 i18n 章节（先规范后代码）；src/i18n/（index.ts 语言解析 + changeAppLanguage 唯一入口 + TS key 类型增强 + zh-CN/en.json）；设置页 22 处文案接入 t()，语言 radio 选中态改由 i18n.language 驱动；TTS_VOLUME_LEVELS 显示名移入资源文件；jest mock react-native-localize；lint/tsc/format/test 四连全过
 
 近期（2026-08，细节见 git log）：
 
@@ -101,7 +101,7 @@
 <!-- prettier-ignore -->
 | 阶段 | 内容                                                                                                              | 验收标准                                                 | 状态     |
 | ---- | ----------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- | -------- |
-| 1    | 基建：依赖安装（Windows PowerShell 手动）+ src/i18n 初始化 + 设置页语言项 + 类型安全                                | 设置页切语言即时生效，重启保持                           | 代码完成（2026-09-02）：架构文档新增 3.5 章节，src/i18n/ 落地，设置页全量接入 t()，四连全过；待真机验收 |
+| 1    | 基建：依赖安装（Windows PowerShell 手动）+ src/i18n 初始化 + 设置页语言项 + 类型安全                                | 设置页切语言即时生效，重启保持                           | ✅ 完成（2026-09-02，真机验收通过） |
 | 2    | UI 文案抽取：38 文件硬编码替换为 t('key')，分屏幕推进；FSM 层「烹饪完成」两处改 i18n.t()                            | grep 无硬编码 UI 文案（排除注释），每屏切语言即时生效    | 未开始   |
 | 3    | 语音管线联动：voiceMap.ts + VoiceCommandService 关键词注入改造 + TTS voiceId / STT language 接线                     | 英文模式下英文关键词可控制 FSM，英文 voice 播报          | 未开始   |
 | 4    | en 包翻译：AI 批量翻译 + 真机校对 + LLM 录入 prompt 多语言化                                                        | 录入→烹饪→语音全流程英文跑通                             | 未开始   |
