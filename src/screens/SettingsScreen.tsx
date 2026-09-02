@@ -2,7 +2,9 @@ import React, { useState, useRef } from 'react';
 import { Alert, View, Text, StyleSheet, TextInput, Switch, ScrollView } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 import { useSettings } from '../hooks/useSettings';
+import { changeAppLanguage } from '../i18n';
 import { settingsStorage } from '../services/storage';
 import { TTS_VOLUME_LEVELS } from '../types/settings';
 import { colors } from '../theme/colors';
@@ -22,6 +24,9 @@ const TTS_VOICES = [
   { id: 'minimax-female', label: 'MiniMax Female' },
   { id: 'minimax-male', label: 'MiniMax Male' },
 ] as const;
+
+// ── Volume level display keys（顺序对应 TTS_VOLUME_LEVELS index，显示名在 i18n）──
+const VOLUME_LEVEL_KEYS = ['muted', 'low', 'standard', 'high', 'max'] as const;
 
 // ── Section Card ──
 function SectionCard({
@@ -138,6 +143,7 @@ function VoiceSelector({
   onSelect: (id: string) => void;
 }) {
   const [expanded, setExpanded] = useState(false);
+  const { t } = useTranslation();
   const selected = TTS_VOICES.find(v => v.id === selectedId);
 
   return (
@@ -148,7 +154,9 @@ function VoiceSelector({
         haptic="light"
       >
         <View style={styles.dropdownTriggerContent}>
-          <Text style={styles.dropdownText}>{selected?.label ?? '请选择语音'}</Text>
+          <Text style={styles.dropdownText}>
+            {selected?.label ?? t('settings.voicePlaceholder')}
+          </Text>
           <View style={[styles.dropdownArrow, expanded && styles.dropdownArrowUp]}>
             <Icon name="chevron-right" size={20} color={colors.text.muted} />
           </View>
@@ -195,6 +203,7 @@ function VoiceSelector({
 export default function SettingsScreen() {
   const navigation = useNavigation();
   const settings = useSettings();
+  const { t, i18n } = useTranslation();
 
   // Local state for text inputs (to avoid keystroke re-render lag)
   const [llmUrl, setLlmUrl] = useState(settings.llmUrl);
@@ -222,9 +231,9 @@ export default function SettingsScreen() {
   const handleExport = async () => {
     try {
       const filePath = await exportRecipesToJson();
-      Alert.alert('导出成功', `菜谱已导出到：\n${filePath}`);
+      Alert.alert(t('settings.exportSuccess'), t('settings.exportSuccessMsg', { path: filePath }));
     } catch (err) {
-      Alert.alert('导出失败', (err as Error).message || '未知错误');
+      Alert.alert(t('settings.exportFailed'), (err as Error).message || t('settings.unknownError'));
     }
   };
 
@@ -232,9 +241,9 @@ export default function SettingsScreen() {
     try {
       const count = await importRecipesFromFile();
       if (count === 0) return; // user cancelled
-      Alert.alert('导入成功', `已导入 ${count} 道菜谱`);
+      Alert.alert(t('settings.importSuccess'), t('settings.importSuccessMsg', { count }));
     } catch (err) {
-      Alert.alert('导入失败', (err as Error).message || '未知错误');
+      Alert.alert(t('settings.importFailed'), (err as Error).message || t('settings.unknownError'));
     }
   };
 
@@ -249,15 +258,19 @@ export default function SettingsScreen() {
 
   return (
     <SafeAreaContainer style={styles.container}>
-      <HeaderBar title="设置" rightTitle="完成" onRightPress={handleDone} />
+      <HeaderBar
+        title={t('settings.title')}
+        rightTitle={t('common.done')}
+        onRightPress={handleDone}
+      />
 
       <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
         {/* API 配置 */}
-        <SectionCard title="服务地址" index={0}>
-          <Text style={styles.fieldLabel}>Azure Speech Key（语音识别 + 播报共用）</Text>
+        <SectionCard title={t('settings.sections.services')} index={0}>
+          <Text style={styles.fieldLabel}>{t('settings.azureKeyLabel')}</Text>
           <TextInput
             style={styles.textInput}
-            placeholder="粘贴 Azure 订阅密钥"
+            placeholder={t('settings.azureKeyPlaceholder')}
             placeholderTextColor={colors.text.placeholder}
             value={azureSpeechKey}
             onChangeText={setAzureSpeechKey}
@@ -277,7 +290,9 @@ export default function SettingsScreen() {
             autoCapitalize="none"
             autoCorrect={false}
           />
-          <Text style={[styles.fieldLabel, styles.fieldLabelSpaced]}>LLM 服务</Text>
+          <Text style={[styles.fieldLabel, styles.fieldLabelSpaced]}>
+            {t('settings.llmService')}
+          </Text>
           <TextInput
             style={styles.textInput}
             placeholder="http://localhost:3001"
@@ -289,7 +304,9 @@ export default function SettingsScreen() {
             autoCorrect={false}
             keyboardType="url"
           />
-          <Text style={[styles.fieldLabel, styles.fieldLabelSpaced]}>TTS 服务</Text>
+          <Text style={[styles.fieldLabel, styles.fieldLabelSpaced]}>
+            {t('settings.ttsService')}
+          </Text>
           <TextInput
             style={styles.textInput}
             placeholder="http://localhost:4000"
@@ -301,7 +318,9 @@ export default function SettingsScreen() {
             autoCorrect={false}
             keyboardType="url"
           />
-          <Text style={[styles.fieldLabel, styles.fieldLabelSpaced]}>STT 服务</Text>
+          <Text style={[styles.fieldLabel, styles.fieldLabelSpaced]}>
+            {t('settings.sttService')}
+          </Text>
           <TextInput
             style={styles.textInput}
             placeholder="http://localhost:5000"
@@ -316,8 +335,8 @@ export default function SettingsScreen() {
         </SectionCard>
 
         {/* TTS 设置 */}
-        <SectionCard title="TTS 设置" index={1}>
-          <Text style={styles.fieldLabel}>语音选择</Text>
+        <SectionCard title={t('settings.sections.tts')} index={1}>
+          <Text style={styles.fieldLabel}>{t('settings.voiceLabel')}</Text>
           <VoiceSelector
             selectedId={settings.ttsVoiceId}
             onSelect={id => update('ttsVoiceId', id)}
@@ -325,20 +344,20 @@ export default function SettingsScreen() {
 
           <Separator />
 
-          <SettingRow label="播报音量">
+          <SettingRow label={t('settings.volumeLabel')}>
             <Stepper
               value={settings.ttsVolumeLevel}
               min={0}
               max={TTS_VOLUME_LEVELS.length - 1}
-              formatValue={v => TTS_VOLUME_LEVELS[v]?.label ?? '标准'}
+              formatValue={v => t(`settings.volumeLevels.${VOLUME_LEVEL_KEYS[v]}`)}
               onChange={v => update('ttsVolumeLevel', v)}
             />
           </SettingRow>
         </SectionCard>
 
         {/* 烹饪默认 */}
-        <SectionCard title="烹饪默认" index={2}>
-          <SettingRow label="默认分量">
+        <SectionCard title={t('settings.sections.cooking')} index={2}>
+          <SettingRow label={t('settings.defaultServings')}>
             <Stepper
               value={settings.defaultServings}
               min={1}
@@ -349,7 +368,7 @@ export default function SettingsScreen() {
 
           <Separator />
 
-          <SettingRow label="手势控制">
+          <SettingRow label={t('settings.gestureControl')}>
             <SettingSwitch
               value={settings.gestureEnabled}
               onValueChange={v => update('gestureEnabled', v)}
@@ -358,7 +377,7 @@ export default function SettingsScreen() {
 
           <Separator />
 
-          <SettingRow label="耳机自动检测">
+          <SettingRow label={t('settings.headsetAutoDetect')}>
             <SettingSwitch
               value={settings.headsetAutoDetect}
               onValueChange={v => update('headsetAutoDetect', v)}
@@ -367,15 +386,16 @@ export default function SettingsScreen() {
         </SectionCard>
 
         {/* 语言 */}
-        <SectionCard title="语言" index={3}>
+        <SectionCard title={t('settings.sections.language')} index={3}>
           <View style={styles.radioGroup}>
             {(['zh', 'en'] as const).map(lang => {
-              const active = settings.language === lang;
+              // 选中态以 i18n 实际生效语言为准（未选择时跟随系统，裸 MMKV 值不可靠）
+              const active = (i18n.language === 'en' ? 'en' : 'zh') === lang;
               return (
                 <PressableScale
                   key={lang}
                   style={[styles.radioItem, active && styles.radioItemActive]}
-                  onPress={() => update('language', lang)}
+                  onPress={() => changeAppLanguage(lang)}
                   haptic="selection"
                 >
                   <View style={styles.radioItemContent}>
@@ -395,14 +415,22 @@ export default function SettingsScreen() {
         </SectionCard>
 
         {/* 数据备份 */}
-        <SectionCard title="数据备份" index={4}>
-          <Text style={styles.backupHint}>导出菜谱为 JSON 文件，可在换机或重装后导入恢复。</Text>
+        <SectionCard title={t('settings.sections.backup')} index={4}>
+          <Text style={styles.backupHint}>{t('settings.backupHint')}</Text>
           <View style={styles.backupActions}>
             <View style={styles.backupButton}>
-              <Button title="导出菜谱" onPress={handleExport} variant="secondary" />
+              <Button
+                title={t('settings.exportRecipes')}
+                onPress={handleExport}
+                variant="secondary"
+              />
             </View>
             <View style={styles.backupButton}>
-              <Button title="导入菜谱" onPress={handleImport} variant="primary" />
+              <Button
+                title={t('settings.importRecipes')}
+                onPress={handleImport}
+                variant="primary"
+              />
             </View>
           </View>
         </SectionCard>

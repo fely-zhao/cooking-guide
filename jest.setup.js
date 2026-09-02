@@ -16,3 +16,7 @@ jest.mock('react-native-audio-api', () => ({
   FileDirectory: { Cache: 'cache' },
   FilePreset: { HIGH: 'high' },
 }));
+
+jest.mock('react-native-localize', () => ({
+  getLocales: () => [{ languageCode: 'zh', countryCode: 'CN', languageTag: 'zh-CN' }],
+}));

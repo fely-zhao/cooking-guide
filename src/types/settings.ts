@@ -19,13 +19,13 @@ export interface AppSettings {
   language: 'zh' | 'en';
 }
 
-/** 播报音量档位（档位制不用滑杆，适应爆炒/安静场景） */
+/** 播报音量档位（档位制不用滑杆，适应爆炒/安静场景）；显示名见 i18n settings.volumeLevels */
 export const TTS_VOLUME_LEVELS = [
-  { label: '静音', gain: 0 },
-  { label: '较低', gain: 0.5 },
-  { label: '标准', gain: 1 },
-  { label: '较高', gain: 1.5 },
-  { label: '最高', gain: 2 },
+  { gain: 0 },
+  { gain: 0.5 },
+  { gain: 1 },
+  { gain: 1.5 },
+  { gain: 2 },
 ] as const;
 
 export const DEFAULT_TTS_VOLUME_LEVEL = 2; // 标准

@@ -1,0 +1,43 @@
+{
+  "common": {
+    "done": "完成"
+  },
+  "settings": {
+    "title": "设置",
+    "sections": {
+      "services": "服务地址",
+      "tts": "TTS 设置",
+      "cooking": "烹饪默认",
+      "language": "语言",
+      "backup": "数据备份"
+    },
+    "azureKeyLabel": "Azure Speech Key（语音识别 + 播报共用）",
+    "azureKeyPlaceholder": "粘贴 Azure 订阅密钥",
+    "llmService": "LLM 服务",
+    "ttsService": "TTS 服务",
+    "sttService": "STT 服务",
+    "voiceLabel": "语音选择",
+    "voicePlaceholder": "请选择语音",
+    "volumeLabel": "播报音量",
+    "volumeLevels": {
+      "muted": "静音",
+      "low": "较低",
+      "standard": "标准",
+      "high": "较高",
+      "max": "最高"
+    },
+    "defaultServings": "默认分量",
+    "gestureControl": "手势控制",
+    "headsetAutoDetect": "耳机自动检测",
+    "backupHint": "导出菜谱为 JSON 文件，可在换机或重装后导入恢复。",
+    "exportRecipes": "导出菜谱",
+    "importRecipes": "导入菜谱",
+    "exportSuccess": "导出成功",
+    "exportSuccessMsg": "菜谱已导出到：\n{{path}}",
+    "exportFailed": "导出失败",
+    "importSuccess": "导入成功",
+    "importSuccessMsg": "已导入 {{count}} 道菜谱",
+    "importFailed": "导入失败",
+    "unknownError": "未知错误"
+  }
+}

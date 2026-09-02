@@ -1,0 +1,43 @@
+{
+  "common": {
+    "done": "Done"
+  },
+  "settings": {
+    "title": "Settings",
+    "sections": {
+      "services": "Services",
+      "tts": "TTS",
+      "cooking": "Cooking Defaults",
+      "language": "Language",
+      "backup": "Data Backup"
+    },
+    "azureKeyLabel": "Azure Speech Key (used for STT & TTS)",
+    "azureKeyPlaceholder": "Paste your Azure subscription key",
+    "llmService": "LLM Service",
+    "ttsService": "TTS Service",
+    "sttService": "STT Service",
+    "voiceLabel": "Voice",
+    "voicePlaceholder": "Select a voice",
+    "volumeLabel": "Voice Volume",
+    "volumeLevels": {
+      "muted": "Muted",
+      "low": "Low",
+      "standard": "Standard",
+      "high": "High",
+      "max": "Max"
+    },
+    "defaultServings": "Default Servings",
+    "gestureControl": "Gesture Control",
+    "headsetAutoDetect": "Auto-detect Headphones",
+    "backupHint": "Export recipes as a JSON file to restore after switching devices or reinstalling.",
+    "exportRecipes": "Export Recipes",
+    "importRecipes": "Import Recipes",
+    "exportSuccess": "Export Successful",
+    "exportSuccessMsg": "Recipes exported to:\n{{path}}",
+    "exportFailed": "Export Failed",
+    "importSuccess": "Import Successful",
+    "importSuccessMsg": "Imported {{count}} recipes",
+    "importFailed": "Import Failed",
+    "unknownError": "Unknown error"
+  }
+}
