@@ -88,7 +88,13 @@ export class AzureTTSProvider implements TTSProvider {
       throw new Error(`AzureTTSProvider: ${detail} from ${url}`);
     }
 
-    return new Uint8Array(await response.arrayBuffer());
+    const audio = new Uint8Array(await response.arrayBuffer());
+    // Azure 对 voice 与文本语言不匹配等情况会返回 200 + 空/无效 body，
+    // 到播放器只会报难懊的 decode 错误，这里提前给出可诊断的错误
+    if (audio.byteLength === 0) {
+      throw new Error('AzureTTSProvider: empty audio body (voice/text language mismatch?)');
+    }
+    return audio;
   }
 }
 

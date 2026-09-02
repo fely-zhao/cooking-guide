@@ -21,3 +21,19 @@ const VOICE_MAP: Record<AppLanguage, VoiceConfig> = {
 export function getVoiceConfig(): VoiceConfig {
   return VOICE_MAP[i18n.language === 'en' ? 'en' : 'zh'];
 }
+
+/** 文本含 CJK 字符视为中文——菜谱数据保持录入语言（见架构文档 3.5 数据语言原则） */
+function detectTextLanguage(text: string): AppLanguage {
+  return /[\u4e00-\u9fff]/.test(text) ? 'zh' : 'en';
+}
+
+/**
+ * 按播报文本的语言取语音配置。
+ *
+ * voice 必须跟随**文本**语言而非 UI 语言：Azure 对 voice 与文本语言不匹配的合成
+ * 会返回 200 但输出空/无效音频（真机 decodeAudioData Invalid file -10）。
+ * 英文 UI + 中文菜谱时用晓晓念中文，才是正确行为。
+ */
+export function getVoiceConfigForText(text: string): VoiceConfig {
+  return VOICE_MAP[detectTextLanguage(text)];
+}
