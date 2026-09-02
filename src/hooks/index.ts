@@ -16,4 +16,4 @@ export { useCookingLogger } from './useCookingLogger';
 
 // Shared types and factory
 export type { Services, CookingState, CookingSend } from './cooking-machine-shared';
-export { createServices, DEFAULT_TTS_VOICE } from './cooking-machine-shared';
+export { createServices } from './cooking-machine-shared';

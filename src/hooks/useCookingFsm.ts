@@ -4,9 +4,9 @@ import { fromPromise } from 'xstate';
 import { useActor } from '@xstate/react';
 import { cookingMachine } from '../machines/cooking-machine';
 import type { Services, CookingState, CookingSend } from './cooking-machine-shared';
-import { DEFAULT_TTS_VOICE } from './cooking-machine-shared';
 import { settingsStorage } from '../services/storage';
 import { DEFAULT_SETTINGS, REMINDER_BOOST, TTS_VOLUME_LEVELS } from '../types/settings';
+import { getVoiceConfig } from '../i18n/voiceMap';
 
 /**
  * Builds the provided cooking FSM with real service implementations
@@ -41,7 +41,7 @@ export function useCookingFsm(services: Services): {
           voice.pauseListening();
           try {
             const audioData = await tts.textToSpeech(input.text, {
-              voiceId: DEFAULT_TTS_VOICE,
+              voiceId: getVoiceConfig().ttsVoiceId,
             });
             // Read the volume level per playback (MMKV read, negligible
             // cost) so setting changes apply without re-subscribing.

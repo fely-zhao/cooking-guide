@@ -1,28 +1,52 @@
 import type { STTService } from './stt';
 import { recordAudio } from './stt';
+import i18n from '../i18n';
+import type { AppLanguage } from '../i18n';
 
 export type VoiceCommand = 'next' | 'repeat' | 'ask';
 
 /**
- * Ordered keyword-to-command mappings.
+ * Per-language ordered keyword-to-command mappings.
  *
  * `ask` entries are checked first to prevent short `next` keywords like
- * "下一步" from consuming question utterances such as "我想问下一步要做什么".
+ * "下一步" / "next" from consuming question utterances such as
+ * "我想问下一步要做什么" / "I have a question about the next step".
  */
-const KEYWORD_MAP: Array<{ keywords: string[]; command: VoiceCommand }> = [
-  {
-    keywords: ['我想问', '我问个问题', '有个问题'],
-    command: 'ask',
-  },
-  {
-    keywords: ['再说一遍', '重复', '再来一次'],
-    command: 'repeat',
-  },
-  {
-    keywords: ['好了', '下一步', '继续', '完成', '已完成'],
-    command: 'next',
-  },
-];
+const KEYWORD_MAPS: Record<AppLanguage, Array<{ keywords: string[]; command: VoiceCommand }>> = {
+  zh: [
+    {
+      keywords: ['我想问', '我问个问题', '有个问题'],
+      command: 'ask',
+    },
+    {
+      keywords: ['再说一遍', '重复', '再来一次'],
+      command: 'repeat',
+    },
+    {
+      keywords: ['好了', '下一步', '继续', '完成', '已完成'],
+      command: 'next',
+    },
+  ],
+  en: [
+    {
+      keywords: ['question', 'ask you'],
+      command: 'ask',
+    },
+    {
+      keywords: ['repeat', 'say it again', 'one more time'],
+      command: 'repeat',
+    },
+    {
+      keywords: ['next', 'done', 'continue', 'go on'],
+      command: 'next',
+    },
+  ],
+};
+
+/** dispatch 时按当前语言取词表（服务实例被 useCookingServices 缓存，切语言不重建） */
+function getKeywordMap(): Array<{ keywords: string[]; command: VoiceCommand }> {
+  return KEYWORD_MAPS[i18n.language === 'en' ? 'en' : 'zh'];
+}
 
 const DEFAULT_DEBOUNCE_MS = 2000;
 
@@ -185,7 +209,7 @@ export class VoiceCommandService {
       return;
     }
 
-    for (const { keywords, command } of KEYWORD_MAP) {
+    for (const { keywords, command } of getKeywordMap()) {
       for (const kw of keywords) {
         const idx = trimmed.indexOf(kw);
         if (idx === -1) continue;

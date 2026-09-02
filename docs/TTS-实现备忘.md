@@ -66,6 +66,12 @@ FSM invoke ttsService
 - 不碰系统音量、不需要权限；`useCookingFsm.ts` 的 ttsService actor 每次播放前读档位（MMKV 内存读，开销可忽略），设置即时生效
 - 真机验证注意：高增益（较高/最高 × boost）下语音是否失真
 
+### 播报音色随 UI 语言（i18n 阶段 3，2026-09-03）
+
+- Azure short name 不再由 `DEFAULT_TTS_VOICE` 常量固化：`useCookingFsm` 的 ttsService actor 每次播放经 `src/i18n/voiceMap.ts` 的 `getVoiceConfig().ttsVoiceId` 求值（zh → `zh-CN-XiaoxiaoNeural` 晓晓；en → `en-US-JennyNeural`），切语言后下一次播报即用新音色
+- SSML `xml:lang` 由 voice short name 推导（`zh-CN-XiaoxiaoNeural` → `zh-CN`），不再硬编码
+- 预缓存（`TTSCache`）以 text 为 key 且无播放消费方（播放走完整 `textToSpeech()`），语言错配不影响正确性，未改造
+
 ### 本地服务请求格式
 
 **服务端**: `D:\project\tts-server\local-tts-server.js`（Express + Windows SAPI）
@@ -91,6 +97,7 @@ FSM invoke ttsService
 2. **TTS 解耦**：从 `ApiClient` 中剥离，独立为 `TTSProvider` 策略接口
 3. **本地服务**：`LocalTTSProvider` 匹配 tts-server 服务的实际 API（字段 `voice`/`rate`，非 `voice_id`）
 4. **切换 Azure** (2026-08-27)：新增 `AzureTTSProvider`；`createServices()` 注释 Local 行改用 Azure；DEFAULT_TTS_VOICE 改为 `zh-CN-XiaoxiaoNeural`；`Services.ttsProvider` 类型同步为 `AzureTTSProvider`
+5. **i18n 阶段 3** (2026-09-03)：`DEFAULT_TTS_VOICE` 常量删除，播放时经 `voiceMap.getVoiceConfig().ttsVoiceId` 按 UI 语言取音色；`AzureTTSProvider` SSML `xml:lang` 从 voice name 推导
 
 ### 启动服务
 

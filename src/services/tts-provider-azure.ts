@@ -51,8 +51,10 @@ export class AzureTTSProvider implements TTSProvider {
 
     const url = `https://${this.region}.tts.speech.microsoft.com/cognitiveservices/v1`;
     const voiceName = options?.voiceId || 'zh-CN-XiaoxiaoNeural';
+    // SSML xml:lang 从 voice short name 推导（zh-CN-XiaoxiaoNeural → zh-CN）
+    const voiceLocale = voiceName.split('-').slice(0, 2).join('-');
     const ssml =
-      `<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="zh-CN">` +
+      `<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="${voiceLocale}">` +
       `<voice name="${escapeXml(voiceName)}">${escapeXml(text)}</voice></speak>`;
 
     const controller = new AbortController();

@@ -9,6 +9,7 @@ import {
 import { AZURE_REGION } from '../config';
 import { STTError } from './stt-error';
 import { ensureMicPermission } from './permissions';
+import { getVoiceConfig } from '../i18n/voiceMap';
 
 // Set audio session options once at module level for concurrent playback + recording.
 AudioManager.setAudioSessionOptions({
@@ -54,7 +55,7 @@ export function releaseRecorder(): void {
  * Two usage modes:
  * 1. **Full dictation** – `speechToText()` for recipe voice input (multi-language)
  * 2. **Short commands** – `speechToTextForCommand()` for cooking voice commands
- *    (Chinese-only, matching keywords like "好了/下一步/再说一遍")
+ *    (language follows UI language via voiceMap, matching per-language keywords)
  *
  * ---------------------------------------------------------------------------
  * LOCAL IMPLEMENTATION (commented out 2026-08-27, switch back if needed):
@@ -167,7 +168,8 @@ export class STTService {
    * Convenience wrapper that fixes the language to `'zh'` for command recognition.
    */
   async speechToTextForCommand(filePath: string): Promise<string> {
-    return this.speechToText(filePath, 'zh');
+    // 转写语言随 UI 语言走（voiceMap 枢纽），语音命令关键词表同步按语言切换
+    return this.speechToText(filePath, getVoiceConfig().sttLanguage);
   }
 }
 

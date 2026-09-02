@@ -96,7 +96,18 @@ LLMService                 ← JSON → llm-server（OpenAI 代理，:3001）（
 | `再说一遍` / `重复` / `再来一次`               | `repeat` | 触发 `REPEAT` 事件，重新播报当前步骤（2026-08-27 起 WAITING_TIMER/WAITING_AUTO 也可用；在计时/自动等待状态触发会取消倒计时，播完按 tag 重新计时） |
 | `好了` / `下一步` / `继续` / `完成` / `已完成` | `next`   | 触发 `NEXT` 事件，推进到下一步                                                                                                                    |
 
-`ask` 关键字排在前面，避免 "我想问下一步要做什么" 被 `next` 提前消费。
+**语音命令关键词表（阶段 3 起按 UI 语言切换）**
+
+<!-- prettier-ignore -->
+| 语言 | 关键词表                                                                                                       |
+| ---- | -------------------------------------------------------------------------------------------------------------- |
+| zh   | ask: `我想问`/`我问个问题`/`有个问题`；repeat: `再说一遍`/`重复`/`再来一次`；next: `好了`/`下一步`/`继续`/`完成`/`已完成` |
+| en   | ask: `question`/`ask you`；repeat: `repeat`/`say it again`/`one more time`；next: `next`/`done`/`continue`/`go on` |
+
+- 词表定义在 `src/services/voice-commands.ts` 的 `KEYWORD_MAPS`（Record<AppLanguage, …>），`_dispatch` 时按 `i18n.language` 求值——服务实例被 `useCookingServices` 的 ref 缓存、切语言不重建，**必须 dispatch 时取词表**，不能构造时固化
+- STT 转写语言同步跟随：`speechToTextForCommand()` 内部经 `getVoiceConfig().sttLanguage`（`src/i18n/voiceMap.ts`）取语言，英文模式下说英文关键词可控制 FSM
+
+`ask` 关键字排在前面，避免 "我想问下一步要做什么" / "I have a question about the next step" 被 `next` 提前消费。
 
 ### VAD（Voice Activity Detection）
 
@@ -187,6 +198,7 @@ yarn android --no-packager
 11. **服务端转录加速**: `stt-server/server.py` — `transcribe()` 添加 `vad_filter=True`（Silero VAD 跳过静音段，减少幻觉 + 缩短转录时间）和 `beam_size=1`（贪婪解码替代 beam search，速度翻倍）
 12. **缩短静音超时**: `VoiceCommandService` 录音参数 `silenceTimeoutMs` 从 500 降至 300
 13. **切换 Azure STT** (2026-08-27): `STTService` 改为 Azure Speech REST 直调（构造参数 `subscriptionKey + region`）；删除 `model` 参数（Azure 无此概念），`speechToTextForCommand()` 接口不变，`VoiceCommandService`/`VoiceInputScreen` 调用点零改动；本地 faster-whisper 实现体与 base64 工具函数以注释保留在 `stt.ts` 内；设置页新增 `azureSpeechKey` 输入框（MMKV 存储）
+14. **i18n 阶段 3 联动** (2026-09-03): `speechToTextForCommand()` 转写语言改经 `src/i18n/voiceMap.ts` 的 `getVoiceConfig().sttLanguage` 随 UI 语言（原硬编码 `'zh'`）；语音命令关键词表改 `KEYWORD_MAPS` 按语言取（见上方关键词表）
 
 ## 待办/后续
 
