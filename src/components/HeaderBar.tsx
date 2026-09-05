@@ -5,6 +5,7 @@ import { colors } from '../theme/colors';
 import { spacing } from '../theme/spacing';
 import { typography } from '../theme/typography';
 import { Icon } from './icons';
+import { useTranslation } from 'react-i18next';
 
 interface HeaderBarProps {
   title: string;
@@ -25,21 +26,23 @@ export function HeaderBar({
   onRightPress,
   rightDisabled,
 }: HeaderBarProps) {
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const isLarge = variant === 'large';
+  const backA11y = { accessibilityRole: 'button' as const, accessibilityLabel: t('common.back') };
 
   const headerContent = (
     <View style={[styles.container, isLarge ? styles.containerLarge : styles.containerDefault]}>
       {isLarge && onBack ? (
         <View style={styles.sideLeft}>
-          <TouchableOpacity onPress={onBack} style={styles.leftButton}>
+          <TouchableOpacity onPress={onBack} style={styles.leftButton} {...backA11y}>
             <Icon name="chevron-left" size={24} color={colors.text.primary} />
           </TouchableOpacity>
         </View>
       ) : !isLarge ? (
         <View style={styles.sideLeft}>
           {onBack ? (
-            <TouchableOpacity onPress={onBack} style={styles.leftButton}>
+            <TouchableOpacity onPress={onBack} style={styles.leftButton} {...backA11y}>
               <Icon name="chevron-left" size={24} color={colors.text.primary} />
             </TouchableOpacity>
           ) : (

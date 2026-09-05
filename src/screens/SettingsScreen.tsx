@@ -62,9 +62,12 @@ function SettingRow({ label, children }: { label: string; children: React.ReactN
 function SettingSwitch({
   value,
   onValueChange,
+  accessibilityLabel,
 }: {
   value: boolean;
   onValueChange: (v: boolean) => void;
+  /** 行标签：Switch 与旁边文本无关联，读屏需要显式 label */
+  accessibilityLabel: string;
 }) {
   return (
     <Switch
@@ -73,6 +76,7 @@ function SettingSwitch({
       trackColor={{ false: colors.border, true: colors.primaryLight }}
       thumbColor={value ? colors.primary : colors.surface}
       ios_backgroundColor={colors.border}
+      accessibilityLabel={accessibilityLabel}
     />
   );
 }
@@ -92,6 +96,7 @@ function Stepper({
   /** Optional display formatter (e.g. level labels instead of raw numbers) */
   formatValue?: (v: number) => string;
 }) {
+  const { t } = useTranslation();
   const canDecrease = value > min;
   const canIncrease = value < max;
 
@@ -103,9 +108,16 @@ function Stepper({
         disabled={!canDecrease}
         onPress={() => canDecrease && onChange(value - 1)}
         style={[styles.stepperBtn, !canDecrease && styles.stepperBtnDisabled]}
+        accessibilityRole="button"
+        accessibilityLabel={t('settings.a11y.decrease')}
+        accessibilityState={{ disabled: !canDecrease }}
       >
         <View style={styles.stepperBtnContent}>
-          <Text style={[styles.stepperBtnText, !canDecrease && styles.stepperBtnTextDisabled]}>
+          <Text
+            style={[styles.stepperBtnText, !canDecrease && styles.stepperBtnTextDisabled]}
+            accessibilityElementsHidden={true}
+            importantForAccessibility="no"
+          >
             −
           </Text>
         </View>
@@ -117,9 +129,16 @@ function Stepper({
         disabled={!canIncrease}
         onPress={() => canIncrease && onChange(value + 1)}
         style={[styles.stepperBtn, !canIncrease && styles.stepperBtnDisabled]}
+        accessibilityRole="button"
+        accessibilityLabel={t('settings.a11y.increase')}
+        accessibilityState={{ disabled: !canIncrease }}
       >
         <View style={styles.stepperBtnContent}>
-          <Text style={[styles.stepperBtnText, !canIncrease && styles.stepperBtnTextDisabled]}>
+          <Text
+            style={[styles.stepperBtnText, !canIncrease && styles.stepperBtnTextDisabled]}
+            accessibilityElementsHidden={true}
+            importantForAccessibility="no"
+          >
             +
           </Text>
         </View>
@@ -215,6 +234,7 @@ export default function SettingsScreen() {
             autoCapitalize="none"
             autoCorrect={false}
             secureTextEntry
+            accessibilityLabel={t('settings.azureKeyLabel')}
           />
           <Text style={[styles.fieldLabel, styles.fieldLabelSpaced]}>Azure Region</Text>
           <TextInput
@@ -226,6 +246,7 @@ export default function SettingsScreen() {
             onEndEditing={e => update('azureRegion', e.nativeEvent.text)}
             autoCapitalize="none"
             autoCorrect={false}
+            accessibilityLabel="Azure Region"
           />
           <Text style={[styles.fieldLabel, styles.fieldLabelSpaced]}>
             {t('settings.llmService')}
@@ -240,6 +261,7 @@ export default function SettingsScreen() {
             autoCapitalize="none"
             autoCorrect={false}
             keyboardType="url"
+            accessibilityLabel={t('settings.llmService')}
           />
           <Text style={[styles.fieldLabel, styles.fieldLabelSpaced]}>
             {t('settings.ttsService')}
@@ -254,6 +276,7 @@ export default function SettingsScreen() {
             autoCapitalize="none"
             autoCorrect={false}
             keyboardType="url"
+            accessibilityLabel={t('settings.ttsService')}
           />
           <Text style={[styles.fieldLabel, styles.fieldLabelSpaced]}>
             {t('settings.sttService')}
@@ -268,6 +291,7 @@ export default function SettingsScreen() {
             autoCapitalize="none"
             autoCorrect={false}
             keyboardType="url"
+            accessibilityLabel={t('settings.sttService')}
           />
         </SectionCard>
 
@@ -301,6 +325,7 @@ export default function SettingsScreen() {
             <SettingSwitch
               value={settings.gestureEnabled}
               onValueChange={v => update('gestureEnabled', v)}
+              accessibilityLabel={t('settings.gestureControl')}
             />
           </SettingRow>
 
@@ -310,6 +335,7 @@ export default function SettingsScreen() {
             <SettingSwitch
               value={settings.headsetAutoDetect}
               onValueChange={v => update('headsetAutoDetect', v)}
+              accessibilityLabel={t('settings.headsetAutoDetect')}
             />
           </SettingRow>
         </SectionCard>
@@ -326,6 +352,8 @@ export default function SettingsScreen() {
                   style={[styles.radioItem, active && styles.radioItemActive]}
                   onPress={() => changeAppLanguage(lang)}
                   haptic="selection"
+                  accessibilityRole="radio"
+                  accessibilityState={{ selected: active }}
                 >
                   <View style={styles.radioItemContent}>
                     {active ? (

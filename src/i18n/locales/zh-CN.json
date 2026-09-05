@@ -1,6 +1,7 @@
 {
   "common": {
     "done": "完成",
+    "back": "返回",
     "loading": "加载中…",
     "cancel": "取消",
     "retry": "重试",
@@ -154,6 +155,10 @@
   },
   "settings": {
     "title": "设置",
+    "a11y": {
+      "increase": "增加",
+      "decrease": "减少"
+    },
     "sections": {
       "services": "服务地址",
       "tts": "TTS 设置",

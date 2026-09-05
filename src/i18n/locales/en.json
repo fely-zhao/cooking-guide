@@ -1,6 +1,7 @@
 {
   "common": {
     "done": "Done",
+    "back": "Back",
     "loading": "Loading…",
     "cancel": "Cancel",
     "retry": "Retry",
@@ -151,6 +152,10 @@
   },
   "settings": {
     "title": "Settings",
+    "a11y": {
+      "increase": "Increase",
+      "decrease": "Decrease"
+    },
     "sections": {
       "services": "Services",
       "tts": "TTS",
