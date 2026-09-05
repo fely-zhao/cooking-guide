@@ -118,7 +118,9 @@
     "stepCounter": "第 {{cur}}/{{total}} 步",
     "defaultQuestion": "请重复一下当前步骤",
     "fallbackTitle": "烹饪中",
-    "listening": "等待语音指令…"
+    "listening": "等待语音指令…",
+    "notFound": "菜谱不存在",
+    "back": "返回"
   },
   "edit": {
     "title": "编辑菜谱",

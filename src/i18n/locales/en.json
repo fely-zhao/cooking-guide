@@ -118,7 +118,9 @@
     "stepCounter": "Step {{cur}}/{{total}}",
     "defaultQuestion": "Please repeat the current step",
     "fallbackTitle": "Cooking",
-    "listening": "Waiting for voice commands…"
+    "listening": "Waiting for voice commands…",
+    "notFound": "Recipe not found",
+    "back": "Back"
   },
   "edit": {
     "title": "Edit Recipe",

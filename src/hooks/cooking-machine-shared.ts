@@ -29,6 +29,8 @@ export interface UseCookingMachineResult {
   context: MachineContext;
   send: CookingSend;
   voiceCommandService: VoiceCommandService;
+  /** 菜谱不存在（已删除或非法 ID）——CookingScreen 渲染 NotFound 状态 */
+  notFound: boolean;
 }
 
 export interface Services {

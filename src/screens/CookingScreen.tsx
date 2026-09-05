@@ -27,6 +27,8 @@ import { StepNumber } from '../components/StepNumber';
 import { TranscriptBar } from '../components/TranscriptBar';
 import { IconButton } from '../components/IconButton';
 import { Icon } from '../components/icons';
+import { Button } from '../components/Button';
+import { NotFoundIllustration } from '../components/illustrations';
 import { useTranslation } from 'react-i18next';
 import i18n from '../i18n';
 import Svg, { Circle } from 'react-native-svg';
@@ -190,7 +192,7 @@ export default function CookingScreen() {
   const route = useRoute<CookingRouteProp>();
   const { recipeId } = route.params;
 
-  const { state, send, context, voiceCommandService } = useCookingMachine(recipeId);
+  const { state, send, context, voiceCommandService, notFound } = useCookingMachine(recipeId);
 
   // ── Timer countdown ────────────────────────────────────────────────────
 
@@ -324,6 +326,19 @@ export default function CookingScreen() {
 
   // ── Render ─────────────────────────────────────────────────────────────
 
+  // 菜谱不存在（已删除或非法 ID）：渲染 NotFound 状态而非空白烹饪页（审计 W6）
+  if (notFound) {
+    return (
+      <SafeAreaContainer style={styles.container}>
+        <View style={styles.notFoundState}>
+          <NotFoundIllustration size={100} />
+          <Text style={styles.notFoundText}>{t('cooking.notFound')}</Text>
+          <Button title={t('cooking.back')} onPress={() => navigation.goBack()} variant="outline" />
+        </View>
+      </SafeAreaContainer>
+    );
+  }
+
   return (
     <SafeAreaContainer style={styles.container}>
       {/* Header — minimal, transparent, dark immersive */}
@@ -433,6 +448,20 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.overlay,
+  },
+
+  // NotFound 状态（审计 W6）：菜谱不存在时兌底
+  notFoundState: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: spacing.lg,
+    paddingHorizontal: spacing.xl,
+  },
+  notFoundText: {
+    ...typography.body,
+    color: colors.text.inverse,
+    textAlign: 'center',
   },
 
   // Header

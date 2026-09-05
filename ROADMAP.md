@@ -64,7 +64,10 @@
 
 **发版前代码审计待清项**（2026-09-02 审计，Blocker 已清零并真机验证；完整报告 `docs/代码审计-2026-09-02.md`，SOP `docs/发版前审计清单.md`）：
 
-- 剩余 Warning：W2 useCookingLogger 挂生产路径（转态打日志+白查 DB）、W3 服务层错误 message 硬编码中文（stt/permissions/tts-provider-azure）、W4 ASK prompt 中文硬编码（随提问功能恢复一并处理）、W5 console.log 残留 21 处、W6 useRecipeLoader 错误不上浮 UI、W7 用户转写文本进日志（隐私）
+- ✅ W2/W5/W7 已修复（2026-09-02）：16 处调试 console.log 加 `__DEV__` 守卫（含 useCookingLogger，生产零开销不查库；转写文本仅 DEV 输出），6 处 console.error（错误观测）保留
+- ✅ W6 已修复（2026-09-02）：useRecipeLoader 返回 notFound，CookingScreen 兑底 NotFound 状态（插画+返回按钮，i18n cooking.notFound/back 双语）
+- ✅ W3 已关闭（2026-09-02 调研）：STT/权限错误中文 message 不上 UI（catch 层已换 i18n 文案）；LLM 错误英文技术串仅作 i18n 插值参数，无中英混杂问题
+- ⏸ W4 挂起：ASK prompt 中文硬编码，随提问功能设计恢复时一并多语言化
 - Nit 7 项发版后处理（真孤儿导出 3 个、多余 export、fontSize 半 token、模板依赖、大文件拆分等，见报告）
 
 - Blocker：① 设置页 TTS 音色选择器无消费路径（`ttsVoiceId` 写入 MMKV 但播放用 `getVoiceConfigForText` 硬映射，选项仅 MiniMax 而运行时只实例化 AzureTTSProvider，选择零效果）；② FSM ANSWERING invoke 无 onError，LLM 失败卡死（ROADMAP 既有记录，代码复核属实）；③ RecipeEditScreen 保存为多表写入（update+delete+recreate）未包 withTransaction，违反红线；④ ErrorBoundary 组件零引用，App 未挂载，生产崩溃白屏无兜底

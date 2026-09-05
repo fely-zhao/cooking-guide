@@ -27,7 +27,7 @@ export function useCookingMachine(recipeId: string): UseCookingMachineResult {
   const services = useCookingServices();
   useTtsHealthCheck(services.ttsProvider);
   const { state, send } = useCookingFsm(services);
-  useRecipeLoader(send, recipeId);
+  const notFound = useRecipeLoader(send, recipeId);
   useTtsPreCache(services, state);
   useCookingCleanup(services, state);
   useCookingLogger(recipeId, state);
@@ -37,5 +37,6 @@ export function useCookingMachine(recipeId: string): UseCookingMachineResult {
     context: state.context,
     send,
     voiceCommandService: services.voice,
+    notFound,
   };
 }
