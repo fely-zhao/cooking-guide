@@ -73,7 +73,7 @@
 - ✅ W3 已关闭（2026-09-02 调研）：STT/权限错误中文 message 不上 UI（catch 层已换 i18n 文案）；LLM 错误英文技术串仅作 i18n 插值参数，无中英混杂问题
 - ⏸ W4 挂起：ASK prompt 中文硬编码，随提问功能设计恢复时一并多语言化
 - Nit 剩余 2 项（N1/N2/N3/N7 已清，2026-09-05）：N4 @react-native/new-app-screen 模板残留依赖（红线 9，Windows PowerShell 操作）；N6 5 个屏幕超 500 行拆分
-- 08-26 项目审计遗留挂账（原 docs/项目审计报告.md，报告删除待确认）：① uuid@^9 在 devDependencies 但被运行时使用，需移 dependencies（红线 9，Windows PowerShell）；② accessibilityLabel 全库为 0，双手不离锅场景核心短板；③ 语音命令无暂停/继续/上一步（与提问功能一并规划）
+- 08-26 项目审计遗留挂账（原报告已删除，2026-09-05；发现项均已处置或转挂此处）：① uuid@^9 在 devDependencies 但被运行时使用，需移 dependencies（红线 9，Windows PowerShell）；② accessibilityLabel 全库为 0，双手不离锅场景核心短板；③ 语音命令无暂停/继续/上一步（与提问功能一并规划）
 
 - Blocker：① 设置页 TTS 音色选择器无消费路径（`ttsVoiceId` 写入 MMKV 但播放用 `getVoiceConfigForText` 硬映射，选项仅 MiniMax 而运行时只实例化 AzureTTSProvider，选择零效果）；② FSM ANSWERING invoke 无 onError，LLM 失败卡死（ROADMAP 既有记录，代码复核属实）；③ RecipeEditScreen 保存为多表写入（update+delete+recreate）未包 withTransaction，违反红线；④ ErrorBoundary 组件零引用，App 未挂载，生产崩溃白屏无兜底
 - Warning：cleanupOrphanCovers 未接线（封面图堆积）、useCookingLogger 挂生产路径（转态打日志+白查 DB）、服务层错误 message 硬编码中文（stt/permissions/tts-provider-azure）、ASK prompt 中文硬编码、console.log 21 处、useRecipeLoader 错误不上浮 UI
