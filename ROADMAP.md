@@ -26,6 +26,7 @@
 
 近期（2026-09，细节见 git log）：
 
+- **文档清理** (2026-09-05)：删除 docs/UI-Redesign-Plan.md（四 Phase 全部完成的历史施工方案，token 表与 UI 规范重复、字体方案已废弃、全库无引用）；Phase-D-UI规范.md 修正两处漂移（图标数标题 27→28 与表格实际行数一致；文件组织节移除已删净的 android/ios 字体目录条目）；同日清理 iOS 字体死配置残留——Info.plist UIAppFonts 整段与 project.pbxproj 23 行字体引用（7 PBXBuildFile + fonts PBXGroup + 7 PBXFileReference + 主 group children 引用 + 7 Resources），指向 09-05 已删净的 ttf 文件；plist 格式与 pbxproj 括号配平已验证
 - **发版前审计整改第一批（Blocker 清零）** (2026-09-02，真机验证通过——14 项检查全过)：
   - B1：设置页音色选择器全链路删除（SettingsScreen 组件+样式、AppSettings.ttsVoiceId 字段、storage 读写、i18n key）；音色唯一来源为 voiceMap 按文本语言自动决定
   - B2：提问入口临时禁用——InteractionControls 的 ASK_FEATURE_ENABLED=false + 两个语言词表 ask 词条注释保留 + 5 个 ask 测试用例 it.skip；提问功能设计完成后一并恢复
@@ -67,7 +68,7 @@
 
 - ✅ W2/W5/W7 已修复（2026-09-02）：16 处调试 console.log 加 `__DEV__` 守卫（含 useCookingLogger，生产零开销不查库；转写文本仅 DEV 输出），6 处 console.error（错误观测）保留
 - ✅ W6 已修复（2026-09-02）：useRecipeLoader 返回 notFound，CookingScreen 兑底 NotFound 状态（插画+返回按钮，i18n cooking.notFound/back 双语）
-- ✅ 真机走查新发现已闭环（2026-09-05 真机复验通过）：①② 字体类问题终极方案——全 App 弃用自定义字体改系统字体（typography.ts 删 12 处 fontFamily，SettingsScreen radio 删 Inter-SemiBold 改 fontWeight，HeaderBar 删 translateY 补偿）。① 英文模式字体不一致：命名字体不复存在，问题消亡；② HeaderBar 标题/按钮垂直错位：根因为西文字体 metrics 不对称（PlayfairDisplay (A+D)/2=0.475em）致中文回退字形中心偏离盒中心 2dp（实测 5.5px@3x 与推算吻合；flex/lineHeight 均无法修复），系统字体中英文同源渲染后 flex 自然居中。曾评估思源宋体子集化方案（中文互差 0.7px 但英文仍偏 2dp+5MB），弃。commit b115de7；规范三层闭环：CLAUDE.md 红线第 10 条严禁自定义字体 → UI 规范字体节重写 → 审计清单 fontFamily 清零扫描。遗留：iOS 侧 Info.plist UIAppFonts 与 project.pbxproj 22 处字体引用悬空，本项目不构建 iOS 故不处理，将来启用 iOS 构建需先清理
+- ✅ 真机走查新发现已闭环（2026-09-05 真机复验通过）：①② 字体类问题终极方案——全 App 弃用自定义字体改系统字体（typography.ts 删 12 处 fontFamily，SettingsScreen radio 删 Inter-SemiBold 改 fontWeight，HeaderBar 删 translateY 补偿）。① 英文模式字体不一致：命名字体不复存在，问题消亡；② HeaderBar 标题/按钮垂直错位：根因为西文字体 metrics 不对称（PlayfairDisplay (A+D)/2=0.475em）致中文回退字形中心偏离盒中心 2dp（实测 5.5px@3x 与推算吻合；flex/lineHeight 均无法修复），系统字体中英文同源渲染后 flex 自然居中。曾评估思源宋体子集化方案（中文互差 0.7px 但英文仍偏 2dp+5MB），弃。commit b115de7；规范三层闭环：CLAUDE.md 红线第 10 条严禁自定义字体 → UI 规范字体节重写 → 审计清单 fontFamily 清零扫描。遗留：iOS 侧 Info.plist UIAppFonts 与 project.pbxproj 22 处字体引用悬空（已于 2026-09-05 全部清理，见下方文档清理条）
 - ✅ W3 已关闭（2026-09-02 调研）：STT/权限错误中文 message 不上 UI（catch 层已换 i18n 文案）；LLM 错误英文技术串仅作 i18n 插值参数，无中英混杂问题
 - ⏸ W4 挂起：ASK prompt 中文硬编码，随提问功能设计恢复时一并多语言化
 - Nit 7 项发版后处理（真孤儿导出 3 个、多余 export、fontSize 半 token、模板依赖、大文件拆分等，见报告）

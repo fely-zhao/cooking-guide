@@ -11,13 +11,6 @@
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
-		cc9657fda6d1b16053eba4d2 /* PlayfairDisplay-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8b5994f71eb82c6694c50fc3 /* PlayfairDisplay-Bold.ttf */; };
-		9e5d4731be438832c2b79ed4 /* PlayfairDisplay-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = f404fa49a75f616329c8b5dc /* PlayfairDisplay-Regular.ttf */; };
-		d374b58e19b294abe42d47f1 /* Inter-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9fb37c1eadc230c07b418dab /* Inter-Bold.ttf */; };
-		fca9beef293f01a99bc70be7 /* Inter-ExtraLight.ttf in Resources */ = {isa = PBXBuildFile; fileRef = b4c210b6f19bb47a95abd9ea /* Inter-ExtraLight.ttf */; };
-		6fd1d461ad4e1ceac0d29381 /* Inter-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = a27c607ef23ecabaefdc0782 /* Inter-Medium.ttf */; };
-		35f7de6ed79a178d7dd9744c /* Inter-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2364cff817fbc22d715fd9d0 /* Inter-Regular.ttf */; };
-		ce042c816398aec06ca905e6 /* Inter-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2be93608b09d314688932f8d /* Inter-SemiBold.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -25,14 +18,6 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = CookingGuideRN/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = CookingGuideRN/Info.plist; sourceTree = "<group>"; };
 		13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = CookingGuideRN/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		0773e0bf943461523117ae90 /* fonts */ = {isa = PBXGroup; children = (8b5994f71eb82c6694c50fc3 /* PlayfairDisplay-Bold.ttf */, f404fa49a75f616329c8b5dc /* PlayfairDisplay-Regular.ttf */, 9fb37c1eadc230c07b418dab /* Inter-Bold.ttf */, b4c210b6f19bb47a95abd9ea /* Inter-ExtraLight.ttf */, a27c607ef23ecabaefdc0782 /* Inter-Medium.ttf */, 2364cff817fbc22d715fd9d0 /* Inter-Regular.ttf */, 2be93608b09d314688932f8d /* Inter-SemiBold.ttf */); name = fonts; path = CookingGuideRN/fonts; sourceTree = "<group>"; };
-		8b5994f71eb82c6694c50fc3 /* PlayfairDisplay-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "PlayfairDisplay-Bold.ttf"; path = "CookingGuideRN/fonts/PlayfairDisplay-Bold.ttf"; sourceTree = "<group>"; };
-		f404fa49a75f616329c8b5dc /* PlayfairDisplay-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "PlayfairDisplay-Regular.ttf"; path = "CookingGuideRN/fonts/PlayfairDisplay-Regular.ttf"; sourceTree = "<group>"; };
-		9fb37c1eadc230c07b418dab /* Inter-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Inter-Bold.ttf"; path = "CookingGuideRN/fonts/Inter-Bold.ttf"; sourceTree = "<group>"; };
-		b4c210b6f19bb47a95abd9ea /* Inter-ExtraLight.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Inter-ExtraLight.ttf"; path = "CookingGuideRN/fonts/Inter-ExtraLight.ttf"; sourceTree = "<group>"; };
-		a27c607ef23ecabaefdc0782 /* Inter-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Inter-Medium.ttf"; path = "CookingGuideRN/fonts/Inter-Medium.ttf"; sourceTree = "<group>"; };
-		2364cff817fbc22d715fd9d0 /* Inter-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Inter-Regular.ttf"; path = "CookingGuideRN/fonts/Inter-Regular.ttf"; sourceTree = "<group>"; };
-		2be93608b09d314688932f8d /* Inter-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Inter-SemiBold.ttf"; path = "CookingGuideRN/fonts/Inter-SemiBold.ttf"; sourceTree = "<group>"; };
 		3B4392A12AC88292D35C810B /* Pods-CookingGuideRN.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CookingGuideRN.debug.xcconfig"; path = "Target Support Files/Pods-CookingGuideRN/Pods-CookingGuideRN.debug.xcconfig"; sourceTree = "<group>"; };
 		5709B34CF0A7D63546082F79 /* Pods-CookingGuideRN.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CookingGuideRN.release.xcconfig"; path = "Target Support Files/Pods-CookingGuideRN/Pods-CookingGuideRN.release.xcconfig"; sourceTree = "<group>"; };
 		5DCACB8F33CDC322A6C60F78 /* libPods-CookingGuideRN.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-CookingGuideRN.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -56,7 +41,6 @@
 		13B07FAE1A68108700A75B9A /* CookingGuideRN */ = {
 			isa = PBXGroup;
 			children = (
-				0773e0bf943461523117ae90 /* fonts */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				761780EC2CA45674006654EE /* AppDelegate.swift */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
@@ -175,13 +159,6 @@
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
-				cc9657fda6d1b16053eba4d2 /* PlayfairDisplay-Bold.ttf in Resources */,
-				9e5d4731be438832c2b79ed4 /* PlayfairDisplay-Regular.ttf in Resources */,
-				d374b58e19b294abe42d47f1 /* Inter-Bold.ttf in Resources */,
-				fca9beef293f01a99bc70be7 /* Inter-ExtraLight.ttf in Resources */,
-				6fd1d461ad4e1ceac0d29381 /* Inter-Medium.ttf in Resources */,
-				35f7de6ed79a178d7dd9744c /* Inter-Regular.ttf in Resources */,
-				ce042c816398aec06ca905e6 /* Inter-SemiBold.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

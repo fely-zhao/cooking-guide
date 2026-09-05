@@ -85,7 +85,7 @@ import type { IconName } from '../components/icons';
 <Icon name="cooking" size={24} color={colors.primary} />;
 ```
 
-### 可用图标（27 个）
+### 可用图标（28 个）
 
 <!-- prettier-ignore -->
 | 名称            | 用途          |
@@ -569,12 +569,8 @@ src/
   theme/
     colors.ts        # 语义化颜色 token
     spacing.ts       # 间距 + 圆角 + 布局常量
-    typography.ts    # 11 级排版样式 + 字体族
+    typography.ts    # 11 级排版样式 + 字体族（系统字体，无自定义字体）
     shadows.ts       # 4 级阴影 token
   navigation/
     AppNavigator.tsx # 全局页面转场配置
-android/app/src/main/assets/fonts/  # Android 自定义字体
-ios/CookingGuideRN/fonts/           # iOS 自定义字体
-ios/CookingGuideRN/Info.plist       # UIAppFonts 注册
-ios/CookingGuideRN.xcodeproj/project.pbxproj  # Resources 注册
 ```
