@@ -27,6 +27,7 @@
 近期（2026-09，细节见 git log）：
 
 - **文档清理** (2026-09-05)：删除 docs/UI-Redesign-Plan.md（四 Phase 全部完成的历史施工方案，token 表与 UI 规范重复、字体方案已废弃、全库无引用）；Phase-D-UI规范.md 修正两处漂移（图标数标题 27→28 与表格实际行数一致；文件组织节移除已删净的 android/ios 字体目录条目）；同日清理 iOS 字体死配置残留——Info.plist UIAppFonts 整段与 project.pbxproj 23 行字体引用（7 PBXBuildFile + fonts PBXGroup + 7 PBXFileReference + 主 group children 引用 + 7 Resources），指向 09-05 已删净的 ttf 文件；plist 格式与 pbxproj 括号配平已验证
+- **审计 Nit 快速清理** (2026-09-05，门禁四件套全绿)：N1 删 closeDatabase/hapticError 死代码（getSessionsByRecipe 复核为 e2e 测试消费方，保留）；N2 收敛 9 处多余导出（OpenAI* 6 接口、INGREDIENT_ITEM_HEIGHT、DEFAULT_TTS_VOLUME_LEVEL、Draggable 两 Props；MIGRATIONS/InteractionControlsProps 有测试或 barrel 消费保留）；N3 StepNumber lg 改 typography.h4，全库 fontSize 硬编码清零；N7 SettingsScreen 两处 err as Error 改 instanceof 收窄；hooks barrel 删 7 个子 hook 全量导出（复核 barrel 零消费方）；README「四级交互降级」失实宣传改为语音+屏幕两级（耳机/手势 V2 规划）
 - **发版前审计整改第一批（Blocker 清零）** (2026-09-02，真机验证通过——14 项检查全过)：
   - B1：设置页音色选择器全链路删除（SettingsScreen 组件+样式、AppSettings.ttsVoiceId 字段、storage 读写、i18n key）；音色唯一来源为 voiceMap 按文本语言自动决定
   - B2：提问入口临时禁用——InteractionControls 的 ASK_FEATURE_ENABLED=false + 两个语言词表 ask 词条注释保留 + 5 个 ask 测试用例 it.skip；提问功能设计完成后一并恢复
@@ -71,7 +72,8 @@
 - ✅ 真机走查新发现已闭环（2026-09-05 真机复验通过）：①② 字体类问题终极方案——全 App 弃用自定义字体改系统字体（typography.ts 删 12 处 fontFamily，SettingsScreen radio 删 Inter-SemiBold 改 fontWeight，HeaderBar 删 translateY 补偿）。① 英文模式字体不一致：命名字体不复存在，问题消亡；② HeaderBar 标题/按钮垂直错位：根因为西文字体 metrics 不对称（PlayfairDisplay (A+D)/2=0.475em）致中文回退字形中心偏离盒中心 2dp（实测 5.5px@3x 与推算吻合；flex/lineHeight 均无法修复），系统字体中英文同源渲染后 flex 自然居中。曾评估思源宋体子集化方案（中文互差 0.7px 但英文仍偏 2dp+5MB），弃。commit b115de7；规范三层闭环：CLAUDE.md 红线第 10 条严禁自定义字体 → UI 规范字体节重写 → 审计清单 fontFamily 清零扫描。遗留：iOS 侧 Info.plist UIAppFonts 与 project.pbxproj 22 处字体引用悬空（已于 2026-09-05 全部清理，见下方文档清理条）
 - ✅ W3 已关闭（2026-09-02 调研）：STT/权限错误中文 message 不上 UI（catch 层已换 i18n 文案）；LLM 错误英文技术串仅作 i18n 插值参数，无中英混杂问题
 - ⏸ W4 挂起：ASK prompt 中文硬编码，随提问功能设计恢复时一并多语言化
-- Nit 7 项发版后处理（真孤儿导出 3 个、多余 export、fontSize 半 token、模板依赖、大文件拆分等，见报告）
+- Nit 剩余 2 项（N1/N2/N3/N7 已清，2026-09-05）：N4 @react-native/new-app-screen 模板残留依赖（红线 9，Windows PowerShell 操作）；N6 5 个屏幕超 500 行拆分
+- 08-26 项目审计遗留挂账（原 docs/项目审计报告.md，报告删除待确认）：① uuid@^9 在 devDependencies 但被运行时使用，需移 dependencies（红线 9，Windows PowerShell）；② accessibilityLabel 全库为 0，双手不离锅场景核心短板；③ 语音命令无暂停/继续/上一步（与提问功能一并规划）
 
 - Blocker：① 设置页 TTS 音色选择器无消费路径（`ttsVoiceId` 写入 MMKV 但播放用 `getVoiceConfigForText` 硬映射，选项仅 MiniMax 而运行时只实例化 AzureTTSProvider，选择零效果）；② FSM ANSWERING invoke 无 onError，LLM 失败卡死（ROADMAP 既有记录，代码复核属实）；③ RecipeEditScreen 保存为多表写入（update+delete+recreate）未包 withTransaction，违反红线；④ ErrorBoundary 组件零引用，App 未挂载，生产崩溃白屏无兜底
 - Warning：cleanupOrphanCovers 未接线（封面图堆积）、useCookingLogger 挂生产路径（转态打日志+白查 DB）、服务层错误 message 硬编码中文（stt/permissions/tts-provider-azure）、ASK prompt 中文硬编码、console.log 21 处、useRecipeLoader 错误不上浮 UI

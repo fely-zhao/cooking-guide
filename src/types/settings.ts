@@ -27,7 +27,7 @@ export const TTS_VOLUME_LEVELS = [
   { gain: 2 },
 ] as const;
 
-export const DEFAULT_TTS_VOLUME_LEVEL = 2; // 标准
+const DEFAULT_TTS_VOLUME_LEVEL = 2; // 标准
 
 /** 计时到点提醒播报（ANNOUNCING_REMINDER）的临时增益倍率，与用户档位相乘，播完恢复 */
 export const REMINDER_BOOST = 3; // +9.5dB，1.5× 仅 +3.5dB 真机听感无差别

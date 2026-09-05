@@ -2,18 +2,18 @@
 // OpenAI Chat Completions types (subset we depend on)
 // ---------------------------------------------------------------------------
 
-export interface OpenAIContentBlock {
+interface OpenAIContentBlock {
   type: 'text' | 'image_url';
   text?: string;
   image_url?: { url: string; detail?: 'low' | 'high' | 'auto' };
 }
 
-export interface OpenAIMessage {
+interface OpenAIMessage {
   role: 'system' | 'user' | 'assistant';
   content: string | OpenAIContentBlock[];
 }
 
-export interface OpenAITool {
+interface OpenAITool {
   type: 'function';
   function: {
     name: string;
@@ -33,7 +33,7 @@ export interface OpenAIChatRequest {
   thinking?: { type: 'enabled' | 'disabled' };
 }
 
-export interface OpenAIToolCall {
+interface OpenAIToolCall {
   id: string;
   type: 'function';
   function: {
@@ -42,13 +42,13 @@ export interface OpenAIToolCall {
   };
 }
 
-export interface OpenAIAssistantMessage {
+interface OpenAIAssistantMessage {
   role: 'assistant';
   content: string | null;
   tool_calls?: OpenAIToolCall[];
 }
 
-export interface OpenAIChoice {
+interface OpenAIChoice {
   index: number;
   message: OpenAIAssistantMessage;
   finish_reason: string;

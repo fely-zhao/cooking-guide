@@ -22,7 +22,7 @@ const SIZE_DIMENSIONS: Record<StepNumberSize, number> = {
 const SIZE_TYPOGRAPHY: Record<StepNumberSize, TextStyle> = {
   sm: { ...typography.badge },
   md: { ...typography.button },
-  lg: { ...typography.button, fontSize: 18, lineHeight: 24 },
+  lg: { ...typography.h4 },
 };
 
 const VARIANT_STYLES: Record<

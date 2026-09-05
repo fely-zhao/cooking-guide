@@ -16,9 +16,9 @@ import { IconButton } from './IconButton';
 import { useTranslation } from 'react-i18next';
 import type { EditableIngredient } from '../utils/recipe-edit';
 
-export const INGREDIENT_ITEM_HEIGHT = 72;
+const INGREDIENT_ITEM_HEIGHT = 72;
 
-export interface DraggableIngredientProps {
+interface DraggableIngredientProps {
   ingredient: EditableIngredient;
   index: number;
   totalCount: number;

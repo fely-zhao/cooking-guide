@@ -11,10 +11,3 @@ export function getDatabase() {
   }
   return dbInstance;
 }
-
-export function closeDatabase() {
-  if (dbInstance) {
-    dbInstance.close();
-    dbInstance = null;
-  }
-}

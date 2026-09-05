@@ -5,7 +5,6 @@ import {
   hapticSelection,
   hapticSuccess,
   hapticWarning,
-  hapticError,
 } from '../utils/haptic';
 
 jest.mock('react-native-haptic-feedback', () => ({
@@ -35,7 +34,6 @@ describe('haptic utils', () => {
     ['hapticSelection', hapticSelection, HapticFeedbackTypes.selection],
     ['hapticSuccess', hapticSuccess, HapticFeedbackTypes.notificationSuccess],
     ['hapticWarning', hapticWarning, HapticFeedbackTypes.notificationWarning],
-    ['hapticError', hapticError, HapticFeedbackTypes.notificationError],
   ] as const)('%s triggers %s', (_name, fn, expectedType) => {
     fn();
     expect(trigger).toHaveBeenCalledWith(expectedType, {

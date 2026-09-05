@@ -29,10 +29,6 @@ export function hapticWarning(): void {
   trigger(HapticFeedbackTypes.notificationWarning);
 }
 
-export function hapticError(): void {
-  trigger(HapticFeedbackTypes.notificationError);
-}
-
 export function hapticSelection(): void {
   trigger(HapticFeedbackTypes.selection);
 }

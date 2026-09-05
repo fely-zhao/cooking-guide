@@ -22,7 +22,7 @@ export const STEP_ITEM_HEIGHT = 220;
 
 const TIMER_PRESETS = [30, 60, 180, 300];
 
-export interface DraggableStepProps {
+interface DraggableStepProps {
   step: EditableStep;
   index: number;
   totalCount: number;

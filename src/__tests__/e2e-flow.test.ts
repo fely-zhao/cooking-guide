@@ -129,7 +129,6 @@ jest.mock('@op-engineering/op-sqlite', () => ({
 }));
 jest.mock('../db/init', () => ({
   getDatabase: () => mockDb,
-  closeDatabase: () => {},
 }));
 
 // ---------------------------------------------------------------------------
