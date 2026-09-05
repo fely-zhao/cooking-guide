@@ -67,7 +67,7 @@
 
 - ✅ W2/W5/W7 已修复（2026-09-02）：16 处调试 console.log 加 `__DEV__` 守卫（含 useCookingLogger，生产零开销不查库；转写文本仅 DEV 输出），6 处 console.error（错误观测）保留
 - ✅ W6 已修复（2026-09-02）：useRecipeLoader 返回 notFound，CookingScreen 兑底 NotFound 状态（插画+返回按钮，i18n cooking.notFound/back 双语）
-- 🔧 真机走查新发现（2026-09-05，已根治待真机复验）：①② 字体类问题统一走「全 App 弃用自定义字体，改用系统字体」终极方案（typography.ts 删 12 处 fontFamily，SettingsScreen radio 删 Inter-SemiBold 改 fontWeight，HeaderBar 删 translateY 补偿）。① 英文模式字体不一致：命名字体不复存在，问题消亡；② HeaderBar 标题/按钮垂直错位：根因确认非 fallback，是西文字体 metrics 不对称（PlayfairDisplay (A+D)/2=0.475em）致中文回退字形中心偏离盒中心 2dp（截图实测 5.5px@3x 与推算吻合；flex/lineHeight 均无法修复，基线位置与 lineHeight 无关），系统字体中英文同源渲染后 flex 自然居中（推算互差 <0.5px@3x）。曾评估思源宋体子集化方案（中文模式互差 0.7px 但英文模式仍偏 2dp+5MB），弃。tsc/lint/format/jest/e2e 全绿；UI 规范字体节重写、审计清单扫描规则改 fontFamily 清零。遗留：字体 ttf 已删净（2026-09-05，android assets + ios fonts 各 7 个，fonts 空目录一并移除）；iOS 侧 Info.plist UIAppFonts 与 project.pbxproj 22 处字体引用悬空，本项目不构建 iOS 故不处理，将来若启用 iOS 构建需先清理；英文模式标题由衬线退为无衬线，设计层次靠字号字重
+- ✅ 真机走查新发现已闭环（2026-09-05 真机复验通过）：①② 字体类问题终极方案——全 App 弃用自定义字体改系统字体（typography.ts 删 12 处 fontFamily，SettingsScreen radio 删 Inter-SemiBold 改 fontWeight，HeaderBar 删 translateY 补偿）。① 英文模式字体不一致：命名字体不复存在，问题消亡；② HeaderBar 标题/按钮垂直错位：根因为西文字体 metrics 不对称（PlayfairDisplay (A+D)/2=0.475em）致中文回退字形中心偏离盒中心 2dp（实测 5.5px@3x 与推算吻合；flex/lineHeight 均无法修复），系统字体中英文同源渲染后 flex 自然居中。曾评估思源宋体子集化方案（中文互差 0.7px 但英文仍偏 2dp+5MB），弃。commit b115de7；规范三层闭环：CLAUDE.md 红线第 10 条严禁自定义字体 → UI 规范字体节重写 → 审计清单 fontFamily 清零扫描。遗留：iOS 侧 Info.plist UIAppFonts 与 project.pbxproj 22 处字体引用悬空，本项目不构建 iOS 故不处理，将来启用 iOS 构建需先清理
 - ✅ W3 已关闭（2026-09-02 调研）：STT/权限错误中文 message 不上 UI（catch 层已换 i18n 文案）；LLM 错误英文技术串仅作 i18n 插值参数，无中英混杂问题
 - ⏸ W4 挂起：ASK prompt 中文硬编码，随提问功能设计恢复时一并多语言化
 - Nit 7 项发版后处理（真孤儿导出 3 个、多余 export、fontSize 半 token、模板依赖、大文件拆分等，见报告）
