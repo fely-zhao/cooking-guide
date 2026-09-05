@@ -46,9 +46,11 @@ export function useCookingFsm(services: Services): {
             // cost) so setting changes apply without re-subscribing.
             const level = settingsStorage.get('ttsVolumeLevel') ?? DEFAULT_SETTINGS.ttsVolumeLevel;
             ttsPlayer.setVolume(TTS_VOLUME_LEVELS[level]?.gain ?? 1);
-            console.log(
-              `[TTS] play: voice=${voiceId} bytes=${audioData.byteLength} gain=${TTS_VOLUME_LEVELS[level]?.gain} text=${JSON.stringify(input.text.slice(0, 30))}`,
-            );
+            if (__DEV__) {
+              console.log(
+                `[TTS] play: voice=${voiceId} bytes=${audioData.byteLength} gain=${TTS_VOLUME_LEVELS[level]?.gain} text=${JSON.stringify(input.text.slice(0, 30))}`,
+              );
+            }
             await ttsPlayer.play(audioData, input.boost ? { boost: REMINDER_BOOST } : undefined);
           } catch (err) {
             console.error(

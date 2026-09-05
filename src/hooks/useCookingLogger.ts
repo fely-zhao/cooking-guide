@@ -5,10 +5,13 @@ import type { CookingState } from './cooking-machine-shared';
 /**
  * Pure observability hook — logs recipe loading and FSM state transitions
  * to the console for debugging.
+ *
+ * DEV-only（2026-09-02 审计 W2）：生产构建零开销——不打日志、不同步白查 DB。
  */
 export function useCookingLogger(recipeId: string, state: CookingState): void {
   // Log recipe data on mount / recipeId change
   useEffect(() => {
+    if (!__DEV__) return;
     const recipe = getRecipe(recipeId);
     console.log('[useCookingMachine] getRecipe result:', {
       recipeId,
@@ -20,6 +23,7 @@ export function useCookingLogger(recipeId: string, state: CookingState): void {
 
   // Log every state transition
   useEffect(() => {
+    if (!__DEV__) return;
     const s = typeof state.value === 'string' ? state.value : String(state.value);
     console.log(
       `[useCookingMachine] state=${s} step=${state.context.currentStepIndex + 1}/${state.context.steps.length}`,

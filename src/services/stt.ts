@@ -125,7 +125,9 @@ export class STTService {
       }
       // Blob body is the reliable way to send raw audio from RN/Hermes.
       const audioBlob = await fileResponse.blob();
-      console.log(`[STT] uploading ${audioBlob.size} bytes from ${filePath}`);
+      if (__DEV__) {
+        console.log(`[STT] uploading ${audioBlob.size} bytes from ${filePath}`);
+      }
 
       const response = await fetch(url, {
         method: 'POST',
@@ -152,7 +154,9 @@ export class STTService {
       if (result.RecognitionStatus && result.RecognitionStatus !== 'Success') {
         // NoSpeech / InitialSilenceTimeout / Babble — treat as empty result so
         // callers can show "未识别到语音" without an exception.
-        console.log(`[STT] Azure recognition not successful: ${result.RecognitionStatus}`);
+        if (__DEV__) {
+          console.log(`[STT] Azure recognition not successful: ${result.RecognitionStatus}`);
+        }
         return '';
       }
       return (result.DisplayText ?? '').trim();
@@ -305,9 +309,11 @@ export async function recordAudio(options: RecordAudioOptions): Promise<{ filePa
     throw new STTError('录音文件路径为空');
   }
 
-  console.log(
-    `[recordAudio] path=${paths[0]} size=${size.toFixed(2)}MB duration=${duration.toFixed(1)}s`,
-  );
+  if (__DEV__) {
+    console.log(
+      `[recordAudio] path=${paths[0]} size=${size.toFixed(2)}MB duration=${duration.toFixed(1)}s`,
+    );
+  }
 
   return { filePath: paths[0] };
 }

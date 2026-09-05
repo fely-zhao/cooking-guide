@@ -101,19 +101,25 @@ export class VoiceCommandService {
   async startListening(): Promise<void> {
     if (this._listening) return;
     this._listening = true;
-    console.log('[VoiceCommand] startListening: loop started');
+    if (__DEV__) {
+      console.log('[VoiceCommand] startListening: loop started');
+    }
 
     const MAX_CONSECUTIVE_FAILURES = 3;
     let consecutiveFailures = 0;
 
     while (this._listening) {
       if (this._paused) {
-        console.log('[VoiceCommand] startListening: paused, waiting...');
+        if (__DEV__) {
+          console.log('[VoiceCommand] startListening: paused, waiting...');
+        }
         await new Promise<void>(resolve => {
           this._pauseResolve = resolve;
         });
         this._pauseResolve = null;
-        console.log('[VoiceCommand] startListening: resumed');
+        if (__DEV__) {
+          console.log('[VoiceCommand] startListening: resumed');
+        }
         continue;
       }
 
@@ -122,24 +128,32 @@ export class VoiceCommandService {
 
       try {
         const t0 = Date.now();
-        console.log('[VoiceCommand] recording...');
+        if (__DEV__) {
+          console.log('[VoiceCommand] recording...');
+        }
         const { filePath } = await recordAudio({
           maxDurationMs: 5000,
           silenceTimeoutMs: 300,
           silenceThreshold: 0.001,
         });
-        console.log('[VoiceCommand] recording done, transcribing...');
+        if (__DEV__) {
+          console.log('[VoiceCommand] recording done, transcribing...');
+        }
         this._recordingPhase = 'transcribing';
         const text = await this.sttService.speechToTextForCommand(filePath);
-        console.log(
-          `[VoiceCommand] transcription: ${JSON.stringify(text)} (${Date.now() - t0}ms from record start)`,
-        );
+        if (__DEV__) {
+          console.log(
+            `[VoiceCommand] transcription: ${JSON.stringify(text)} (${Date.now() - t0}ms from record start)`,
+          );
+        }
 
         // Discard if TTS playback started while the mic was still open.
         // The recording likely captured TTS audio from the speaker, which
         // should never be interpreted as a voice command.
         if (this._pauseDiscard) {
-          console.log('[VoiceCommand] transcription discarded (recording overlapped with TTS)');
+          if (__DEV__) {
+            console.log('[VoiceCommand] transcription discarded (recording overlapped with TTS)');
+          }
           this._pauseDiscard = false;
           continue;
         }
@@ -153,14 +167,18 @@ export class VoiceCommandService {
           err,
         );
         if (consecutiveFailures >= MAX_CONSECUTIVE_FAILURES) {
-          console.log('[VoiceCommand] too many failures, stopping listening loop');
+          if (__DEV__) {
+            console.log('[VoiceCommand] too many failures, stopping listening loop');
+          }
           this._listening = false;
         }
       } finally {
         this._recordingPhase = 'idle';
       }
     }
-    console.log('[VoiceCommand] startListening: loop ended');
+    if (__DEV__) {
+      console.log('[VoiceCommand] startListening: loop ended');
+    }
   }
 
   /**
@@ -203,13 +221,17 @@ export class VoiceCommandService {
   private _dispatch(text: string): void {
     const now = Date.now();
     if (now - this._lastCommandTime < this.debounceMs) {
-      console.log('[VoiceCommand] dispatch: debounced');
+      if (__DEV__) {
+        console.log('[VoiceCommand] dispatch: debounced');
+      }
       return;
     }
 
     const trimmed = text.trim();
     if (!trimmed) {
-      console.log('[VoiceCommand] dispatch: empty text');
+      if (__DEV__) {
+        console.log('[VoiceCommand] dispatch: empty text');
+      }
       return;
     }
 
@@ -233,7 +255,10 @@ export class VoiceCommandService {
         if (idx === -1) continue;
 
         this._lastCommandTime = now;
-        console.log('[VoiceCommand] dispatch: matched', command, 'from', JSON.stringify(text));
+        if (__DEV__) {
+          // 转写内容属用户语音数据（审计 W7），仅 DEV 输出，release 不落日志
+          console.log('[VoiceCommand] dispatch: matched', command, 'from', JSON.stringify(text));
+        }
 
         if (command === 'ask') {
           const question = trimmed.slice(idx + kw.length).trim() || undefined;
@@ -244,6 +269,9 @@ export class VoiceCommandService {
         return;
       }
     }
-    console.log('[VoiceCommand] dispatch: no keyword matched in', JSON.stringify(text));
+    if (__DEV__) {
+      // 同 W7：转写内容仅 DEV 输出
+      console.log('[VoiceCommand] dispatch: no keyword matched in', JSON.stringify(text));
+    }
   }
 }
