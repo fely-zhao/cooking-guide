@@ -2,6 +2,11 @@
   "common": {
     "done": "Done",
     "back": "Back",
+    "a11y": {
+      "increase": "Increase",
+      "decrease": "Decrease",
+      "remove": "Remove"
+    },
     "loading": "Loading…",
     "cancel": "Cancel",
     "retry": "Retry",
@@ -85,7 +90,8 @@
     "recognizeCta": "Recognize Recipe",
     "camera": "Take Photo",
     "gallery": "Choose from Gallery",
-    "parseFailedMsg": "Could not parse the image. Try again or use another photo."
+    "parseFailedMsg": "Could not parse the image. Try again or use another photo.",
+    "changeImage": "Change image"
   },
   "url": {
     "title": "Import from Link",
@@ -93,7 +99,8 @@
     "linkPlaceholder": "Paste a recipe link",
     "hint": "Supports http and https links",
     "parseCta": "Parse Recipe",
-    "parseFailedMsg": "Could not parse this link. Check that it is valid."
+    "parseFailedMsg": "Could not parse this link. Check that it is valid.",
+    "clear": "Clear"
   },
   "voice": {
     "title": "Voice Input",
@@ -107,7 +114,13 @@
     "tapToStart": "Tap to start recording",
     "tapToStop": "Tap again to stop",
     "transcribing": "Transcribing...",
-    "maxDuration": "Max recording {{n}}s"
+    "maxDuration": "Max recording {{n}}s",
+    "a11y": {
+      "startRecording": "Start recording",
+      "stopRecording": "Stop recording",
+      "elapsedMinSec": "{{min}} min {{sec}} sec recorded",
+      "elapsedSec": "{{sec}} sec recorded"
+    }
   },
   "cooking": {
     "stateAnnouncing": "Announcing…",
@@ -152,10 +165,6 @@
   },
   "settings": {
     "title": "Settings",
-    "a11y": {
-      "increase": "Increase",
-      "decrease": "Decrease"
-    },
     "sections": {
       "services": "Services",
       "tts": "TTS",

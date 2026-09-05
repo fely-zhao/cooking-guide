@@ -109,7 +109,7 @@ function Stepper({
         onPress={() => canDecrease && onChange(value - 1)}
         style={[styles.stepperBtn, !canDecrease && styles.stepperBtnDisabled]}
         accessibilityRole="button"
-        accessibilityLabel={t('settings.a11y.decrease')}
+        accessibilityLabel={t('common.a11y.decrease')}
         accessibilityState={{ disabled: !canDecrease }}
       >
         <View style={styles.stepperBtnContent}>
@@ -130,7 +130,7 @@ function Stepper({
         onPress={() => canIncrease && onChange(value + 1)}
         style={[styles.stepperBtn, !canIncrease && styles.stepperBtnDisabled]}
         accessibilityRole="button"
-        accessibilityLabel={t('settings.a11y.increase')}
+        accessibilityLabel={t('common.a11y.increase')}
         accessibilityState={{ disabled: !canIncrease }}
       >
         <View style={styles.stepperBtnContent}>

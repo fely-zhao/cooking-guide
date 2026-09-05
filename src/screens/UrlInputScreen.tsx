@@ -85,9 +85,15 @@ export default function UrlInputScreen() {
             keyboardType="url"
             returnKeyType="done"
             editable={!isParsing}
+            accessibilityLabel={t('url.linkLabel')}
           />
           {url.length > 0 && !isParsing && (
-            <TouchableOpacity style={styles.clearButton} onPress={() => setUrl('')}>
+            <TouchableOpacity
+              style={styles.clearButton}
+              onPress={() => setUrl('')}
+              accessibilityRole="button"
+              accessibilityLabel={t('url.clear')}
+            >
               <Icon name="close" size={16} color={colors.text.muted} />
             </TouchableOpacity>
           )}

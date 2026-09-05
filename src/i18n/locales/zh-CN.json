@@ -2,6 +2,11 @@
   "common": {
     "done": "完成",
     "back": "返回",
+    "a11y": {
+      "increase": "增加",
+      "decrease": "减少",
+      "remove": "删除"
+    },
     "loading": "加载中…",
     "cancel": "取消",
     "retry": "重试",
@@ -88,7 +93,8 @@
     "recognizeCta": "识别菜谱",
     "camera": "拍照",
     "gallery": "从相册选择",
-    "parseFailedMsg": "无法解析图片内容，请重试或换一张图片。"
+    "parseFailedMsg": "无法解析图片内容，请重试或换一张图片。",
+    "changeImage": "重新选择图片"
   },
   "url": {
     "title": "链接导入",
@@ -96,7 +102,8 @@
     "linkPlaceholder": "粘贴菜谱链接",
     "hint": "支持 http 和 https 链接",
     "parseCta": "解析菜谱",
-    "parseFailedMsg": "无法解析该链接内容，请检查链接是否有效。"
+    "parseFailedMsg": "无法解析该链接内容，请检查链接是否有效。",
+    "clear": "清空"
   },
   "voice": {
     "title": "语音录入",
@@ -110,7 +117,13 @@
     "tapToStart": "点击开始录音",
     "tapToStop": "再次点击停止录音",
     "transcribing": "正在识别语音...",
-    "maxDuration": "最长录制 {{n}} 秒"
+    "maxDuration": "最长录制 {{n}} 秒",
+    "a11y": {
+      "startRecording": "开始录音",
+      "stopRecording": "停止录音",
+      "elapsedMinSec": "已录 {{min}} 分 {{sec}} 秒",
+      "elapsedSec": "已录 {{sec}} 秒"
+    }
   },
   "cooking": {
     "stateAnnouncing": "播报中…",
@@ -155,10 +168,6 @@
   },
   "settings": {
     "title": "设置",
-    "a11y": {
-      "increase": "增加",
-      "decrease": "减少"
-    },
     "sections": {
       "services": "服务地址",
       "tts": "TTS 设置",

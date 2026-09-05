@@ -106,6 +106,8 @@ export default function ImageInputScreen() {
           style={styles.previewArea}
           onPress={handlePreviewPress}
           activeOpacity={0.7}
+          accessibilityRole="imagebutton"
+          accessibilityLabel={imageUri ? t('image.changeImage') : undefined}
         >
           {imageUri ? (
             <Image source={{ uri: imageUri }} style={styles.previewImage} resizeMode="cover" />

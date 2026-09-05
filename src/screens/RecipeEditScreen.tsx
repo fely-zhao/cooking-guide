@@ -347,16 +347,39 @@ export default function RecipeEditScreen() {
                 onChangeText={setRecipeName}
                 placeholder={t('edit.namePlaceholder')}
                 placeholderTextColor={colors.text.inputPlaceholder}
+                accessibilityLabel={t('edit.name')}
               />
 
               <Text style={[styles.label, styles.labelSpacing]}>{t('edit.servings')}</Text>
               <View style={styles.stepperRow}>
-                <TouchableOpacity style={styles.stepperButton} onPress={() => changeServings(-1)}>
-                  <Text style={styles.stepperButtonText}>−</Text>
+                <TouchableOpacity
+                  style={styles.stepperButton}
+                  onPress={() => changeServings(-1)}
+                  accessibilityRole="button"
+                  accessibilityLabel={t('common.a11y.decrease')}
+                >
+                  <Text
+                    style={styles.stepperButtonText}
+                    accessibilityElementsHidden={true}
+                    importantForAccessibility="no"
+                  >
+                    −
+                  </Text>
                 </TouchableOpacity>
                 <Text style={styles.stepperValue}>{t('edit.servingsValue', { n: servings })}</Text>
-                <TouchableOpacity style={styles.stepperButton} onPress={() => changeServings(1)}>
-                  <Text style={styles.stepperButtonText}>+</Text>
+                <TouchableOpacity
+                  style={styles.stepperButton}
+                  onPress={() => changeServings(1)}
+                  accessibilityRole="button"
+                  accessibilityLabel={t('common.a11y.increase')}
+                >
+                  <Text
+                    style={styles.stepperButtonText}
+                    accessibilityElementsHidden={true}
+                    importantForAccessibility="no"
+                  >
+                    +
+                  </Text>
                 </TouchableOpacity>
               </View>
 

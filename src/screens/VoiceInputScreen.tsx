@@ -210,10 +210,26 @@ export default function VoiceInputScreen() {
         </Text>
 
         {/* Timer */}
-        <Text style={styles.timerText}>{formatTime(elapsedSeconds)}</Text>
+        <Text
+          style={styles.timerText}
+          accessibilityLabel={
+            elapsedSeconds >= 60
+              ? t('voice.a11y.elapsedMinSec', {
+                  min: Math.floor(elapsedSeconds / 60),
+                  sec: elapsedSeconds % 60,
+                })
+              : t('voice.a11y.elapsedSec', { sec: elapsedSeconds })
+          }
+        >
+          {formatTime(elapsedSeconds)}
+        </Text>
 
         {/* Waveform */}
-        <View style={styles.waveform}>
+        <View
+          style={styles.waveform}
+          accessibilityElementsHidden={true}
+          importantForAccessibility="no-hide-descendants"
+        >
           {waveAnims.map((_, i) => (
             <Animated.View
               key={i}
@@ -231,6 +247,11 @@ export default function VoiceInputScreen() {
           onPress={handleToggleRecording}
           disabled={isProcessing}
           activeOpacity={0.8}
+          accessibilityRole="button"
+          accessibilityLabel={
+            isRecording ? t('voice.a11y.stopRecording') : t('voice.a11y.startRecording')
+          }
+          accessibilityState={{ disabled: isProcessing }}
         >
           <Animated.View
             style={[

@@ -152,6 +152,7 @@ export const DraggableIngredient = React.memo(function DraggableIngredient({
           size={18}
           onPress={() => onRemove(ingredient.tempId)}
           style={styles.deleteButton}
+          accessibilityLabel={t('common.a11y.remove')}
         />
       </View>
     </Animated.View>

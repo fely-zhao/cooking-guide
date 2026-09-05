@@ -28,6 +28,7 @@
 
 - **依赖清理** (2026-09-05，门禁全绿)：删除模板残留依赖 @react-native/new-app-screen；uuid ^9 从 devDependencies 挪到 dependencies（yarn add 实装 ^14.0.2，named import 用法兼容，tsc 验证通过）
 - **DB 迁移覆盖安装真机验证** (2026-09-05)：debug 包覆盖安装至旧数据真机，菜谱/收藏/烹饪记录/设置项全部保留，幂等重放通过（2026-08-31 挂账销项）
+- **无障碍第四轮：录入/编辑页** (2026-09-05，门禁全绿)：录入入口 + 手动/图片/链接/语音四屏输入框与操作按钮 label、录音按钮状态化 label + disabled 态、录制时长语义化、波形装饰隐藏、编辑页份数 stepper 与拖拽行删除按钮 label；增减/删除词条提升至 common.a11y 跨页复用
 - **无障碍第三轮：设置页** (2026-09-05，门禁全绿)：HeaderBar 返回按钮组件内置「返回」label（全屏复用）、Stepper 增减按钮 label + disabled 态、Switch 关联行标签、语言 radio selected 语义、服务地址输入框关联字段名 label
 - **无障碍第二轮：首页** (2026-09-05，门禁全绿)：设置按钮/卡片 play 按钮/长按菜单三按钮读屏 label，筛选 tab 选中态语义化，卡片长按菜单以 accessibilityActions 透出（读屏用户原本无法触达收藏/编辑），PressableScale 无障碍 props 透传
 - **无障碍第一轮：烹饪页** (2026-09-05，门禁全绿)：IconButton 组件新增 accessibilityLabel prop（全库复用）、退出按钮接入读屏文案、TimerRing 倒计时语义化（剩余 X 分 Y 秒 + role timer）、状态点/庆祝特效对读屏隐藏；无障碍规范固化入 UI 规范第 12 节
@@ -59,7 +60,7 @@
 发版前待清项（报告 `docs/代码审计-2026-09-02.md`，SOP `docs/发版前审计清单.md`；2026-09-02/09-05 批次 Blocker/Warning/Nit 大半已闭环，细节见 git log）：
 
 - N6：5 个屏幕超 500 行拆分
-- accessibilityLabel 剩余屏幕补齐（烹饪页、首页、设置页已完成，剩余录入/编辑/详情页分轮，规范见 UI 规范第 12 节）
+- accessibilityLabel 剩余屏幕补齐（烹饪页、首页、设置页、录入/编辑页已完成，剩余详情页等零散触点，规范见 UI 规范第 12 节）
 - 语音命令无暂停/继续/上一步
 
 待复现：首页偶现筛选栏与卡片瞬态重叠（疑与 FadeInUp entering 中间帧相关；再出现时记录触发场景）

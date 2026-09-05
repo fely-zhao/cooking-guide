@@ -147,6 +147,7 @@ export const DraggableStep = React.memo(function DraggableStep({
                 placeholder="0"
                 placeholderTextColor={colors.text.inputPlaceholder}
                 keyboardType="numeric"
+                accessibilityLabel={t('components.durationLabel')}
               />
             </View>
             <View style={styles.presetRow}>

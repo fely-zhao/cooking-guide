@@ -89,6 +89,7 @@ export default function ManualInputScreen() {
               textAlignVertical="top"
               multiline
               editable={!isParsing}
+              accessibilityLabel={t('manual.title')}
             />
           </View>
 

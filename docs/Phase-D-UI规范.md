@@ -591,3 +591,4 @@ src/
 - `CookingScreen.tsx`：退出按钮 label、TimerRing 计时 label、状态点/庆祝特效隐藏（a11y 第一轮，2026-09-05）
 - `HomeScreen.tsx` / `MagazineCard.tsx` / `PressableScale.tsx`：设置按钮 label、筛选 tab `accessibilityState.selected`、卡片 play 按钮与长按菜单按钮 label、卡片长按菜单以 `accessibilityActions` longpress 透出（读屏用户原本无法触达收藏/编辑）、`PressableScale` 无障碍 props 透传（a11y 第二轮，2026-09-05）
 - `SettingsScreen.tsx` / `HeaderBar.tsx`：`HeaderBar` 返回按钮组件内置「返回」label（全屏复用零调用方改动）、Stepper 增减按钮 label + disabled 态、Switch 关联行标签、语言 radio `selected` 语义、五个服务输入框关联字段名 label（a11y 第三轮，2026-09-05）
+- 录入/编辑全家桶：录入入口、手动/图片/链接/语音四屏输入框与操作按钮 label、录音按钮状态化 label（开始/停止 + disabled）、录制时长语义化、编辑页份数 stepper 与拖拽行删除按钮 label（增减/删除词条提升至 `common.a11y` 供跨页复用）（a11y 第四轮，2026-09-05）
