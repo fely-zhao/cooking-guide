@@ -27,7 +27,7 @@
 近期（2026-09，细节见 git log）：
 
 - **文档清理** (2026-09-05)：删除 docs/UI-Redesign-Plan.md（四 Phase 全部完成的历史施工方案，token 表与 UI 规范重复、字体方案已废弃、全库无引用）；Phase-D-UI规范.md 修正两处漂移（图标数标题 27→28 与表格实际行数一致；文件组织节移除已删净的 android/ios 字体目录条目）；同日清理 iOS 字体死配置残留——Info.plist UIAppFonts 整段与 project.pbxproj 23 行字体引用（7 PBXBuildFile + fonts PBXGroup + 7 PBXFileReference + 主 group children 引用 + 7 Resources），指向 09-05 已删净的 ttf 文件；plist 格式与 pbxproj 括号配平已验证
-- **审计 Nit 快速清理** (2026-09-05，门禁四件套全绿)：N1 删 closeDatabase/hapticError 死代码（getSessionsByRecipe 复核为 e2e 测试消费方，保留）；N2 收敛 9 处多余导出（OpenAI* 6 接口、INGREDIENT_ITEM_HEIGHT、DEFAULT_TTS_VOLUME_LEVEL、Draggable 两 Props；MIGRATIONS/InteractionControlsProps 有测试或 barrel 消费保留）；N3 StepNumber lg 改 typography.h4，全库 fontSize 硬编码清零；N7 SettingsScreen 两处 err as Error 改 instanceof 收窄；hooks barrel 删 7 个子 hook 全量导出（复核 barrel 零消费方）；README「四级交互降级」失实宣传改为语音+屏幕两级（耳机/手势 V2 规划）
+- **审计 Nit 快速清理** (2026-09-05，门禁四件套全绿)：N1 删 closeDatabase/hapticError 死代码（getSessionsByRecipe 复核为 e2e 测试消费方，保留）；N2 收敛 9 处多余导出（OpenAI\* 6 接口、INGREDIENT_ITEM_HEIGHT、DEFAULT_TTS_VOLUME_LEVEL、Draggable 两 Props；MIGRATIONS/InteractionControlsProps 有测试或 barrel 消费保留）；N3 StepNumber lg 改 typography.h4，全库 fontSize 硬编码清零；N7 SettingsScreen 两处 err as Error 改 instanceof 收窄；hooks barrel 删 7 个子 hook 全量导出（复核 barrel 零消费方）；README「四级交互降级」失实宣传改为语音+屏幕两级（耳机/手势 V2 规划）
 - **发版前审计整改第一批（Blocker 清零）** (2026-09-02，真机验证通过——14 项检查全过)：
   - B1：设置页音色选择器全链路删除（SettingsScreen 组件+样式、AppSettings.ttsVoiceId 字段、storage 读写、i18n key）；音色唯一来源为 voiceMap 按文本语言自动决定
   - B2：提问入口临时禁用——InteractionControls 的 ASK_FEATURE_ENABLED=false + 两个语言词表 ask 词条注释保留 + 5 个 ask 测试用例 it.skip；提问功能设计完成后一并恢复
