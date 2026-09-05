@@ -27,6 +27,7 @@
 近期（2026-09）：
 
 - **依赖清理** (2026-09-05，门禁全绿)：删除模板残留依赖 @react-native/new-app-screen；uuid ^9 从 devDependencies 挪到 dependencies（yarn add 实装 ^14.0.2，named import 用法兼容，tsc 验证通过）
+- **DB 迁移覆盖安装真机验证** (2026-09-05)：debug 包覆盖安装至旧数据真机，菜谱/收藏/烹饪记录/设置项全部保留，幂等重放通过（2026-08-31 挂账销项）
 - **无障碍第一轮：烹饪页** (2026-09-05，门禁全绿)：IconButton 组件新增 accessibilityLabel prop（全库复用）、退出按钮接入读屏文案、TimerRing 倒计时语义化（剩余 X 分 Y 秒 + role timer）、状态点/庆祝特效对读屏隐藏；无障碍规范固化入 UI 规范第 12 节
 - **审计 Nit 快速清理** (2026-09-05，门禁全绿)：删死代码、收敛 9 处多余导出、StepNumber 改 typography.h4（全库 fontSize 硬编码清零）、err as Error 收窄、hooks barrel 删 7 个子 hook 导出
 - **文档治理** (2026-09-05)：删 UI-Redesign-Plan.md 与 08-26 项目审计报告（待办转挂本文件）；UI 规范修正图标计数漂移；iOS 字体死配置清理（Info.plist UIAppFonts + pbxproj 23 行）；审计盲区 4 项固化入审计清单
@@ -58,7 +59,6 @@
 - N6：5 个屏幕超 500 行拆分
 - accessibilityLabel 剩余屏幕补齐（第一轮烹饪页已完成，后续按屏幕分轮，规范见 UI 规范第 12 节）
 - 语音命令无暂停/继续/上一步
-- DB 迁移覆盖安装真机验证（2026-08-31 挂账）
 
 待复现：首页偶现筛选栏与卡片瞬态重叠（疑与 FadeInUp entering 中间帧相关；再出现时记录触发场景）
 
