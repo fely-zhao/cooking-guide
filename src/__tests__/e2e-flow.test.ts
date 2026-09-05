@@ -547,7 +547,9 @@ describe('Scenario B: 语音指令触发', () => {
     expect(cmd).toBe('repeat');
   });
 
-  it('should map "我想问一下还要多久" to ASK with question', () => {
+  // 2026-09-02 代码审计 B2：ask 词条随提问入口临时禁用（见 voice-commands.ts
+  // ASK 注释块），以下三用例同步 skip，提问功能恢复时一并恢复。
+  it.skip('should map "我想问一下还要多久" to ASK with question', () => {
     const svc = new VoiceCommandService(mockStt(), 0);
     let cmd: string | undefined, q: string | undefined;
     svc.onCommand = (c, question) => {
@@ -560,7 +562,7 @@ describe('Scenario B: 语音指令触发', () => {
     expect(q).toBe('一下还要多久');
   });
 
-  it('should map "我问个问题怎么做" to ASK with question', () => {
+  it.skip('should map "我问个问题怎么做" to ASK with question', () => {
     const svc = new VoiceCommandService(mockStt(), 0);
     let cmd: string | undefined, q: string | undefined;
     svc.onCommand = (c, question) => {
@@ -572,7 +574,7 @@ describe('Scenario B: 语音指令触发', () => {
     expect(q).toBe('怎么做');
   });
 
-  it('should map "有个问题" to ASK without question', () => {
+  it.skip('should map "有个问题" to ASK without question', () => {
     const svc = new VoiceCommandService(mockStt(), 0);
     let cmd: string | undefined, q: string | undefined;
     svc.onCommand = (c, question) => {

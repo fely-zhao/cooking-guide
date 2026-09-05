@@ -156,8 +156,6 @@
     "llmService": "LLM Service",
     "ttsService": "TTS Service",
     "sttService": "STT Service",
-    "voiceLabel": "Voice",
-    "voicePlaceholder": "Select a voice",
     "volumeLabel": "Voice Volume",
     "volumeLevels": {
       "muted": "Muted",

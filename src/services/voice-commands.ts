@@ -11,13 +11,17 @@ export type VoiceCommand = 'next' | 'repeat' | 'ask';
  * `ask` entries are checked first to prevent short `next` keywords like
  * "下一步" / "next" from consuming question utterances such as
  * "我想问下一步要做什么" / "I have a question about the next step".
+ *
+ * 2026-09-02 代码审计 B2：ask 词条已临时禁用（发版）——ANSWERING 无 onError
+ * 卡死风险，与 InteractionControls 的 ASK_FEATURE_ENABLED 同步。禁用期间含
+ * "我想问"的语句要么匹配 next/repeat，要么无命中被忽略，均为安全行为。
  */
 const KEYWORD_MAPS: Record<AppLanguage, Array<{ keywords: string[]; command: VoiceCommand }>> = {
   zh: [
-    {
-      keywords: ['我想问', '我问个问题', '有个问题'],
-      command: 'ask',
-    },
+    // {
+    //   keywords: ['我想问', '我问个问题', '有个问题'],
+    //   command: 'ask',
+    // },
     {
       keywords: ['再说一遍', '重复', '再来一次'],
       command: 'repeat',
@@ -28,10 +32,10 @@ const KEYWORD_MAPS: Record<AppLanguage, Array<{ keywords: string[]; command: Voi
     },
   ],
   en: [
-    {
-      keywords: ['question', 'ask you'],
-      command: 'ask',
-    },
+    // {
+    //   keywords: ['question', 'ask you'],
+    //   command: 'ask',
+    // },
     {
       keywords: ['repeat', 'say it again', 'one more time', 'again'],
       command: 'repeat',

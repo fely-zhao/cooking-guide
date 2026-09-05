@@ -30,14 +30,16 @@ describe('VoiceCommandService 关键词匹配', () => {
     expect(onCommand).toHaveBeenCalledWith('repeat');
   });
 
-  it('ask 关键词优先于 next，避免"我想问下一步要做什么"被误判', () => {
+  // 2026-09-02 代码审计 B2：ask 词条随提问入口临时禁用（见 voice-commands.ts
+  // ASK 注释块），以下两用例同步 skip，提问功能恢复时一并恢复。
+  it.skip('ask 关键词优先于 next，避免"我想问下一步要做什么"被误判', () => {
     const { dispatch, onCommand } = createService();
     dispatch('我想问下一步要做什么');
     expect(onCommand).toHaveBeenCalledTimes(1);
     expect(onCommand).toHaveBeenCalledWith('ask', '下一步要做什么');
   });
 
-  it('ask 关键词后无内容时 question 为 undefined', () => {
+  it.skip('ask 关键词后无内容时 question 为 undefined', () => {
     const { dispatch, onCommand } = createService();
     dispatch('有个问题');
     expect(onCommand).toHaveBeenCalledWith('ask', undefined);

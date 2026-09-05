@@ -19,12 +19,6 @@ import { Icon } from '../components/icons';
 import { exportRecipesToJson } from '../utils/export-recipes';
 import { importRecipesFromFile } from '../utils/import-recipes';
 
-// ── TTS Voice options ──
-const TTS_VOICES = [
-  { id: 'minimax-female', label: 'MiniMax Female' },
-  { id: 'minimax-male', label: 'MiniMax Male' },
-] as const;
-
 // ── Volume level display keys（顺序对应 TTS_VOLUME_LEVELS index，显示名在 i18n）──
 const VOLUME_LEVEL_KEYS = ['muted', 'low', 'standard', 'high', 'max'] as const;
 
@@ -134,71 +128,8 @@ function Stepper({
   );
 }
 
-// ── Voice Selector (simple dropdown) ──
-function VoiceSelector({
-  selectedId,
-  onSelect,
-}: {
-  selectedId: string;
-  onSelect: (id: string) => void;
-}) {
-  const [expanded, setExpanded] = useState(false);
-  const { t } = useTranslation();
-  const selected = TTS_VOICES.find(v => v.id === selectedId);
-
-  return (
-    <View style={styles.dropdown}>
-      <PressableScale
-        style={styles.dropdownTrigger}
-        onPress={() => setExpanded(!expanded)}
-        haptic="light"
-      >
-        <View style={styles.dropdownTriggerContent}>
-          <Text style={styles.dropdownText}>
-            {selected?.label ?? t('settings.voicePlaceholder')}
-          </Text>
-          <View style={[styles.dropdownArrow, expanded && styles.dropdownArrowUp]}>
-            <Icon name="chevron-right" size={20} color={colors.text.muted} />
-          </View>
-        </View>
-      </PressableScale>
-
-      {expanded && (
-        <View style={styles.dropdownOptions}>
-          {TTS_VOICES.map((voice, index) => {
-            const active = voice.id === selectedId;
-            const isFirst = index === 0;
-            return (
-              <PressableScale
-                key={voice.id}
-                style={[
-                  styles.dropdownOption,
-                  active && styles.dropdownOptionActive,
-                  !isFirst && styles.dropdownOptionBorder,
-                ]}
-                onPress={() => {
-                  onSelect(voice.id);
-                  setExpanded(false);
-                }}
-                haptic="light"
-              >
-                <View style={styles.dropdownOptionContent}>
-                  <Text
-                    style={[styles.dropdownOptionText, active && styles.dropdownOptionTextActive]}
-                  >
-                    {voice.label}
-                  </Text>
-                  {active && <Icon name="check" size={18} color={colors.primary} />}
-                </View>
-              </PressableScale>
-            );
-          })}
-        </View>
-      )}
-    </View>
-  );
-}
-
+// ── Voice Selector 已删除（2026-09-02 代码审计 B1）：ttsVoiceId 设置项无消费路径，
+// 播报音色由 src/i18n/voiceMap.ts 按文本语言自动决定，设置页不再提供音色选择。
 // ── Main Screen ──
 export default function SettingsScreen() {
   const navigation = useNavigation();
@@ -334,16 +265,8 @@ export default function SettingsScreen() {
           />
         </SectionCard>
 
-        {/* TTS 设置 */}
+        {/* TTS 设置（2026-09-02 移除音色选择器，审计 B1：设置无消费路径，音色由 voiceMap 自动决定） */}
         <SectionCard title={t('settings.sections.tts')} index={1}>
-          <Text style={styles.fieldLabel}>{t('settings.voiceLabel')}</Text>
-          <VoiceSelector
-            selectedId={settings.ttsVoiceId}
-            onSelect={id => update('ttsVoiceId', id)}
-          />
-
-          <Separator />
-
           <SettingRow label={t('settings.volumeLabel')}>
             <Stepper
               value={settings.ttsVolumeLevel}
@@ -546,62 +469,6 @@ const styles = StyleSheet.create({
     color: colors.text.primary,
     minWidth: spacing.xxl,
     textAlign: 'center',
-  },
-
-  // Dropdown
-  dropdown: {
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: spacing.radius.sm,
-    overflow: 'hidden',
-    backgroundColor: colors.surfaceFillLight,
-  },
-  dropdownTrigger: {
-    padding: spacing.md,
-  },
-  dropdownTriggerContent: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  dropdownText: {
-    ...typography.body,
-    color: colors.text.primary,
-  },
-  dropdownArrow: {
-    transform: [{ rotate: '90deg' }],
-  },
-  dropdownArrowUp: {
-    transform: [{ rotate: '-90deg' }],
-  },
-  dropdownOptions: {
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: colors.borderLight,
-  },
-  dropdownOption: {
-    padding: spacing.md,
-  },
-  dropdownOptionContent: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  dropdownOptionBorder: {
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: colors.borderLight,
-  },
-  dropdownOptionActive: {
-    backgroundColor: colors.primaryLight,
-  },
-  dropdownOptionText: {
-    ...typography.body,
-    color: colors.text.secondary,
-  },
-  dropdownOptionTextActive: {
-    color: colors.primary,
-    fontWeight: '600',
   },
 
   // Radio

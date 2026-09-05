@@ -68,7 +68,7 @@ FSM invoke ttsService
 
 ### 播报音色随播报文本语言（i18n 阶段 3，2026-09-03）
 
-- Azure short name 不由常量固化：`useCookingFsm` 的 ttsService actor 每次播放经 `src/i18n/voiceMap.ts` 的 `getVoiceConfigForText(input.text).ttsVoiceId` 求值（文本含 CJK → `zh-CN-XiaoxiaoNeural` 晓晓；否则 → `en-US-JennyNeural`）
+- Azure short name 不由常量固化：`useCookingFsm` 的 ttsService actor 每次播放经 `src/i18n/voiceMap.ts` 的 `getVoiceConfigForText(input.text).ttsVoiceId` 求值（文本含 CJK → `zh-CN-XiaoxiaoNeural` 晓晓；否则 → `en-US-JennyNeural`）。2026-09-02 审计 B1 后设置页音色选择器已删除（`ttsVoiceId` 设置项无消费路径），音色完全由此映射自动决定
 - **voice 跟随播报文本语言而非 UI 语言**：菜谱数据保持录入语言（架构文档 3.5 数据语言原则），中文菜谱在英文 UI 下也用晓晓念。真机教训：Jenny 念纯中文时 Azure 返回 200 + 空/无效音频，播放器报 decodeAudioData Invalid file (-10)
 - Azure provider 对空 audio body 抛可诊断错误（`empty audio body`），不再落到播放器 decode
 - SSML `xml:lang` 由 voice short name 推导（`zh-CN-XiaoxiaoNeural` → `zh-CN`），不再硬编码

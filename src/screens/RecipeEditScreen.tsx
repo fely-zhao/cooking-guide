@@ -17,6 +17,7 @@ import type { RootStackNavigationProp, RootStackParamList } from '../navigation/
 import { getRecipe, updateRecipe } from '../db/recipes';
 import { deleteByRecipe as deleteIngredientsByRecipe, createIngredient } from '../db/ingredients';
 import { deleteByRecipe as deleteStepsByRecipe, createStep } from '../db/steps';
+import { withTransaction } from '../db/transaction';
 import { LLMService } from '../services/llm';
 import { createApiClient } from '../config';
 import type { ParseRecipeResponse } from '../types/api';
@@ -139,43 +140,47 @@ export default function RecipeEditScreen() {
       return;
     }
 
-    updateRecipe(recipeId, {
-      name: recipeName.trim(),
-      servings,
-      coverImage,
+    // 多表写入（recipes/ingredients/steps）必须原子：2026-09-02 审计 B3 补事务包裹，
+    // 中途失败回滚，避免留下无食材/无步骤的半损菜谱。
+    withTransaction(() => {
+      updateRecipe(recipeId, {
+        name: recipeName.trim(),
+        servings,
+        coverImage,
+      });
+
+      deleteIngredientsByRecipe(recipeId);
+      deleteStepsByRecipe(recipeId);
+
+      for (let i = 0; i < ingredients.length; i++) {
+        const ing = ingredients[i];
+        if (ing.name.trim()) {
+          createIngredient({
+            recipeId,
+            name: ing.name.trim(),
+            amount: ing.amount.trim(),
+            sortOrder: i,
+          });
+        }
+      }
+
+      for (let i = 0; i < steps.length; i++) {
+        const step = steps[i];
+        if (step.text.trim()) {
+          createStep({
+            recipeId,
+            stepNumber: i + 1,
+            text: step.text.trim(),
+            tag: step.tag,
+            durationSeconds:
+              step.tag === 'wait_timer' && step.durationSeconds
+                ? Number(step.durationSeconds)
+                : undefined,
+            sortOrder: i,
+          });
+        }
+      }
     });
-
-    deleteIngredientsByRecipe(recipeId);
-    deleteStepsByRecipe(recipeId);
-
-    for (let i = 0; i < ingredients.length; i++) {
-      const ing = ingredients[i];
-      if (ing.name.trim()) {
-        createIngredient({
-          recipeId,
-          name: ing.name.trim(),
-          amount: ing.amount.trim(),
-          sortOrder: i,
-        });
-      }
-    }
-
-    for (let i = 0; i < steps.length; i++) {
-      const step = steps[i];
-      if (step.text.trim()) {
-        createStep({
-          recipeId,
-          stepNumber: i + 1,
-          text: step.text.trim(),
-          tag: step.tag,
-          durationSeconds:
-            step.tag === 'wait_timer' && step.durationSeconds
-              ? Number(step.durationSeconds)
-              : undefined,
-          sortOrder: i,
-        });
-      }
-    }
 
     navigation.goBack();
   }, [recipeId, recipeName, servings, coverImage, ingredients, steps, navigation]);

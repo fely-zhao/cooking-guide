@@ -10,7 +10,6 @@ export interface AppSettings {
   azureSpeechKey: string;
   /** Azure 资源所在区域，如 eastasia / japaneast；默认取 config.ts 的 AZURE_REGION */
   azureRegion: string;
-  ttsVoiceId: string;
   /** 播报音量档位 index，对应 TTS_VOLUME_LEVELS */
   ttsVolumeLevel: number;
   defaultServings: number;
@@ -39,7 +38,6 @@ export const DEFAULT_SETTINGS: AppSettings = {
   sttUrl: 'http://localhost:5000',
   azureSpeechKey: '',
   azureRegion: AZURE_REGION,
-  ttsVoiceId: '',
   ttsVolumeLevel: DEFAULT_TTS_VOLUME_LEVEL,
   defaultServings: 2,
   gestureEnabled: true,

@@ -156,8 +156,6 @@
     "llmService": "LLM 服务",
     "ttsService": "TTS 服务",
     "sttService": "STT 服务",
-    "voiceLabel": "语音选择",
-    "voicePlaceholder": "请选择语音",
     "volumeLabel": "播报音量",
     "volumeLevels": {
       "muted": "静音",

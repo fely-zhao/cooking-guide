@@ -25,6 +25,12 @@
 
 近期（2026-09，细节见 git log）：
 
+- **发版前审计整改第一批（Blocker 清零）** (2026-09-02，真机验证通过——14 项检查全过)：
+  - B1：设置页音色选择器全链路删除（SettingsScreen 组件+样式、AppSettings.ttsVoiceId 字段、storage 读写、i18n key）；音色唯一来源为 voiceMap 按文本语言自动决定
+  - B2：提问入口临时禁用——InteractionControls 的 ASK_FEATURE_ENABLED=false + 两个语言词表 ask 词条注释保留 + 5 个 ask 测试用例 it.skip；提问功能设计完成后一并恢复
+  - B3：RecipeEditScreen handleSave 多表写入包 withTransaction，中途失败回滚
+  - 同日全量代码审计（报告 docs/代码审计-2026-09-02.md，SOP 固化 docs/发版前审计清单.md）；B4/W1 复核为扫描范围误报撤销（App.tsx 已挂 ErrorBoundary/已调 cleanupOrphanCovers），教训已入清单
+
 - **i18n 多语言体系** (2026-09-03，四阶段真机验收全部通过)：
   - 阶段 1 基建：架构文档新增 3.5 章节（先规范后代码）；src/i18n/（同步初始化 + 语言解析优先级 MMKV 覆盖 > 系统语言 > zh 兕底 + changeAppLanguage 唯一入口 + TS key 类型增强）；设置页语言项切语言即时生效、重启保持
   - 阶段 2 全量抽取：10 屏 + 10 组件 + FSM 播报/服务层错误文案接入 t()；TAG_OPTIONS/音量档位名移入资源；jest.setup 全局初始化 i18n；grep 验收无硬编码 UI 文案
@@ -55,6 +61,15 @@
 - **测试基建**：jest 单测 + e2e 全绿（7 套件）
 
 **待解决**：
+
+**发版前代码审计待清项**（2026-09-02 审计，Blocker 已清零并真机验证；完整报告 `docs/代码审计-2026-09-02.md`，SOP `docs/发版前审计清单.md`）：
+
+- 剩余 Warning：W2 useCookingLogger 挂生产路径（转态打日志+白查 DB）、W3 服务层错误 message 硬编码中文（stt/permissions/tts-provider-azure）、W4 ASK prompt 中文硬编码（随提问功能恢复一并处理）、W5 console.log 残留 21 处、W6 useRecipeLoader 错误不上浮 UI、W7 用户转写文本进日志（隐私）
+- Nit 7 项发版后处理（真孤儿导出 3 个、多余 export、fontSize 半 token、模板依赖、大文件拆分等，见报告）
+
+- Blocker：① 设置页 TTS 音色选择器无消费路径（`ttsVoiceId` 写入 MMKV 但播放用 `getVoiceConfigForText` 硬映射，选项仅 MiniMax 而运行时只实例化 AzureTTSProvider，选择零效果）；② FSM ANSWERING invoke 无 onError，LLM 失败卡死（ROADMAP 既有记录，代码复核属实）；③ RecipeEditScreen 保存为多表写入（update+delete+recreate）未包 withTransaction，违反红线；④ ErrorBoundary 组件零引用，App 未挂载，生产崩溃白屏无兜底
+- Warning：cleanupOrphanCovers 未接线（封面图堆积）、useCookingLogger 挂生产路径（转态打日志+白查 DB）、服务层错误 message 硬编码中文（stt/permissions/tts-provider-azure）、ASK prompt 中文硬编码、console.log 21 处、useRecipeLoader 错误不上浮 UI
+- 通过项：tsc/lint/format 全绿、硬编码颜色零残留、any/@ts-ignore 零、generateUuid/withTransaction 入口约定遵守（违规在 screen 层）、密钥不进日志
 
 - 提问功能（ASK/ANSWERING）设计未完成，fely 待设计回答范围后再实施。设计输入（2026-09-03 排查结论）：
   - 回答被静默丢弃：ANSWERING 的 llmService 拿到 answer 后直接回原状态，无 TTS 播报（接入方案已讨论：useCookingFsm 的 llmService actor 内播报，voice 跟随回答文本语言，播完才回原状态）

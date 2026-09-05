@@ -55,6 +55,14 @@ export interface InteractionControlsProps {
 // State → button enabled map
 // ---------------------------------------------------------------------------
 
+/**
+ * 2026-09-02 代码审计 B2：发版临时禁用提问入口。
+ * 根因：FSM ANSWERING invoke 无 onError，LLM 失败（服务未起/断网）会卡死在
+ * ANSWERING；提问功能整体设计未完成（见 ROADMAP 待解决）。提问按钮置灰，
+ * 语音词表同步禁用（src/services/voice-commands.ts）。功能设计完成后改回 true。
+ */
+const ASK_FEATURE_ENABLED = false;
+
 interface ButtonStates {
   next: boolean;
   repeat: boolean;
@@ -255,7 +263,7 @@ export default function InteractionControls({
           variant="outline"
           icon={<Icon name="chat" size={16} color={colors.primary} />}
           onPress={handleAskPress}
-          disabled={!buttons.ask}
+          disabled={!ASK_FEATURE_ENABLED || !buttons.ask}
           style={styles.halfButton}
         />
       </View>
