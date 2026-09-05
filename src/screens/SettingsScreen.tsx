@@ -508,7 +508,9 @@ const styles = StyleSheet.create({
   },
   radioLabelActive: {
     color: colors.text.primary,
-    fontWeight: '600',
+    // 用命名字体而非 fontWeight：body 的 Inter-Regular 叠 fontWeight '600'
+    // 在 Android 会 fallback 系统字体（英文模式字体不一致根因之一）
+    fontFamily: 'Inter-SemiBold',
   },
 
   // Backup

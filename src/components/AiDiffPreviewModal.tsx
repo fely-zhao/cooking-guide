@@ -159,7 +159,8 @@ const styles = StyleSheet.create({
   },
   stepTagNew: {
     color: colors.success,
-    fontWeight: '500',
+    // 注：不叠加 fontWeight——badge 已是 Inter-Medium（=500），Android 上命名字体
+    // 叠 fontWeight 会因找不到变体而整体 fallback 系统字体（英文模式字体不一致根因之一）
   },
   stepMeta: {
     flexDirection: 'row',

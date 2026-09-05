@@ -66,6 +66,7 @@
 
 - ✅ W2/W5/W7 已修复（2026-09-02）：16 处调试 console.log 加 `__DEV__` 守卫（含 useCookingLogger，生产零开销不查库；转写文本仅 DEV 输出），6 处 console.error（错误观测）保留
 - ✅ W6 已修复（2026-09-02）：useRecipeLoader 返回 notFound，CookingScreen 兑底 NotFound 状态（插画+返回按钮，i18n cooking.notFound/back 双语）
+- 🔧 真机走查新发现（2026-09-05，修复中）：① 英文模式字体不一致——命名字体叠加 fontWeight 致 Android 整体 fallback 系统字体，已修 2 处（AiDiffPreviewModal/SettingsScreen radio），扫描规则已入审计清单，待真机复验；② 设置页/编辑页 HeaderBar 标题与右侧按钮视觉不居中——布局代码几何对称，疑似 PlayfairDisplay 中文 fallback metrics 偏移，待看截图定位（换模型续修）
 - ✅ W3 已关闭（2026-09-02 调研）：STT/权限错误中文 message 不上 UI（catch 层已换 i18n 文案）；LLM 错误英文技术串仅作 i18n 插值参数，无中英混杂问题
 - ⏸ W4 挂起：ASK prompt 中文硬编码，随提问功能设计恢复时一并多语言化
 - Nit 7 项发版后处理（真孤儿导出 3 个、多余 export、fontSize 半 token、模板依赖、大文件拆分等，见报告）
