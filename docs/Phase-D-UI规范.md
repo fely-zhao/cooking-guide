@@ -589,3 +589,4 @@ src/
 ### 参考实现
 
 - `CookingScreen.tsx`：退出按钮 label、TimerRing 计时 label、状态点/庆祝特效隐藏（a11y 第一轮，2026-09-05）
+- `HomeScreen.tsx` / `MagazineCard.tsx` / `PressableScale.tsx`：设置按钮 label、筛选 tab `accessibilityState.selected`、卡片 play 按钮与长按菜单按钮 label、卡片长按菜单以 `accessibilityActions` longpress 透出（读屏用户原本无法触达收藏/编辑）、`PressableScale` 无障碍 props 透传（a11y 第二轮，2026-09-05）

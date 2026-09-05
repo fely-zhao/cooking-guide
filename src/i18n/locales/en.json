@@ -186,6 +186,13 @@
   },
   "components": {
     "startCooking": "Start Cooking",
+    "close": "Close",
+    "edit": "Edit",
+    "favorite": "Favorite",
+    "unfavorite": "Remove from favorites",
+    "a11y": {
+      "openMenu": "Open menu"
+    },
     "aiTitle": "AI Assist",
     "optimizeSteps": "Refine Step Text",
     "optimizeStepsDesc": "Make step descriptions clearer and more actionable",

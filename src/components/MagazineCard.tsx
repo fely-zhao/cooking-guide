@@ -85,6 +85,8 @@ export function MagazineCard({
         {onPlayPress && (
           <Pressable
             style={[styles.playButton, !hasImage && styles.playButtonPrimary]}
+            accessibilityRole="button"
+            accessibilityLabel={t('components.startCooking')}
             onPress={(event: GestureResponderEvent) => {
               event.stopPropagation();
               onPlayPress();
@@ -107,6 +109,15 @@ export function MagazineCard({
       onLongPress={onLongPress}
       scale={0.97}
       haptic="light"
+      accessibilityRole="button"
+      accessibilityActions={
+        onLongPress ? [{ name: 'longpress', label: t('components.a11y.openMenu') }] : undefined
+      }
+      onAccessibilityAction={event => {
+        if (event.nativeEvent.actionName === 'longpress') {
+          onLongPress?.();
+        }
+      }}
     >
       {image ? (
         <ImageBackground
@@ -169,6 +180,8 @@ export function MagazineCard({
                 {onPlayPress && (
                   <Pressable
                     style={styles.playButtonCompact}
+                    accessibilityRole="button"
+                    accessibilityLabel={t('components.startCooking')}
                     onPress={(event: GestureResponderEvent) => {
                       event.stopPropagation();
                       onPlayPress();
@@ -233,6 +246,7 @@ export function MagazineCard({
             size={14}
             onPress={onCloseMenu}
             style={styles.menuCloseButton}
+            accessibilityLabel={t('components.close')}
           />
           <View style={styles.menuActions}>
             <IconButton
@@ -242,6 +256,9 @@ export function MagazineCard({
               color={isFavorite ? colors.danger : colors.text.primary}
               onPress={onToggleFavorite}
               style={styles.menuActionButton}
+              accessibilityLabel={
+                isFavorite ? t('components.unfavorite') : t('components.favorite')
+              }
             />
             <IconButton
               name="edit"
@@ -249,6 +266,7 @@ export function MagazineCard({
               size={20}
               onPress={onEditPress}
               style={styles.menuActionButton}
+              accessibilityLabel={t('components.edit')}
             />
           </View>
         </Animated.View>

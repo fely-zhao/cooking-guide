@@ -152,6 +152,8 @@ function FilterBar({ activeFilter, onFilterChange }: FilterBarProps) {
             haptic="selection"
             onPress={() => onFilterChange(filter.key)}
             style={styles.filterTab}
+            accessibilityRole="button"
+            accessibilityState={{ selected: isActive }}
           >
             <Text style={[styles.filterText, isActive && styles.filterTextActive]}>
               {t(filter.label)}
@@ -363,6 +365,7 @@ export default function HomeScreen() {
             color={colors.text.lighter}
             size={22}
             onPress={handleSettings}
+            accessibilityLabel={t('home.a11y.settings')}
           />
         </Animated.View>
 
@@ -402,6 +405,7 @@ export default function HomeScreen() {
           color={colors.text.lighter}
           size={22}
           onPress={handleSettings}
+          accessibilityLabel={t('home.a11y.settings')}
         />
       </Animated.View>
 

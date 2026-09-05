@@ -39,7 +39,10 @@
     "emptyRecentTitle": "还没有烹饪记录",
     "emptyFavoriteHint": "长按菜谱即可收藏",
     "emptyRecentHint": "做过的菜会出现在这里",
-    "fab": "录入新菜谱"
+    "fab": "录入新菜谱",
+    "a11y": {
+      "settings": "设置"
+    }
   },
   "detail": {
     "notFound": "菜谱不存在",
@@ -186,6 +189,13 @@
   },
   "components": {
     "startCooking": "开始烹饪",
+    "close": "关闭",
+    "edit": "编辑",
+    "favorite": "收藏",
+    "unfavorite": "取消收藏",
+    "a11y": {
+      "openMenu": "打开菜单"
+    },
     "aiTitle": "AI 辅助",
     "optimizeSteps": "优化步骤文案",
     "optimizeStepsDesc": "让步骤描述更清晰、具体、可操作",
