@@ -17,6 +17,8 @@ interface IconButtonProps {
   disabled?: boolean;
   style?: ViewStyle;
   haptic?: boolean;
+  /** 读屏文案；图标按钮无可见文本，必须传入 */
+  accessibilityLabel?: string;
 }
 
 const ICON_BUTTON_SIZE = 44;
@@ -44,6 +46,7 @@ export function IconButton({
   disabled = false,
   style,
   haptic = true,
+  accessibilityLabel,
 }: IconButtonProps) {
   const scale = useSharedValue(1);
 
@@ -77,6 +80,7 @@ export function IconButton({
       onPressOut={handlePressOut}
       disabled={disabled}
       activeOpacity={0.8}
+      accessibilityLabel={accessibilityLabel}
     >
       <Animated.View style={animatedStyle}>
         <Icon name={name} size={size} color={iconColor} />

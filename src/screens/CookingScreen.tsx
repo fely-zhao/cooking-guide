@@ -74,12 +74,26 @@ function TimerRing({ remainingSeconds, totalSeconds }: TimerRingProps) {
     return colors.accent;
   }, [remainingSeconds]);
 
+  // 读屏语义化：mm:ss 会被读成数字串，用「剩余 X 分 Y 秒」替代
+  const a11yLabel = useMemo(() => {
+    const mins = Math.floor(remainingSeconds / 60);
+    const secs = remainingSeconds % 60;
+    return mins > 0
+      ? i18n.t('cooking.a11y.timerRemainingMinSec', { min: mins, sec: secs })
+      : i18n.t('cooking.a11y.timerRemainingSec', { sec: secs });
+  }, [remainingSeconds]);
+
   const radius = (RING_SIZE - RING_BORDER) / 2;
   const circumference = 2 * Math.PI * radius;
   const offset = circumference * (1 - progress);
 
   return (
-    <View style={timerStyles.container}>
+    <View
+      style={timerStyles.container}
+      accessible={true}
+      accessibilityLabel={a11yLabel}
+      accessibilityRole="timer"
+    >
       <Svg width={RING_SIZE} height={RING_SIZE}>
         <Circle
           cx={RING_SIZE / 2}
@@ -348,6 +362,7 @@ export default function CookingScreen() {
           variant="default"
           color={colors.text.inverse}
           onPress={handleExit}
+          accessibilityLabel={t('cooking.a11y.exit')}
         />
         <View style={styles.headerCenter}>
           <Text style={styles.headerTitle} numberOfLines={1}>
@@ -401,12 +416,18 @@ export default function CookingScreen() {
                   },
                 ]}
                 entering={FadeIn.delay(sparkle.delay).duration(400)}
+                accessibilityElementsHidden={true}
+                importantForAccessibility="no"
               >
                 <Icon name="sparkle" size={24} color={colors.warning} />
               </Animated.View>
             ))}
 
-            <Animated.View style={celebrationAnimatedStyle}>
+            <Animated.View
+              style={celebrationAnimatedStyle}
+              accessibilityElementsHidden={true}
+              importantForAccessibility="no"
+            >
               <Icon name="celebration" size={48} color={colors.warning} />
             </Animated.View>
             <Text style={styles.completedText}>{t('fsm.completed')}</Text>
@@ -418,7 +439,11 @@ export default function CookingScreen() {
 
         {!isIdle && (
           <View style={styles.statusContainer}>
-            <View style={[styles.statusDot, { backgroundColor: getStatusDotColor(state) }]} />
+            <View
+              style={[styles.statusDot, { backgroundColor: getStatusDotColor(state) }]}
+              accessibilityElementsHidden={true}
+              importantForAccessibility="no"
+            />
             <Text style={styles.statusLabel}>{getStatusLabel(state)}</Text>
           </View>
         )}

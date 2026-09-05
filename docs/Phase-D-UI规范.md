@@ -574,3 +574,18 @@ src/
   navigation/
     AppNavigator.tsx # 全局页面转场配置
 ```
+
+## 12. 无障碍
+
+> 目标场景：双手忙于做饭/持物，读屏（TalkBack/VoiceOver）反馈是核心兜底通道。
+
+### 规范
+
+1. **图标按钮必须传 `accessibilityLabel`**：纯图标按钮（如 `IconButton`）无可见文本，使用时必须传 label，文案走 i18n（`*.a11y.*` 词条组）。
+2. **装饰元素必须对读屏隐藏**：纯视觉、无信息量的元素（状态点、庆祝特效、插画、装饰 Icon）统一加 `accessibilityElementsHidden={true}` + `importantForAccessibility="no"`（双平台写法）。
+3. **动态数据用语义 label**：倒计时 `05:00` 这类裸文本会被读成数字串，用「剩余 X 分 Y 秒」语义 label 替代，容器加 `accessible={true}` + `accessibilityRole="timer"`。
+4. **有可见文本的按钮不加 label**：`Button`/`Text` 天然可读，额外 `accessibilityLabel` 会与可见文案漂移，禁止。
+
+### 参考实现
+
+- `CookingScreen.tsx`：退出按钮 label、TimerRing 计时 label、状态点/庆祝特效隐藏（a11y 第一轮，2026-09-05）

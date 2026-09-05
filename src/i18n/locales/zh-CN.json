@@ -120,7 +120,12 @@
     "fallbackTitle": "烹饪中",
     "listening": "等待语音指令…",
     "notFound": "菜谱不存在",
-    "back": "返回"
+    "back": "返回",
+    "a11y": {
+      "exit": "退出烹饪",
+      "timerRemainingMinSec": "剩余 {{min}} 分 {{sec}} 秒",
+      "timerRemainingSec": "剩余 {{sec}} 秒"
+    }
   },
   "edit": {
     "title": "编辑菜谱",

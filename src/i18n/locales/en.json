@@ -120,7 +120,12 @@
     "fallbackTitle": "Cooking",
     "listening": "Waiting for voice commands…",
     "notFound": "Recipe not found",
-    "back": "Back"
+    "back": "Back",
+    "a11y": {
+      "exit": "Exit cooking",
+      "timerRemainingMinSec": "{{min}} min {{sec}} sec remaining",
+      "timerRemainingSec": "{{sec}} sec remaining"
+    }
   },
   "edit": {
     "title": "Edit Recipe",
