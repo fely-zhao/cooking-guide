@@ -26,6 +26,8 @@ interface ButtonProps {
   style?: ViewStyle;
   textStyle?: TextStyle;
   haptic?: boolean;
+  /** 读屏文案；title 为符号（如 stepper 的 −/+）时必须传 */
+  accessibilityLabel?: string;
 }
 
 const styles = StyleSheet.create({
@@ -142,6 +144,7 @@ export function Button({
   style,
   textStyle,
   haptic = true,
+  accessibilityLabel,
 }: ButtonProps) {
   const scale = useSharedValue(1);
 
@@ -182,6 +185,7 @@ export function Button({
       onPressOut={handlePressOut}
       disabled={disabled || loading}
       activeOpacity={0.7}
+      accessibilityLabel={accessibilityLabel}
     >
       <Animated.View style={[animatedStyle, styles.content]}>
         {loading ? (

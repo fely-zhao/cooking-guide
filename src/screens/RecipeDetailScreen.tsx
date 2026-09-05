@@ -167,6 +167,7 @@ export default function RecipeDetailScreen() {
                 onPress={() => navigation.goBack()}
                 color={colors.text.inverse}
                 style={styles.heroNavBtn}
+                accessibilityLabel={t('common.back')}
               />
               <Button
                 title={t('detail.edit')}
@@ -202,6 +203,7 @@ export default function RecipeDetailScreen() {
                   disabled={servings <= 1}
                   style={styles.stepperBtn}
                   textStyle={styles.stepperBtnText}
+                  accessibilityLabel={t('common.a11y.decrease')}
                 />
                 <Text style={styles.stepperValue}>{servings}</Text>
                 <Button
@@ -210,6 +212,7 @@ export default function RecipeDetailScreen() {
                   onPress={() => setServings(s => s + 1)}
                   style={styles.stepperBtn}
                   textStyle={styles.stepperBtnText}
+                  accessibilityLabel={t('common.a11y.increase')}
                 />
               </View>
             </View>
@@ -258,6 +261,8 @@ export default function RecipeDetailScreen() {
                   onPress={() => toggleIngredient(ing.id)}
                   disabled={!prepMode}
                   style={styles.ingredientCard}
+                  accessibilityRole="checkbox"
+                  accessibilityState={{ checked, disabled: !prepMode }}
                 >
                   {prepMode && (
                     <View style={[styles.checkbox, checked && styles.checkboxChecked]}>
