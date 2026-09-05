@@ -107,8 +107,4 @@
 
 ---
 
-i18n 已完成（2026-09-03 四阶段真机验收）：i18next + react-i18next + react-native-localize，zh-CN 源语言 + en。明确不做：RTL 布局、翻译管理平台、更多语言（加 JSON 文件即可）。
-
----
-
 详见 [`docs/Phase-D-UI规范.md`](docs/Phase-D-UI规范.md) 和 [`docs/架构与技术文档.md`](docs/架构与技术文档.md)
