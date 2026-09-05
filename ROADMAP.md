@@ -53,31 +53,24 @@
 
 发版前待清项（报告 `docs/代码审计-2026-09-02.md`，SOP `docs/发版前审计清单.md`；2026-09-02/09-05 批次 Blocker/Warning/Nit 大半已闭环，细节见 git log）：
 
-- ⏸ W4：ASK prompt 中文硬编码，随提问功能一并多语言化
 - N4：@react-native/new-app-screen 模板残留依赖（红线 9，Windows PowerShell 操作）
 - N6：5 个屏幕超 500 行拆分
 - uuid@^9 在 devDependencies 但被运行时使用，需移 dependencies（红线 9，Windows PowerShell）
 - accessibilityLabel 全库为 0，双手不离锅场景核心短板
-- 语音命令无暂停/继续/上一步（与提问功能一并规划）
+- 语音命令无暂停/继续/上一步
 - DB 迁移覆盖安装真机验证（2026-08-31 挂账）
-
-提问功能（ASK/ANSWERING）设计未完成，fely 待设计回答范围后再实施。设计输入（2026-09-03 排查结论）：
-
-- 回答被静默丢弃：ANSWERING 的 llmService 拿到 answer 后直接回原状态，无 TTS 播报（已讨论方案：useCookingFsm 的 llmService actor 内播报，voice 跟随回答文本语言，播完才回原状态）
-- 卡死隐患：ANSWERING invoke 无 onError，LLM 失败（服务未起/网络）会卡死，设计时必须一并处理
-- 回答范围现状：ASK_SYSTEM_PROMPT 仅限「30 字以内」，无内容边界，fely 要先设计
-- 恢复入口：InteractionControls 的 ASK_FEATURE_ENABLED=false + 两语言词表 ask 词条 + 5 个 ask it.skip 用例
 
 待复现：首页偶现筛选栏与卡片瞬态重叠（疑与 FadeInUp entering 中间帧相关；再出现时记录触发场景）
 
 ## 长期（V2）
 
 <!-- prettier-ignore -->
-| 功能         | 说明                                          |
-| ------------ | --------------------------------------------- |
-| 双菜并行     | XState spawn 子 FSM，两道菜同步推进           |
-| BLE 耳机按键 | 耳机物理按键控制烹饪流程（优先级 1）          |
-| 手势控制     | MediaPipe HandLandmarker 挥手控制（优先级 4） |
+| 功能                | 说明                                                                |
+| ------------------- | ------------------------------------------------------------------- |
+| 双菜并行            | XState spawn 子 FSM，两道菜同步推进                                 |
+| BLE 耳机按键        | 耳机物理按键控制烹饪流程（优先级 1）                                |
+| 手势控制            | MediaPipe HandLandmarker 挥手控制（优先级 4）                       |
+| 提问功能 ASK/ANSWERING | 烹饪中向 LLM 提问；待设计回答范围。已知隐患（2026-09-03 排查）：answer 静默丢弃无播报、ANSWERING invoke 无 onError 会卡死、ASK prompt 中文硬编码。恢复入口：ASK_FEATURE_ENABLED=false + 两语言词表 ask 词条 + 5 个 ask it.skip 用例 |
 
 ---
 
