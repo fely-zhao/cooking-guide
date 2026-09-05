@@ -232,6 +232,7 @@ typography.timer; // Inter ExtraLight + tabular-nums, 48/56
 ### 规范
 
 - 所有文字样式必须来自 `typography` token，禁止硬编码 `fontSize`
+- **禁止在命名字体上叠加 `fontWeight`** — Android 上 `Inter-Regular` 等命名字体叠加 `fontWeight: '500'/'600'` 会因找不到对应字重变体丢弃整个 `fontFamily`，fallback 系统字体（英文模式字体不一致的根因，2026-09-05 真机发现）。加粗需求用 typography 内对应字重样式（如 `fontFamily: 'Inter-SemiBold'`）
 - 衬线标题使用 `PlayfairDisplay-Bold`，无衬线正文/按钮/标签使用对应 Inter 字重
 - 新增字重需先确认字体文件已在 `android/app/src/main/assets/fonts/` 和 `ios/<AppName>/fonts/` 中就位，并在 `Info.plist` `UIAppFonts` / Xcode `Resources` 中注册
 

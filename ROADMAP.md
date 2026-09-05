@@ -5,15 +5,16 @@
 
 ---
 
-## 当前状态（2026-09-03）
+## 当前状态（2026-09-05）
 
 <!-- prettier-ignore -->
 | 指标       | 数值                                                                                                      |
 | ---------- | --------------------------------------------------------------------------------------------------------- |
 | 源文件     | 132 TS/TSX（不含测试）                                                                                    |
-| 代码量     | ~12800 行（不含测试）                                                                                     |
-| 测试       | 8 套件全过（单测 33 + e2e 36）：cooking-machine, haptic, useKeepAwake, HomeScreen, voice-commands, LoadingOverlay, migrations, e2e-flow |
+| 代码量     | ~12700 行（不含测试）                                                                                     |
+| 测试       | 8 套件全过（单测 33 + e2e 36，其中 5 个 ask 用例 skip 为提问功能临时禁用）：cooking-machine, haptic, useKeepAwake, HomeScreen, voice-commands, LoadingOverlay, migrations, e2e-flow |
 | i18n       | zh-CN/en 双语，193 key，全链路随设置页语言切换（UI/语音命令/播报音色/LLM 解析）                        |
+| 代码审计   | 发版前全量审计完成：Blocker 3/3 + Warning 5/6 处置并真机验证（2026-09-02），报告 `docs/代码审计-2026-09-02.md`，SOP `docs/发版前审计清单.md` |
 | 屏幕       | 10                                                                                                        |
 | 共享组件   | 28（不含图标）                                                                                            |
 | 图标       | 27 个 SVG 图标组件（icons/ 目录，不含 Icon.tsx 分发器）                                                   |
