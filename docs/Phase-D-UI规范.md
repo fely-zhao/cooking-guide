@@ -11,7 +11,7 @@
 温暖、诱人、编辑感 —— 像精装数字 cookbook，不是效率工具。
 
 - **食物摄影 / 大图优先**：每张菜谱都是一张小封面
-- **衬线标题 + 无衬线正文**：杂志排版感
+- **统一系统字体**：层次靠字号 / 字重 / 颜色（原「衬线标题 + 无衬线正文」方案已废弃，见字体节）
 - **大圆角、柔和阴影、大量留白**：不锐利、不冰冷
 - **克制用色**：奶油背景（`background: #FAF4EC`）+ 赤陶 CTA（`primary: #BF5A36`）+ 橄榄绿辅助（`secondary: #6B7A45`）
 
@@ -199,42 +199,41 @@ style={{ backgroundColor: colors.primary, color: colors.text.inverse }}
 
 ## 4. 字体
 
+> **2026-09-05 决策：全 App 弃用自定义字体（PlayfairDisplay / Inter），统一系统字体。**
+> 根因：西文字体不含汉字，中文经系统回退渲染后，字体 metrics 不对称（如 PlayfairDisplay ascent 1.082 / descent 0.251em）导致字形中心偏离文字盒中心，且 flex/lineHeight 均无法修复（基线相对盒中心的位置由字体 metrics 决定，与 lineHeight 无关），实测 HeaderBar 标题与按钮互差 2dp。系统字体中英文同源渲染，flex 居中即视觉居中，也无回退与字重变体问题。
+
 ### 字体族
 
 <!-- prettier-ignore -->
-| 用途                     | 字体                  | React Native `fontFamily`                            |
-| ------------------------ | --------------------- | ---------------------------------------------------- |
-| 大标题 / 菜谱名 / 步骤号 | **Playfair Display**  | `PlayfairDisplay-Bold`                               |
-| 正文 / 按钮 / 标签       | **Inter**             | `Inter-Regular` / `Inter-Medium` / `Inter-SemiBold`  |
-| 计时器数字               | **Inter**（等宽数字） | `Inter-ExtraLight` + `fontVariant: ['tabular-nums']` |
-
-> 说明：Playfair Display 静态字重仅提供 Regular / Bold，因此 `h1`–`h4` 统一使用 `PlayfairDisplay-Bold`；需要较细视觉时可配合 `fontWeight`。
+| 用途                     | 字体                 | 说明                                            |
+| ------------------------ | -------------------- | ----------------------------------------------- |
+| 全部文字（标题/正文/按钮/标签/计时器） | 系统默认字体           | 不设 `fontFamily`，Android 为 Roboto + 思源黑体回退 |
 
 ### 排版 Token
 
 ```tsx
 import { typography } from '../theme/typography';
 
-typography.h1; // Playfair Display Bold, 28/36
-typography.h2; // Playfair Display Bold, 24/32
-typography.h3; // Playfair Display Bold, 20/28
-typography.h4; // Playfair Display Bold, 18/24
-typography.body; // Inter Regular, 15/22
+typography.h1; // 700, 28/36
+typography.h2; // 700, 24/32
+typography.h3; // 600, 20/28
+typography.h4; // 600, 18/24
+typography.body; // 400, 15/22
 typography.bodySmall;
 typography.caption;
 typography.captionSmall;
 typography.badge;
-typography.button; // Inter SemiBold, 16/22
-typography.header; // Inter SemiBold, 17/24
-typography.timer; // Inter ExtraLight + tabular-nums, 48/56
+typography.button; // 600, 16/22
+typography.header; // 600, 17/24
+typography.timer; // 200 + tabular-nums, 48/56
 ```
 
 ### 规范
 
 - 所有文字样式必须来自 `typography` token，禁止硬编码 `fontSize`
-- **禁止在命名字体上叠加 `fontWeight`** — Android 上 `Inter-Regular` 等命名字体叠加 `fontWeight: '500'/'600'` 会因找不到对应字重变体丢弃整个 `fontFamily`，fallback 系统字体（英文模式字体不一致的根因，2026-09-05 真机发现）。加粗需求用 typography 内对应字重样式（如 `fontFamily: 'Inter-SemiBold'`）
-- 衬线标题使用 `PlayfairDisplay-Bold`，无衬线正文/按钮/标签使用对应 Inter 字重
-- 新增字重需先确认字体文件已在 `android/app/src/main/assets/fonts/` 和 `ios/<AppName>/fonts/` 中就位，并在 `Info.plist` `UIAppFonts` / Xcode `Resources` 中注册
+- **禁止引入自定义 `fontFamily`**（包括按语言/平台条件切换字体的写法）；等宽数字用 `fontVariant: ['tabular-nums']`，系统字体支持
+- `fontWeight` 可直接叠加在系统字体上，无命名字体时代的 fallback 问题
+- 历史遗留：自定义字体 ttf 已于 2026-09-05 删净（原 android assets 与 ios fonts 下各 7 个，目录已移除）
 
 ---
 
@@ -498,7 +497,7 @@ import { StepNumber } from '../components/StepNumber';
 <StepNumber number={1} size="md" />;
 ```
 
-- 圆形步骤序号，使用 Playfair Display。
+- 圆形步骤序号，字体随 `typography` token（系统字体，不设 `fontFamily`）。
 - Props：`number`, `size?: 'sm' | 'md' | 'lg'`, `variant?: 'default' | 'outline'`。
 
 ### `TranscriptBar`

@@ -2,6 +2,8 @@
 
 > 方向：FireVibe 式温暖编辑风 —— "像周日早晨翻阅一本温暖的 Bon Appétit"
 > 状态：Phase 3 已完成；全部 7 个屏幕已按 FireVibe 温暖编辑风重设计；下一步 Phase 4
+>
+> **⚠ 2026-09-05 字体方案变更**：全 App 弃用 Playfair Display / Inter，统一系统字体（根因与规范见 `Phase-D-UI规范.md` 字体节）。本文中「衬线 / Playfair / Inter」相关描述为历史设计记录，以 UI 规范为准。
 
 ---
 

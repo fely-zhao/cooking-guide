@@ -47,6 +47,7 @@ description: 'React Native 移动端 App — 三层上下文记忆体系：L1 �
 7. **严禁动画 `width`/`height`。** 全部使用 `react-native-reanimated`，只动画 `opacity`/`transform`。
 8. **严禁在根目录执行 npm 命令。严禁生成 bun.lock、package-lock.json。**
 9. **依赖变更（`yarn add` / `yarn remove`）与 `yarn install` / `yarn android` / `yarn start` 严禁在 WSL 执行，必须在 Windows PowerShell 手动操作。改依赖后必须重跑 `npx patch-package` 并确认 `patches/` 全部应用。**
+10. **严禁引入自定义字体。** 全部 UI 文字使用系统字体，禁止任何 `fontFamily`（含按语言/平台条件切换字体的写法）；等宽数字用 `fontVariant: ['tabular-nums']`。根因与规范见 `docs/Phase-D-UI规范.md` 字体节。
 
 ---
 
