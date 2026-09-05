@@ -26,6 +26,7 @@
 
 近期（2026-09）：
 
+- **依赖清理** (2026-09-05，门禁全绿)：删除模板残留依赖 @react-native/new-app-screen；uuid ^9 从 devDependencies 挪到 dependencies（yarn add 实装 ^14.0.2，named import 用法兼容，tsc 验证通过）
 - **审计 Nit 快速清理** (2026-09-05，门禁全绿)：删死代码、收敛 9 处多余导出、StepNumber 改 typography.h4（全库 fontSize 硬编码清零）、err as Error 收窄、hooks barrel 删 7 个子 hook 导出
 - **文档治理** (2026-09-05)：删 UI-Redesign-Plan.md 与 08-26 项目审计报告（待办转挂本文件）；UI 规范修正图标计数漂移；iOS 字体死配置清理（Info.plist UIAppFonts + pbxproj 23 行）；审计盲区 4 项固化入审计清单
 - **字体方案终极处置** (2026-09-05，真机复验)：全 App 弃用自定义字体改系统字体（fontWeight 失效与 HeaderBar 错位一并根治，commit b115de7）；fontFamily 扫描规则入 CLAUDE.md 红线与审计清单
@@ -53,9 +54,7 @@
 
 发版前待清项（报告 `docs/代码审计-2026-09-02.md`，SOP `docs/发版前审计清单.md`；2026-09-02/09-05 批次 Blocker/Warning/Nit 大半已闭环，细节见 git log）：
 
-- N4：@react-native/new-app-screen 模板残留依赖（红线 9，Windows PowerShell 操作）
 - N6：5 个屏幕超 500 行拆分
-- uuid@^9 在 devDependencies 但被运行时使用，需移 dependencies（红线 9，Windows PowerShell）
 - accessibilityLabel 全库为 0，双手不离锅场景核心短板
 - 语音命令无暂停/继续/上一步
 - DB 迁移覆盖安装真机验证（2026-08-31 挂账）

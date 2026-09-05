@@ -17,7 +17,6 @@
   "dependencies": {
     "@op-engineering/op-sqlite": "^15.1.6",
     "@react-native-community/blur": "^4.4.1",
-    "@react-native/new-app-screen": "0.86.0",
     "@react-navigation/native": "^6.x",
     "@react-navigation/native-stack": "^6.x",
     "@xstate/react": "^6.1.0",
@@ -38,7 +37,7 @@
     "react-native-screens": "^4.0.0",
     "react-native-svg": "^15.15.5",
     "react-native-worklets": "0.9.2",
-    "uuid": "^9.0.0",
+    "uuid": "^14.0.2",
     "xstate": "^5.0.0"
   },
   "devDependencies": {
